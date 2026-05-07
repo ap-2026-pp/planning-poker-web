@@ -50,8 +50,12 @@ export const Header = () => {
   const { pathname } = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isHomePage = pathname === appRoutes.home;
+  const isHeroPage =
+    pathname === appRoutes.home ||
+    pathname === appRoutes.login ||
+    pathname === appRoutes.register;
   const userInitials = useMemo(() => getInitials(user?.email), [user?.email]);
-  const headerVars = isHomePage
+  const headerVars = isHeroPage
     ? {
         '--header-border': 'rgba(255,255,255,0.08)',
         '--header-background': 'transparent',
@@ -132,14 +136,14 @@ export const Header = () => {
   return (
     <>
       <AppBar
-        position={isHomePage ? 'static' : 'sticky'}
+        position={isHeroPage ? 'static' : 'sticky'}
         color="transparent"
         elevation={0}
         className={styles.header}
         style={headerVars as CSSProperties}
       >
         <Toolbar className={styles.toolbar}>
-          {isHomePage ? (
+          {isHeroPage ? (
             <Container maxWidth="xl" className={styles.container}>
               <Stack direction="row" alignItems="center" className={styles.leftBlock}>
                 <Box
@@ -152,7 +156,11 @@ export const Header = () => {
 
                 <Divider orientation="vertical" flexItem className={styles.navDivider} />
 
-                <Box component={RouterLink} to={appRoutes.home} className={styles.homeLink}>
+                <Box
+                  component={RouterLink}
+                  to={appRoutes.home}
+                  className={[styles.homeLink, isHomePage ? styles.homeLinkActive : ''].join(' ').trim()}
+                >
                   <HomeRoundedIcon fontSize="small" />
                   <span>Головна</span>
                 </Box>
@@ -227,14 +235,14 @@ export const Header = () => {
       >
         <Box className={styles.drawerBody}>
           <Stack className={styles.drawerStack}>
-            <BrandMark inverse={isHomePage} />
+            <BrandMark inverse={isHeroPage} />
             <Divider className={styles.drawerDivider} />
 
             <Button
               component={RouterLink}
               to={appRoutes.home}
               variant="text"
-              className={isHomePage ? styles.outlineButton : styles.defaultTextButton}
+              className={isHeroPage ? styles.outlineButton : styles.defaultTextButton}
               onClick={() => setMobileMenuOpen(false)}
             >
               Головна

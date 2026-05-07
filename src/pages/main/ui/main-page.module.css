@@ -1,36 +1,18 @@
-.root {
-  position: relative;
-  min-height: calc(100vh - 170px);
-  display: flex;
-  align-items: center;
-  padding-block: 24px;
-}
-
-.backdrop {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.grid {
-  position: relative;
-  z-index: 1;
-}
-
 .layout {
   position: relative;
   z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 40px;
   width: 100%;
   margin-inline: auto;
-  margin-top: 10%;
+  margin-top: 5%;
 }
 
 .leftColumn {
-  flex: 0 1 620px;
-  max-width: 620px;
+  flex: 0 1 680px;
+  max-width: 680px;
 }
 
 .rightColumn {
@@ -46,19 +28,19 @@
   flex-direction: column;
   gap: 24px;
   width: 100%;
-  max-width: 560px;
+  max-width: 620px;
 }
 
 .headingBlock {
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 560px;
+  max-width: 620px;
 }
 
 .title,
 .accentTitle {
-  max-width: 560px;
+  max-width: 620px;
   font-weight: 800 !important;
   letter-spacing: -0.05em !important;
   font-size: 3.1rem !important;
@@ -80,279 +62,235 @@
 
 .description {
   width: 100%;
-  max-width: 560px;
-  min-height: 74px;
+  max-width: 580px;
   color: rgba(225, 218, 244, 0.86) !important;
   font-size: 1.22rem !important;
-  line-height: 1.52 !important;
+  line-height: 1.55 !important;
 }
 
-/* Hero illustration */
-
-.cardFan {
-  position: relative;
-  width: 560px;
-  max-width: 100%;
-  height: 230px;
-  overflow: visible;
-  flex-shrink: 0;
-}
-
-.cardFanSvg {
-  position: absolute;
-  left: 50%;
-  bottom: 0;
+.featureGrid {
+  display: grid;
+  gap: 16px;
   width: 100%;
-  max-width: 560px;
-  height: auto;
-  display: block;
-  transform: translateX(-50%);
-  pointer-events: none;
-  user-select: none;
+  max-width: 620px;
 }
 
-.svgCardDefault {
-  fill: url(#cardGradientDefault);
-  stroke: rgba(191, 171, 244, 0.55);
-  stroke-width: 1.6;
-}
-
-.svgCardActive {
-  fill: url(#cardGradientActive);
-  stroke: rgba(255, 255, 255, 0.32);
-  stroke-width: 1.6;
-  filter: drop-shadow(0 14px 24px rgba(141, 92, 236, 0.32));
-}
-
-.svgCardText,
-.svgCardTextActive {
-  font-size: 34px;
-  font-weight: 800;
-  dominant-baseline: middle;
-}
-
-.svgCardText {
-  fill: #56319f;
-}
-
-.svgCardTextActive {
-  fill: #33125b;
-}
-
-.sparkle {
-  position: absolute;
-  border-radius: 4px;
-  transform: rotate(45deg);
-  pointer-events: none;
-}
-
-.sparkle0 {
-  top: 18%;
-  left: 18%;
-  width: 6px;
-  height: 6px;
-}
-
-.sparkle1 {
-  top: 30%;
-  right: 16%;
-  width: 8px;
-  height: 8px;
-}
-
-.sparkle2 {
-  top: 74%;
-  left: 10%;
-  width: 5px;
-  height: 5px;
-}
-
-.sparkle3 {
-  top: 82%;
-  right: 14%;
-  width: 6px;
-  height: 6px;
-}
-
-.sparkle4 {
-  top: 58%;
-  left: 84%;
-  width: 5px;
-  height: 5px;
-}
-
-.sparkleActive {
-  background: rgba(165, 108, 255, 0.66);
-  box-shadow: 0 0 14px rgba(162, 100, 255, 0.26);
-}
-
-.leftIcon,
-.rightIcon {
-  position: absolute;
-  opacity: 0.95;
-  pointer-events: none;
-}
-
-.leftIcon {
-  left: 22px;
-  bottom: 78px;
-}
-
-.rightIcon {
-  right: 12px;
-  bottom: 76px;
-}
-
-.activeIcon {
-  color: rgba(129, 74, 226, 0.62);
-}
-
-.activeIconSecondary {
-  color: rgba(129, 74, 226, 0.58);
-}
-
-.heroIconLarge {
-  font-size: 62px !important;
-}
-
-.heroIconMedium {
-  font-size: 58px !important;
-}
-
-.glow {
-  position: absolute;
-  left: 50%;
-  bottom: 8px;
-  width: 300px;
-  height: 120px;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at center,
-    rgba(128, 74, 226, 0.28) 0%,
-    rgba(128, 74, 226, 0.14) 36%,
-    transparent 78%
-  );
-  filter: blur(12px);
-  pointer-events: none;
-}
-
-/* Action cards */
-
-.actionsColumn {
-  width: 100%;
-}
-
-.actionsGrid {
-  width: 100%;
-  max-width: 760px;
-  margin-left: auto;
-}
-
-.singleActionWrap {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.cardShell {
-  height: 100%;
-  min-height: 336px;
-  border-radius: 40px;
+.featureCard {
+  min-height: 190px;
+  border-radius: 28px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(180deg, rgba(31, 33, 54, 0.94) 0%, rgba(24, 25, 43, 0.92) 100%);
-  box-shadow: 0 28px 50px rgba(5, 8, 20, 0.28);
-  padding: 26px 24px;
+  background: linear-gradient(180deg, rgba(31, 33, 54, 0.82) 0%, rgba(24, 25, 43, 0.78) 100%);
+  box-shadow: 0 24px 44px rgba(5, 8, 20, 0.22);
+  padding: 22px 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
 }
 
-.cardIcon {
-  width: 86px;
-  height: 86px;
+.featureIcon,
+.widgetIcon {
+  width: 56px;
+  height: 56px;
   border-radius: 18px;
   display: grid;
   place-items: center;
   color: #fff;
-  margin-bottom: 24px;
 }
 
-.cardIconPurple {
-  background: linear-gradient(180deg, #9e69ff 0%, #7b4de5 100%);
-  box-shadow: 0 26px 34px rgba(147, 97, 255, 0.32);
+.featureIcon {
+  margin-bottom: 18px;
 }
 
-.cardIconGreen {
+.iconPurple {
+  background: linear-gradient(180deg, #a66fff 0%, #8b56f6 100%);
+  box-shadow: 0 18px 28px rgba(147, 97, 255, 0.28);
+}
+
+.iconGreen {
   background: linear-gradient(180deg, #3dae57 0%, #287e3b 100%);
-  box-shadow: 0 26px 34px rgba(50, 162, 77, 0.28);
+  box-shadow: 0 18px 28px rgba(50, 162, 77, 0.24);
 }
 
-.cardIconBlue {
+.iconBlue {
   background: linear-gradient(180deg, #347be5 0%, #2564c3 100%);
-  box-shadow: 0 26px 34px rgba(56, 118, 230, 0.28);
+  box-shadow: 0 18px 28px rgba(56, 118, 230, 0.24);
 }
 
-.cardIconGlyph {
-  font-size: 46px !important;
+.featureIconGlyph,
+.widgetIconGlyph {
+  font-size: 28px !important;
   line-height: 1;
 }
 
-.cardTitle {
-  font-size: 2rem !important;
-  line-height: 1.08 !important;
+.featureTitle {
+  font-size: 1.12rem !important;
+  line-height: 1.18 !important;
   font-weight: 800 !important;
   color: #f8f5ff !important;
-  margin-bottom: 16px !important;
+  margin-bottom: 10px !important;
 }
 
-.cardDescription {
-  color: rgba(226, 220, 245, 0.82) !important;
-  font-size: 1.2rem !important;
-  line-height: 1.5 !important;
-  max-width: 360px;
-  margin-bottom: 32px !important;
+.featureDescription {
+  color: rgba(226, 220, 245, 0.78) !important;
+  font-size: 0.98rem !important;
+  line-height: 1.52 !important;
 }
 
-.cardButton {
+.widgetsGrid {
+  width: 100%;
+  display: grid;
+  gap: 16px;
+}
+
+.widgetsGridAuthenticated {
+  max-width: 760px;
+  grid-template-columns: 1fr;
+}
+
+.widgetsGridGuest {
+  max-width: 420px;
+  grid-template-columns: 1fr;
+}
+
+.widgetCard {
+  position: relative;
+  overflow: hidden;
+  min-height: 248px;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(31, 33, 54, 0.88) 0%, rgba(24, 25, 43, 0.84) 100%);
+  box-shadow: 0 24px 44px rgba(5, 8, 20, 0.24);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.widgetCardFeatured {
+  min-height: 300px;
+  border-color: rgba(193, 142, 255, 0.24);
+  background:
+    radial-gradient(circle at top right, rgba(166, 111, 255, 0.22) 0%, transparent 40%),
+    linear-gradient(180deg, rgba(44, 31, 72, 0.96) 0%, rgba(24, 21, 43, 0.96) 100%);
+  box-shadow:
+    0 28px 56px rgba(5, 8, 20, 0.34),
+    0 0 0 1px rgba(193, 142, 255, 0.08);
+}
+
+.widgetCardFeatured::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 84% 18%, rgba(214, 183, 255, 0.16) 0%, transparent 30%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 48%);
+  pointer-events: none;
+}
+
+.featuredBadge {
+  position: relative;
+  z-index: 1;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  margin-bottom: 18px;
+  padding-inline: 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 177, 255, 0.24);
+  background: rgba(212, 177, 255, 0.08);
+  color: #f3e8ff;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.widgetIcon {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 20px;
+}
+
+.widgetIconFeatured {
+  width: 66px;
+  height: 66px;
+  border-radius: 22px;
+  box-shadow:
+    0 22px 34px rgba(147, 97, 255, 0.24),
+    0 0 0 6px rgba(193, 142, 255, 0.08);
+}
+
+.widgetTitle {
+  position: relative;
+  z-index: 1;
+  font-size: 1.24rem !important;
+  line-height: 1.18 !important;
+  font-weight: 800 !important;
+  color: #f8f5ff !important;
+  margin-bottom: 12px !important;
+}
+
+.widgetTitleFeatured {
+  font-size: 1.45rem !important;
+}
+
+.widgetDescription {
+  position: relative;
+  z-index: 1;
+  color: rgba(226, 220, 245, 0.8) !important;
+  font-size: 1rem !important;
+  line-height: 1.55 !important;
+  margin-bottom: 20px !important;
+}
+
+.widgetDescriptionFeatured {
+  color: rgba(238, 230, 250, 0.92) !important;
+  font-size: 1.05rem !important;
+  line-height: 1.6 !important;
+}
+
+.widgetButton {
+  position: relative;
+  z-index: 1;
   margin-top: auto !important;
   width: 100%;
-  min-height: 72px !important;
+  min-height: 58px !important;
   border-radius: 14px !important;
-  font-size: 1.3rem !important;
+  font-size: 1.02rem !important;
   font-weight: 800 !important;
   color: #ffffff !important;
 }
 
-.cardButtonPurple {
+.widgetButtonPurple {
   background: linear-gradient(90deg, #a66fff 0%, #8b56f6 100%) !important;
-  box-shadow: 0 22px 38px rgba(147, 97, 255, 0.32) !important;
+  box-shadow: 0 18px 30px rgba(147, 97, 255, 0.28) !important;
 }
 
-.cardButtonGreen {
+.widgetButtonGreen {
   background: linear-gradient(90deg, #42b95b 0%, #2f9d4a 100%) !important;
-  box-shadow: 0 22px 38px rgba(50, 162, 77, 0.28) !important;
+  box-shadow: 0 18px 30px rgba(50, 162, 77, 0.24) !important;
 }
 
-.cardButtonBlue {
+.widgetButtonBlue {
   background: linear-gradient(90deg, #347be5 0%, #256dce 100%) !important;
-  box-shadow: 0 22px 38px rgba(56, 118, 230, 0.28) !important;
+  box-shadow: 0 18px 30px rgba(56, 118, 230, 0.24) !important;
 }
 
-.cardButtonPurple:hover,
-.cardButtonGreen:hover,
-.cardButtonBlue:hover {
+.widgetButtonFeatured {
+  min-height: 66px !important;
+  border-radius: 18px !important;
+  font-size: 1.12rem !important;
+  box-shadow: 0 22px 36px rgba(147, 97, 255, 0.32) !important;
+}
+
+.widgetButtonPurple:hover,
+.widgetButtonGreen:hover,
+.widgetButtonBlue:hover {
   transform: translateY(-1px);
 }
 
 @media (min-width: 900px) {
-  .root {
-    padding-block: 32px 40px;
-  }
-
   .title,
   .accentTitle {
-    max-width: 620px;
     font-size: 4.7rem !important;
   }
 
@@ -366,76 +304,72 @@
 
   .description {
     max-width: 620px;
-    min-height: 92px;
     font-size: 1.5rem !important;
   }
 
-  .cardFan {
-    width: 620px;
-    height: 270px;
+  .featureGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .cardFanSvg {
-    max-width: 620px;
+  .featureCard {
+    min-height: 206px;
+    padding: 24px;
   }
 
-  .leftIcon {
-    left: 32px;
-    bottom: 90px;
-  }
-
-  .rightIcon {
-    right: 10px;
-    bottom: 88px;
-  }
-
-  .heroIconLarge {
-    font-size: 82px !important;
-  }
-
-  .heroIconMedium {
-    font-size: 74px !important;
-  }
-
-  .glow {
-    width: 360px;
-    height: 140px;
-    bottom: 8px;
-  }
-
-  .cardShell {
-    min-height: 430px;
-    padding: 36px 32px;
-  }
-
-  .cardIcon {
-    width: 108px;
-    height: 108px;
+  .featureIcon,
+  .widgetIcon {
+    width: 60px;
+    height: 60px;
     border-radius: 20px;
-    margin-bottom: 32px;
   }
 
-  .cardIconGlyph {
-    font-size: 56px !important;
+  .featureIconGlyph,
+  .widgetIconGlyph {
+    font-size: 30px !important;
   }
 
-  .cardTitle {
-    font-size: 2.35rem !important;
+  .featureTitle {
+    font-size: 1.18rem !important;
   }
 
-  .cardDescription {
-    font-size: 1.3rem !important;
-    margin-bottom: 40px !important;
+  .featureDescription {
+    font-size: 1rem !important;
   }
 
-  .cardButton {
-    font-size: 1.55rem !important;
+  .widgetsGridAuthenticated {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-}
 
-@media (min-width: 1200px) {
-  .actionsGrid {
-    justify-content: flex-end;
+  .widgetCardFeatured {
+    min-height: 360px;
+    padding: 30px 28px;
+    transform: translateY(-6px);
+  }
+
+  .featuredBadge {
+    min-height: 40px;
+    margin-bottom: 20px;
+    padding-inline: 16px;
+    font-size: 0.84rem;
+  }
+
+  .widgetIconFeatured {
+    width: 76px;
+    height: 76px;
+    border-radius: 24px;
+  }
+
+  .widgetTitleFeatured {
+    font-size: 1.72rem !important;
+  }
+
+  .widgetDescriptionFeatured {
+    font-size: 1.12rem !important;
+  }
+
+  .widgetButtonFeatured {
+    min-height: 72px !important;
+    font-size: 1.2rem !important;
   }
 }
 
@@ -444,23 +378,53 @@
     flex-direction: column;
     align-items: stretch;
     max-width: 100%;
+    gap: 28px;
+    margin-top: 4%;
   }
 
   .leftColumn,
-  .rightColumn {
+  .rightColumn,
+  .widgetsGrid,
+  .widgetsGridGuest,
+  .widgetsGridAuthenticated {
     width: 100%;
     max-width: 100%;
   }
 
-  .actionsGrid {
-    max-width: 100%;
+  .widgetCardFeatured {
+    min-height: 320px;
+  }
+}
+
+@media (max-width: 899px) {
+  .widgetCardFeatured {
+    min-height: 340px;
+    padding: 26px 22px;
+    border-radius: 30px;
   }
 
-  .singleActionWrap {
-    justify-content: stretch;
+  .featuredBadge {
+    min-height: 40px;
+    margin-bottom: 20px;
   }
 
-  .singleActionCard {
-    max-width: 100%;
+  .widgetIconFeatured {
+    width: 72px;
+    height: 72px;
+    border-radius: 24px;
+  }
+
+  .widgetTitleFeatured {
+    font-size: 1.62rem !important;
+  }
+
+  .widgetDescriptionFeatured {
+    font-size: 1.08rem !important;
+  }
+
+  .widgetButtonFeatured {
+    min-height: 70px !important;
+    border-radius: 18px !important;
+    font-size: 1.16rem !important;
   }
 }

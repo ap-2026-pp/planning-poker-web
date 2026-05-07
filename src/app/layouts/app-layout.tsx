@@ -7,16 +7,19 @@ import styles from './app-layout.module.css';
 
 export const AppLayout = () => {
   const { pathname } = useLocation();
-  const isHomePage = pathname === appRoutes.home;
+  const isHeroPage =
+    pathname === appRoutes.home ||
+    pathname === appRoutes.login ||
+    pathname === appRoutes.register;
 
   return (
     <Box
-      className={[styles.page, isHomePage ? styles.pageHome : styles.pageDefault].join(' ')}
+      className={[styles.page, isHeroPage ? styles.pageHome : styles.pageDefault].join(' ')}
     >
-      <Box className={[styles.shell, isHomePage ? styles.shellHome : ''].join(' ').trim()}>
+      <Box className={[styles.shell, isHeroPage ? styles.shellHome : ''].join(' ').trim()}>
         <Header />
 
-        {isHomePage ? (
+        {isHeroPage ? (
           <Container maxWidth="xl" className={styles.homeContent}>
             <Outlet />
           </Container>
