@@ -13,28 +13,20 @@ import { appRoutes } from '@shared/config/routes';
 import styles from './main-page.module.css';
 
 const CardFan = ({ muted = false }: { muted?: boolean }) => {
-  const cards = [
-    { label: '0', positionClass: styles.card0, active: false },
-    { label: '1', positionClass: styles.card1, active: false },
-    { label: '2', positionClass: styles.card2, active: false },
-    { label: '3', positionClass: styles.card3, active: false },
-    { label: '5', positionClass: styles.card4, active: false },
-    { label: '8', positionClass: styles.card5, active: false },
-    { label: '?', positionClass: styles.card6, active: true },
-  ];
-
   return (
     <Box className={styles.cardFan}>
-      {[styles.sparkle0, styles.sparkle1, styles.sparkle2, styles.sparkle3, styles.sparkle4].map((sparkleClass, index) => (
-        <Box
-          key={index}
-          className={[
-            styles.sparkle,
-            sparkleClass,
-            muted ? styles.sparkleMuted : styles.sparkleActive,
-          ].join(' ')}
-        />
-      ))}
+      {[styles.sparkle0, styles.sparkle1, styles.sparkle2, styles.sparkle3, styles.sparkle4].map(
+        (sparkleClass, index) => (
+          <Box
+            key={index}
+            className={[
+              styles.sparkle,
+              sparkleClass,
+              muted ? styles.sparkleMuted : styles.sparkleActive,
+            ].join(' ')}
+          />
+        ),
+      )}
 
       <Box className={[styles.leftIcon, muted ? styles.mutedIcon : styles.activeIcon].join(' ')}>
         {muted ? (
@@ -54,19 +46,61 @@ const CardFan = ({ muted = false }: { muted?: boolean }) => {
 
       <Box className={styles.glow} />
 
-      {cards.map((card) => (
-        <Box
-          key={card.label}
-          className={[
-            styles.card,
-            card.positionClass,
-            card.active ? styles.cardActive : styles.cardDefault,
-            muted && !card.active ? styles.cardMuted : '',
-          ].join(' ')}
-        >
-          {card.label}
-        </Box>
-      ))}
+      <Box
+        component="svg"
+        viewBox="0 0 520 240"
+        className={[styles.cardFanSvg, muted ? styles.cardFanSvgMuted : ''].join(' ')}
+        aria-hidden="true"
+      >
+        <defs>
+          <linearGradient id="cardGradientDefault" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="rgba(255,255,255,0.98)" />
+            <stop offset="100%" stopColor="rgba(231,223,255,0.94)" />
+          </linearGradient>
+
+          <linearGradient id="cardGradientActive" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#c18eff" />
+            <stop offset="100%" stopColor="#8e61ff" />
+          </linearGradient>
+        </defs>
+
+        <g transform="translate(70,42)">
+          <g transform="translate(0,18) rotate(-20 42 88)">
+            <rect x="0" y="0" rx="16" ry="16" width="84" height="136" className={styles.svgCardDefault} />
+            <text x="42" y="76" textAnchor="middle" className={styles.svgCardText}>0</text>
+          </g>
+
+          <g transform="translate(48,10) rotate(-13 42 88)">
+            <rect x="0" y="0" rx="16" ry="16" width="84" height="136" className={styles.svgCardDefault} />
+            <text x="42" y="76" textAnchor="middle" className={styles.svgCardText}>1</text>
+          </g>
+
+          <g transform="translate(98,4) rotate(-7 42 88)">
+            <rect x="0" y="0" rx="16" ry="16" width="84" height="136" className={styles.svgCardDefault} />
+            <text x="42" y="76" textAnchor="middle" className={styles.svgCardText}>2</text>
+          </g>
+
+          <g transform="translate(148,0) rotate(-1 42 88)">
+            <rect x="0" y="0" rx="16" ry="16" width="84" height="136" className={styles.svgCardDefault} />
+            <text x="42" y="76" textAnchor="middle" className={styles.svgCardText}>3</text>
+          </g>
+
+          <g transform="translate(198,2) rotate(6 42 88)">
+            <rect x="0" y="0" rx="16" ry="16" width="84" height="136" className={styles.svgCardDefault} />
+            <text x="42" y="76" textAnchor="middle" className={styles.svgCardText}>5</text>
+          </g>
+
+          <g transform="translate(248,8) rotate(13 42 88)">
+            <rect x="0" y="0" rx="16" ry="16" width="84" height="136" className={styles.svgCardDefault} />
+            <text x="42" y="76" textAnchor="middle" className={styles.svgCardText}>8</text>
+          </g>
+
+          <g transform="translate(298,16) rotate(20 42 88)">
+            <rect x="0" y="0" rx="16" ry="16" width="84" height="136" className={styles.svgCardActive} />
+            <text x="42" y="76" textAnchor="middle" className={styles.svgCardTextActive}>?</text>
+          </g>
+        </g>
+      </Box>
     </Box>
   );
 };
@@ -103,13 +137,9 @@ const ActionCard = ({
         <Box className={styles.cardIconGlyph}>{icon}</Box>
       </Box>
 
-      <Typography className={styles.cardTitle}>
-        {title}
-      </Typography>
+      <Typography className={styles.cardTitle}>{title}</Typography>
 
-      <Typography className={styles.cardDescription}>
-        {description}
-      </Typography>
+      <Typography className={styles.cardDescription}>{description}</Typography>
 
       <Button
         component={RouterLink}
@@ -135,60 +165,57 @@ export const MainPage = () => {
   const { isAuthenticated } = useSession();
 
   return (
-    <Box className={styles.root}>
-      <Box className={styles.backdrop} />
-
-      <Grid container spacing={{ xs: 4, lg: 5 }} alignItems="center" className={styles.grid}>
-        <Grid size={{ xs: 12, lg: 5 }}>
-          <Stack className={styles.heroColumn}>
-            <Box className={styles.headingBlock}>
-              <Typography component="h1" className={styles.title}>
-                {isAuthenticated ? 'Ласкаво просимо до' : 'Planning Poker'}
-              </Typography>
-
-              <Typography component="h2" className={styles.accentTitle}>
-                {isAuthenticated ? 'Planning Poker!' : 'для вашої команди'}
-              </Typography>
-            </Box>
-
-            <Typography className={styles.description}>
-              {isAuthenticated
-                ? 'Створюйте ігри, запрошуйте команду та оцінюйте user stories разом легко та зручно.'
-                : 'Простий інструмент для оцінки задач та спільного планування в команді.'}
+    <Box className={styles.layout}>
+      <Box className={styles.leftColumn}>
+        <Stack className={styles.heroColumn}>
+          <Box className={styles.headingBlock}>
+            <Typography component="h1" className={styles.title}>
+              {isAuthenticated ? 'Ласкаво просимо до' : 'Planning Poker'}
             </Typography>
 
-            <CardFan muted={!isAuthenticated} />
-          </Stack>
-        </Grid>
+            <Typography component="h2" className={styles.accentTitle}>
+              {isAuthenticated ? 'Planning Poker!' : 'для вашої команди'}
+            </Typography>
+          </Box>
 
-        <Grid size={{ xs: 12, lg: 7 }}>
-          <Grid container spacing={3} justifyContent={{ xs: 'stretch', lg: isAuthenticated ? 'flex-end' : 'center' }} className={styles.actionsGrid}>
-            {isAuthenticated ? (
-              <>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <ActionCard
-                    accent="purple"
-                    icon={<AddRoundedIcon fontSize="inherit" />}
-                    title="Створити нову гру"
-                    description="Створіть нову гру та запросіть учасників для планування."
-                    buttonLabel="Створити гру"
-                    to={appRoutes.createGame}
-                  />
-                </Grid>
+          <Typography className={styles.description}>
+            {isAuthenticated
+              ? 'Створюйте ігри, запрошуйте команду та оцінюйте user stories разом легко та зручно.'
+              : 'Простий інструмент для оцінки задач та спільного планування в команді.'}
+          </Typography>
 
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <ActionCard
-                    accent="green"
-                    icon={<ArrowForwardRoundedIcon fontSize="inherit" />}
-                    title="Приєднатися до гри"
-                    description="Введіть код гри, щоб приєднатися до існуючої сесії."
-                    buttonLabel="Приєднатися"
-                    to={appRoutes.joinGame}
-                  />
-                </Grid>
-              </>
-            ) : (
-              <Grid size={{ xs: 12, md: 8, lg: 7 }}>
+          <CardFan muted={!isAuthenticated} />
+        </Stack>
+      </Box>
+
+      <Box className={styles.rightColumn}>
+        <Grid container spacing={3} className={styles.actionsGrid}>
+          {isAuthenticated ? (
+            <>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <ActionCard
+                  accent="purple"
+                  icon={<AddRoundedIcon fontSize="inherit" />}
+                  title="Створити нову гру"
+                  description="Створіть нову гру та запросіть учасників для планування."
+                  buttonLabel="Створити гру"
+                  to={appRoutes.createGame}
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <ActionCard
+                  accent="green"
+                  icon={<ArrowForwardRoundedIcon fontSize="inherit" />}
+                  title="Приєднатися до гри"
+                  description="Введіть код гри, щоб приєднатися до існуючої сесії."
+                  buttonLabel="Приєднатися"
+                  to={appRoutes.joinGame}
+                />
+              </Grid>
+            </>
+          ) : (
+            <Grid size={{ xs: 12 }} className={styles.singleActionWrap}>
                 <ActionCard
                   accent="blue"
                   icon={<LoginRoundedIcon fontSize="inherit" />}
@@ -197,11 +224,11 @@ export const MainPage = () => {
                   buttonLabel="Приєднатися"
                   to={appRoutes.joinGame}
                 />
-              </Grid>
-            )}
-          </Grid>
+          
+            </Grid>
+          )}
         </Grid>
-      </Grid>
+      </Box>
     </Box>
   );
 };

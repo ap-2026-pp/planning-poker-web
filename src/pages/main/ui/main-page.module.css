@@ -9,9 +9,6 @@
 .backdrop {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(circle at 14% 24%, rgba(93, 54, 168, 0.18), transparent 28%),
-    radial-gradient(circle at 88% 58%, rgba(161, 84, 255, 0.14), transparent 22%);
   pointer-events: none;
 }
 
@@ -24,16 +21,21 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  width: 100%;
+  max-width: 560px;
 }
 
 .headingBlock {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 560px;
+  min-height: 210px;
 }
 
 .title,
 .accentTitle {
-  max-width: 640px;
+  max-width: 560px;
   font-weight: 800 !important;
   letter-spacing: -0.05em !important;
   line-height: 1.06 !important;
@@ -52,62 +54,105 @@
 }
 
 .description {
-  max-width: 620px;
+  width: 100%;
+  max-width: 560px;
+  min-height: 74px;
   color: rgba(225, 218, 244, 0.86) !important;
   font-size: 1.22rem !important;
   line-height: 1.52 !important;
 }
 
+/* Hero illustration */
+
 .cardFan {
   position: relative;
-  height: 220px;
+  width: 560px;
+  max-width: 100%;
+  height: 230px;
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+.cardFanSvg {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
   width: 100%;
-  max-width: 540px;
+  max-width: 560px;
+  height: auto;
+  display: block;
+  transform: translateX(-50%);
+  pointer-events: none;
+  user-select: none;
+}
+
+.svgCardDefault {
+  fill: url(#cardGradientDefault);
+  stroke: rgba(191, 171, 244, 0.55);
+  stroke-width: 1.6;
+}
+
+.svgCardActive {
+  fill: url(#cardGradientActive);
+  stroke: rgba(255, 255, 255, 0.32);
+  stroke-width: 1.6;
+  filter: drop-shadow(0 14px 24px rgba(141, 92, 236, 0.32));
+}
+
+.svgCardText {
+  fill: #56319f;
+  font-size: 34px;
+  font-weight: 800;
+  dominant-baseline: middle;
+}
+
+.svgCardTextActive {
+  fill: #33125b;
+  font-size: 34px;
+  font-weight: 800;
+  dominant-baseline: middle;
 }
 
 .sparkle {
   position: absolute;
   border-radius: 4px;
   transform: rotate(45deg);
+  pointer-events: none;
 }
 
 .sparkle0 {
-  top: 8%;
-  left: 12%;
+  top: 18%;
+  left: 18%;
   width: 6px;
   height: 6px;
 }
 
 .sparkle1 {
-  top: 16%;
-  right: 22%;
+  top: 30%;
+  right: 16%;
   width: 8px;
   height: 8px;
 }
 
 .sparkle2 {
-  top: 56%;
-  left: 8%;
+  top: 74%;
+  left: 10%;
   width: 5px;
   height: 5px;
 }
 
 .sparkle3 {
-  top: 72%;
+  top: 82%;
   right: 14%;
   width: 6px;
   height: 6px;
 }
 
 .sparkle4 {
-  top: 84%;
-  left: 22%;
+  top: 58%;
+  left: 84%;
   width: 5px;
   height: 5px;
-}
-
-.sparkleMuted {
-  background: rgba(112, 76, 188, 0.32);
 }
 
 .sparkleActive {
@@ -119,20 +164,17 @@
 .rightIcon {
   position: absolute;
   opacity: 0.95;
+  pointer-events: none;
 }
 
 .leftIcon {
-  left: 6px;
-  bottom: 42px;
+  left: 22px;
+  bottom: 78px;
 }
 
 .rightIcon {
-  right: 10px;
-  bottom: 46px;
-}
-
-.mutedIcon {
-  color: rgba(125, 82, 213, 0.4);
+  right: 12px;
+  bottom: 76px;
 }
 
 .activeIcon {
@@ -154,82 +196,22 @@
 .glow {
   position: absolute;
   left: 50%;
-  bottom: 0;
-  width: 320px;
-  height: 170px;
+  bottom: 8px;
+  width: 300px;
+  height: 120px;
   transform: translateX(-50%);
   border-radius: 50%;
-  background:
-    radial-gradient(circle at center, rgba(92, 45, 176, 0.28) 0%, rgba(92, 45, 176, 0.12) 38%, transparent 78%);
-  filter: blur(10px);
+  background: radial-gradient(
+    circle at center,
+    rgba(128, 74, 226, 0.28) 0%,
+    rgba(128, 74, 226, 0.14) 36%,
+    transparent 78%
+  );
+  filter: blur(12px);
+  pointer-events: none;
 }
 
-.card {
-  position: absolute;
-  bottom: 24px;
-  width: 54px;
-  height: 100px;
-  border-radius: 12px;
-  transform-origin: bottom center;
-  display: grid;
-  place-items: center;
-  font-weight: 800;
-  font-size: 2rem;
-}
-
-.card0 {
-  left: 6.4px;
-  transform: rotate(-24deg);
-}
-
-.card1 {
-  left: 43.2px;
-  transform: rotate(-16deg);
-}
-
-.card2 {
-  left: 81.6px;
-  transform: rotate(-8deg);
-}
-
-.card3 {
-  left: 120px;
-  transform: rotate(0deg);
-}
-
-.card4 {
-  left: 158.4px;
-  transform: rotate(8deg);
-}
-
-.card5 {
-  left: 196.8px;
-  transform: rotate(16deg);
-}
-
-.card6 {
-  left: 235.2px;
-  transform: rotate(24deg);
-}
-
-.cardActive {
-  color: #33125b;
-  background: linear-gradient(180deg, rgba(185, 138, 255, 0.98) 0%, rgba(141, 92, 236, 0.98) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 24px 34px rgba(113, 64, 207, 0.38);
-}
-
-.cardDefault {
-  color: #4b2e8d;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(231, 223, 255, 0.94) 100%);
-  border: 1px solid rgba(191, 171, 244, 0.48);
-  box-shadow: 0 14px 24px rgba(8, 10, 28, 0.22);
-}
-
-.cardMuted {
-  color: rgba(63, 38, 116, 0.52);
-  opacity: 0.42;
-}
+/* Action cards */
 
 .actionsColumn {
   width: 100%;
@@ -336,28 +318,46 @@
     padding-block: 32px 40px;
   }
 
+  .heroColumn {
+    max-width: 620px;
+  }
+
+  .headingBlock {
+    max-width: 620px;
+    min-height: 250px;
+  }
+
   .title,
   .accentTitle {
+    max-width: 620px;
     font-size: 4.7rem !important;
     line-height: 1.02 !important;
   }
 
   .description {
+    max-width: 620px;
+    min-height: 92px;
     font-size: 1.5rem !important;
   }
 
   .cardFan {
-    height: 280px;
+    width: 620px;
+    max-width: 100%;
+    height: 270px;
+  }
+
+  .cardFanSvg {
+    max-width: 620px;
   }
 
   .leftIcon {
-    left: 22px;
-    bottom: 60px;
+    left: 32px;
+    bottom: 90px;
   }
 
   .rightIcon {
-    right: 28px;
-    bottom: 70px;
+    right: 10px;
+    bottom: 88px;
   }
 
   .heroIconLarge {
@@ -369,44 +369,9 @@
   }
 
   .glow {
-    width: 430px;
-    height: 215px;
-  }
-
-  .card {
-    bottom: 30px;
-    width: 70px;
-    height: 130px;
-    border-radius: 16px;
-    font-size: 2.6rem;
-  }
-
-  .card0 {
-    left: 8px;
-  }
-
-  .card1 {
-    left: 54px;
-  }
-
-  .card2 {
-    left: 102px;
-  }
-
-  .card3 {
-    left: 150px;
-  }
-
-  .card4 {
-    left: 198px;
-  }
-
-  .card5 {
-    left: 246px;
-  }
-
-  .card6 {
-    left: 294px;
+    width: 360px;
+    height: 140px;
+    bottom: 8px;
   }
 
   .cardShell {
@@ -442,5 +407,73 @@
 @media (min-width: 1200px) {
   .actionsGrid {
     justify-content: flex-end;
+  }
+}
+
+.layout {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: auto;
+  width: 100%;
+  margin-inline: auto;
+  margin-top: 10%;
+}
+
+.leftColumn {
+  flex: 0 1 620px;
+  max-width: 620px;
+}
+
+.rightColumn {
+  flex: 0 1 760px;
+  max-width: 760px;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.actionsGrid {
+  width: 100%;
+  max-width: 760px;
+  margin-left: auto;
+}
+
+.singleActionWrap {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* .singleActionCard {
+  width: 100%;
+  max-width: 520px;
+} */
+
+@media (max-width: 1199px) {
+  .layout {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 32px;
+    max-width: 100%;
+  }
+
+  .leftColumn,
+  .rightColumn {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .actionsGrid {
+    max-width: 100%;
+  }
+
+  .singleActionWrap {
+    justify-content: stretch;
+  }
+
+  .singleActionCard {
+    max-width: 100%;
   }
 }
