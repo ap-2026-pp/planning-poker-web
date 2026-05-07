@@ -1,0 +1,86 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.heroCard {
+  overflow: hidden;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.92) 0%, rgba(236, 250, 246, 0.95) 52%, rgba(255, 243, 236, 0.95) 100%) !important;
+}
+
+.heroContent {
+  padding: 24px !important;
+}
+
+.heroStack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.heroChips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.invitePanel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.74);
+  border: 1px solid rgba(255, 255, 255, 0.76);
+}
+
+.inviteLabel {
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  font-weight: 800 !important;
+}
+
+.inviteCode {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace !important;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.settingsStack,
+.inviteStack,
+.participantsStack {
+  display: flex;
+  flex-direction: column;
+}
+
+.settingsStack {
+  gap: 12px;
+}
+
+.inviteStack {
+  gap: 12px;
+}
+
+.participantsStack {
+  gap: 16px;
+}
+
+.votingChip {
+  width: fit-content;
+}
+
+.inviteLink {
+  word-break: break-word;
+}
+
+@media (min-width: 900px) {
+  .heroContent {
+    padding: 32px !important;
+  }
+}

@@ -1,0 +1,239 @@
+.header {
+  border-bottom: 1px solid var(--header-border);
+  background: var(--header-background);
+  backdrop-filter: var(--header-backdrop);
+}
+
+.toolbar {
+  min-height: 78px !important;
+  padding-inline: 0 !important;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.leftBlock {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.brandLink {
+  text-decoration: none;
+  color: inherit;
+  display: inline-flex;
+}
+
+.navDivider {
+  display: none;
+  border-color: rgba(255, 255, 255, 0.09) !important;
+}
+
+.homeLink {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  min-height: 80px;
+  padding: 0 14px;
+  text-decoration: none;
+  color: #f8f3ff;
+  font-size: 1.15rem;
+  font-weight: 700;
+  position: relative;
+}
+
+.homeLink::after {
+  content: '';
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 12px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #bc7eff 0%, #9d66ff 100%);
+}
+
+.actions {
+  display: none;
+  align-items: center;
+  gap: 16px;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 62px;
+  padding: 0 16px 0 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f6f0ff;
+  max-width: 360px;
+}
+
+.profileAvatar {
+  width: 42px !important;
+  height: 42px !important;
+  background: #8e61ff !important;
+  color: #fdfbff !important;
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+}
+
+.profileEmail {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: #f6f0ff !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profileArrow {
+  color: rgba(246, 240, 255, 0.88) !important;
+}
+
+.outlineButton,
+.filledButton,
+.logoutButton {
+  min-height: 62px !important;
+  border-radius: 12px !important;
+  padding-inline: 24px !important;
+  text-decoration: none;
+}
+
+.outlineButton {
+  color: #f8f3ff !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+.outlineButton:hover {
+  border-color: rgba(255, 255, 255, 0.24) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.filledButton {
+  color: #ffffff !important;
+  background: linear-gradient(90deg, #b97bff 0%, #9e69ff 100%) !important;
+  box-shadow: 0 20px 36px rgba(143, 95, 255, 0.28) !important;
+}
+
+.filledButton:hover {
+  background: linear-gradient(90deg, #c58bff 0%, #a96fff 100%) !important;
+  box-shadow: 0 22px 40px rgba(143, 95, 255, 0.34) !important;
+}
+
+.logoutButton {
+  color: #f8f3ff !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+.logoutButton:hover {
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.defaultTextButton {
+  color: #0c2230 !important;
+}
+
+.desktopTextButton {
+  display: none !important;
+}
+
+.defaultOutlineButton {
+  color: #0c2230 !important;
+  border-color: rgba(12, 34, 48, 0.12) !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+}
+
+.menuButton {
+  display: inline-flex !important;
+  color: var(--menu-button-color) !important;
+  border: 1px solid var(--menu-button-border) !important;
+  background: var(--menu-button-background) !important;
+}
+
+.drawerPaper {
+  width: 312px !important;
+  background: var(--drawer-background) !important;
+  color: var(--drawer-text-color) !important;
+}
+
+.drawerBody {
+  padding: 24px;
+}
+
+.drawerStack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.drawerDivider {
+  border-color: var(--drawer-divider) !important;
+}
+
+.drawerProfile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 0;
+  border: 1px solid var(--drawer-profile-border);
+  background: var(--drawer-profile-background);
+}
+
+.drawerProfileText {
+  font-weight: 600 !important;
+}
+
+.drawerPrimaryButton {
+  color: #ffffff !important;
+  background: linear-gradient(90deg, #a66fff 0%, #8b56f6 100%) !important;
+}
+
+.drawerSecondaryFilledButton {
+  color: #ffffff !important;
+  background: linear-gradient(90deg, #347be5 0%, #256dce 100%) !important;
+}
+
+.drawerRegisterButton {
+  color: #ffffff !important;
+  background: linear-gradient(90deg, #b97bff 0%, #9e69ff 100%) !important;
+}
+
+.drawerOutlineButton {
+  color: var(--drawer-outline-color) !important;
+  border-color: var(--drawer-outline-border) !important;
+}
+
+@media (min-width: 900px) {
+  .toolbar {
+    min-height: 88px !important;
+  }
+
+  .navDivider,
+  .homeLink,
+  .actions {
+    display: flex;
+  }
+
+  .desktopTextButton {
+    display: block !important;
+  }
+
+  .menuButton {
+    display: none !important;
+  }
+}

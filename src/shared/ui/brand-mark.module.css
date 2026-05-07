@@ -1,0 +1,78 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cards {
+  position: relative;
+  width: 62px;
+  height: 48px;
+}
+
+.card {
+  position: absolute;
+  top: 2px;
+  width: 28px;
+  height: 38px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #4c2a92;
+  border: 1px solid rgba(220, 204, 255, 0.72);
+}
+
+.cardDefault {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(238, 231, 255, 0.96) 100%);
+  box-shadow: 0 8px 14px rgba(9, 10, 26, 0.22);
+}
+
+.cardAccent {
+  background: linear-gradient(180deg, #c399ff 0%, #a872ff 100%);
+  box-shadow: 0 10px 20px rgba(137, 86, 246, 0.28);
+}
+
+.cardFirst {
+  left: 0;
+  transform: rotate(-14deg);
+  z-index: 1;
+}
+
+.cardSecond {
+  left: 12px;
+  transform: rotate(-4deg);
+  z-index: 2;
+}
+
+.cardThird {
+  left: 28px;
+  transform: rotate(12deg);
+  z-index: 3;
+}
+
+.title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.titleInverse {
+  color: #faf7ff;
+}
+
+.titleDefault {
+  color: #141826;
+}
+
+.accent {
+  color: #a66fff;
+}
+
+@media (min-width: 900px) {
+  .title {
+    font-size: 2rem;
+  }
+}

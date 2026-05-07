@@ -1,0 +1,45 @@
+.card {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  inset: auto auto -36px -18px;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(56, 178, 160, 0.18), transparent 70%);
+}
+
+.content {
+  padding: 24px !important;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.label {
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  font-weight: 800 !important;
+}
+
+.value {
+  font-size: 1.9rem !important;
+}
+
+.caption {
+  max-width: 240px;
+}
+
+@media (min-width: 900px) {
+  .value {
+    font-size: 2.25rem !important;
+  }
+}

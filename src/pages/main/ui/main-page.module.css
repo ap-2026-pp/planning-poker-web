@@ -1,0 +1,446 @@
+.root {
+  position: relative;
+  min-height: calc(100vh - 170px);
+  display: flex;
+  align-items: center;
+  padding-block: 24px;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 14% 24%, rgba(93, 54, 168, 0.18), transparent 28%),
+    radial-gradient(circle at 88% 58%, rgba(161, 84, 255, 0.14), transparent 22%);
+  pointer-events: none;
+}
+
+.grid {
+  position: relative;
+  z-index: 1;
+}
+
+.heroColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.headingBlock {
+  display: flex;
+  flex-direction: column;
+}
+
+.title,
+.accentTitle {
+  max-width: 640px;
+  font-weight: 800 !important;
+  letter-spacing: -0.05em !important;
+  line-height: 1.06 !important;
+  font-size: 3.1rem !important;
+}
+
+.title {
+  color: #fcfaff !important;
+}
+
+.accentTitle {
+  margin-top: 4px !important;
+  background: linear-gradient(90deg, #c18eff 0%, #8e61ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.description {
+  max-width: 620px;
+  color: rgba(225, 218, 244, 0.86) !important;
+  font-size: 1.22rem !important;
+  line-height: 1.52 !important;
+}
+
+.cardFan {
+  position: relative;
+  height: 220px;
+  width: 100%;
+  max-width: 540px;
+}
+
+.sparkle {
+  position: absolute;
+  border-radius: 4px;
+  transform: rotate(45deg);
+}
+
+.sparkle0 {
+  top: 8%;
+  left: 12%;
+  width: 6px;
+  height: 6px;
+}
+
+.sparkle1 {
+  top: 16%;
+  right: 22%;
+  width: 8px;
+  height: 8px;
+}
+
+.sparkle2 {
+  top: 56%;
+  left: 8%;
+  width: 5px;
+  height: 5px;
+}
+
+.sparkle3 {
+  top: 72%;
+  right: 14%;
+  width: 6px;
+  height: 6px;
+}
+
+.sparkle4 {
+  top: 84%;
+  left: 22%;
+  width: 5px;
+  height: 5px;
+}
+
+.sparkleMuted {
+  background: rgba(112, 76, 188, 0.32);
+}
+
+.sparkleActive {
+  background: rgba(165, 108, 255, 0.66);
+  box-shadow: 0 0 14px rgba(162, 100, 255, 0.26);
+}
+
+.leftIcon,
+.rightIcon {
+  position: absolute;
+  opacity: 0.95;
+}
+
+.leftIcon {
+  left: 6px;
+  bottom: 42px;
+}
+
+.rightIcon {
+  right: 10px;
+  bottom: 46px;
+}
+
+.mutedIcon {
+  color: rgba(125, 82, 213, 0.4);
+}
+
+.activeIcon {
+  color: rgba(129, 74, 226, 0.62);
+}
+
+.activeIconSecondary {
+  color: rgba(129, 74, 226, 0.58);
+}
+
+.heroIconLarge {
+  font-size: 62px !important;
+}
+
+.heroIconMedium {
+  font-size: 58px !important;
+}
+
+.glow {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 320px;
+  height: 170px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, rgba(92, 45, 176, 0.28) 0%, rgba(92, 45, 176, 0.12) 38%, transparent 78%);
+  filter: blur(10px);
+}
+
+.card {
+  position: absolute;
+  bottom: 24px;
+  width: 54px;
+  height: 100px;
+  border-radius: 12px;
+  transform-origin: bottom center;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 2rem;
+}
+
+.card0 {
+  left: 6.4px;
+  transform: rotate(-24deg);
+}
+
+.card1 {
+  left: 43.2px;
+  transform: rotate(-16deg);
+}
+
+.card2 {
+  left: 81.6px;
+  transform: rotate(-8deg);
+}
+
+.card3 {
+  left: 120px;
+  transform: rotate(0deg);
+}
+
+.card4 {
+  left: 158.4px;
+  transform: rotate(8deg);
+}
+
+.card5 {
+  left: 196.8px;
+  transform: rotate(16deg);
+}
+
+.card6 {
+  left: 235.2px;
+  transform: rotate(24deg);
+}
+
+.cardActive {
+  color: #33125b;
+  background: linear-gradient(180deg, rgba(185, 138, 255, 0.98) 0%, rgba(141, 92, 236, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 24px 34px rgba(113, 64, 207, 0.38);
+}
+
+.cardDefault {
+  color: #4b2e8d;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(231, 223, 255, 0.94) 100%);
+  border: 1px solid rgba(191, 171, 244, 0.48);
+  box-shadow: 0 14px 24px rgba(8, 10, 28, 0.22);
+}
+
+.cardMuted {
+  color: rgba(63, 38, 116, 0.52);
+  opacity: 0.42;
+}
+
+.actionsColumn {
+  width: 100%;
+}
+
+.actionsGrid {
+  width: 100%;
+  margin-left: auto;
+}
+
+.cardShell {
+  height: 100%;
+  min-height: 336px;
+  border-radius: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(31, 33, 54, 0.94) 0%, rgba(24, 25, 43, 0.92) 100%);
+  box-shadow: 0 28px 50px rgba(5, 8, 20, 0.28);
+  padding: 26px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.cardIcon {
+  width: 86px;
+  height: 86px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  margin-bottom: 24px;
+}
+
+.cardIconPurple {
+  background: linear-gradient(180deg, #9e69ff 0%, #7b4de5 100%);
+  box-shadow: 0 26px 34px rgba(147, 97, 255, 0.32);
+}
+
+.cardIconGreen {
+  background: linear-gradient(180deg, #3dae57 0%, #287e3b 100%);
+  box-shadow: 0 26px 34px rgba(50, 162, 77, 0.28);
+}
+
+.cardIconBlue {
+  background: linear-gradient(180deg, #347be5 0%, #2564c3 100%);
+  box-shadow: 0 26px 34px rgba(56, 118, 230, 0.28);
+}
+
+.cardIconGlyph {
+  font-size: 46px !important;
+  line-height: 1;
+}
+
+.cardTitle {
+  font-size: 2rem !important;
+  line-height: 1.08 !important;
+  font-weight: 800 !important;
+  color: #f8f5ff !important;
+  margin-bottom: 16px !important;
+}
+
+.cardDescription {
+  color: rgba(226, 220, 245, 0.82) !important;
+  font-size: 1.2rem !important;
+  line-height: 1.5 !important;
+  max-width: 360px;
+  margin-bottom: 32px !important;
+}
+
+.cardButton {
+  margin-top: auto !important;
+  width: 100%;
+  min-height: 72px !important;
+  border-radius: 14px !important;
+  font-size: 1.3rem !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+}
+
+.cardButtonPurple {
+  background: linear-gradient(90deg, #a66fff 0%, #8b56f6 100%) !important;
+  box-shadow: 0 22px 38px rgba(147, 97, 255, 0.32) !important;
+}
+
+.cardButtonGreen {
+  background: linear-gradient(90deg, #42b95b 0%, #2f9d4a 100%) !important;
+  box-shadow: 0 22px 38px rgba(50, 162, 77, 0.28) !important;
+}
+
+.cardButtonBlue {
+  background: linear-gradient(90deg, #347be5 0%, #256dce 100%) !important;
+  box-shadow: 0 22px 38px rgba(56, 118, 230, 0.28) !important;
+}
+
+.cardButtonPurple:hover,
+.cardButtonGreen:hover,
+.cardButtonBlue:hover {
+  transform: translateY(-1px);
+}
+
+@media (min-width: 900px) {
+  .root {
+    padding-block: 32px 40px;
+  }
+
+  .title,
+  .accentTitle {
+    font-size: 4.7rem !important;
+    line-height: 1.02 !important;
+  }
+
+  .description {
+    font-size: 1.5rem !important;
+  }
+
+  .cardFan {
+    height: 280px;
+  }
+
+  .leftIcon {
+    left: 22px;
+    bottom: 60px;
+  }
+
+  .rightIcon {
+    right: 28px;
+    bottom: 70px;
+  }
+
+  .heroIconLarge {
+    font-size: 82px !important;
+  }
+
+  .heroIconMedium {
+    font-size: 74px !important;
+  }
+
+  .glow {
+    width: 430px;
+    height: 215px;
+  }
+
+  .card {
+    bottom: 30px;
+    width: 70px;
+    height: 130px;
+    border-radius: 16px;
+    font-size: 2.6rem;
+  }
+
+  .card0 {
+    left: 8px;
+  }
+
+  .card1 {
+    left: 54px;
+  }
+
+  .card2 {
+    left: 102px;
+  }
+
+  .card3 {
+    left: 150px;
+  }
+
+  .card4 {
+    left: 198px;
+  }
+
+  .card5 {
+    left: 246px;
+  }
+
+  .card6 {
+    left: 294px;
+  }
+
+  .cardShell {
+    min-height: 430px;
+    padding: 36px 32px;
+  }
+
+  .cardIcon {
+    width: 108px;
+    height: 108px;
+    border-radius: 20px;
+    margin-bottom: 32px;
+  }
+
+  .cardIconGlyph {
+    font-size: 56px !important;
+  }
+
+  .cardTitle {
+    font-size: 2.35rem !important;
+  }
+
+  .cardDescription {
+    font-size: 1.3rem !important;
+    margin-bottom: 40px !important;
+  }
+
+  .cardButton {
+    font-size: 1.55rem !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .actionsGrid {
+    justify-content: flex-end;
+  }
+}

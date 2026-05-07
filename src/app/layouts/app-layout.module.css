@@ -1,0 +1,50 @@
+.page {
+  min-height: 100vh;
+}
+
+.pageHome {
+  background: var(--pp-home-background);
+}
+
+.pageDefault {
+  background: var(--pp-app-background);
+}
+
+.shell {
+  min-height: 100vh;
+}
+
+.shellHome {
+  width: 100%;
+  background: transparent;
+  overflow: hidden;
+  position: relative;
+}
+
+.shellHome::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--pp-home-overlay);
+  pointer-events: none;
+}
+
+.homeContent {
+  position: relative;
+  z-index: 1;
+  padding-bottom: 32px;
+}
+
+.defaultContent {
+  padding-block: 24px 40px;
+}
+
+@media (min-width: 900px) {
+  .homeContent {
+    padding-bottom: 48px;
+  }
+
+  .defaultContent {
+    padding-block: 40px;
+  }
+}

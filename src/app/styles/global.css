@@ -1,0 +1,50 @@
+:root {
+  --pp-font-family: 'Manrope', sans-serif;
+  --pp-text-primary: #0c2230;
+  --pp-text-secondary: #607789;
+  --pp-app-background:
+    radial-gradient(circle at 12% 12%, rgba(35, 94, 134, 0.16), transparent 26%),
+    radial-gradient(circle at 84% 14%, rgba(108, 160, 166, 0.18), transparent 24%),
+    linear-gradient(180deg, #f3f8fc 0%, #e9f0f7 100%);
+  --pp-home-background: linear-gradient(120deg, #080a17 0%, #0b0d1b 46%, #1a1232 78%, #281541 100%);
+  --pp-home-overlay:
+    radial-gradient(circle at 18% 18%, rgba(82, 38, 167, 0.18), transparent 26%),
+    radial-gradient(circle at 88% 54%, rgba(153, 81, 255, 0.22), transparent 24%);
+  --pp-selection: rgba(35, 94, 134, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+html {
+  background-color: #eff5fb;
+}
+
+body {
+  margin: 0;
+  font-family: var(--pp-font-family);
+  color: var(--pp-text-primary);
+  background: var(--pp-app-background);
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+::selection {
+  background-color: var(--pp-selection);
+}
