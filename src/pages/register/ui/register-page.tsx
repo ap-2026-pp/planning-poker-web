@@ -1,19 +1,16 @@
-import { Grid } from '@mui/material';
+import { Box } from '@mui/material';
 
-import { PageSection } from '@shared/ui/PageSection';
 import { RegisterForm } from './register-form';
+import styles from './register-page.module.css';
 
 export const RegisterPage = () => (
-  <Grid container spacing={3}>
-    <Grid size={{ xs: 12, lg: 5 }}>
-      <PageSection
-        eyebrow="New account"
-        title="Створіть акаунт і запускайте першу сесію"
-        description="Після реєстрації можна одразу створювати кімнати, запрошувати учасників і вести оцінювання в одному просторі."
-      />
-    </Grid>
-    <Grid size={{ xs: 12, lg: 7 }}>
-      <RegisterForm />
-    </Grid>
-  </Grid>
+  <Box className={styles.root}>
+    <Box className={styles.backdrop} />
+
+    <Box className={styles.cardWrap}>
+      <Box className={styles.cardColumn}>
+        <RegisterForm />
+      </Box>
+    </Box>
+  </Box>
 );

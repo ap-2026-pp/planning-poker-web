@@ -1,9 +1,9 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
+import LoginRoundedIcon from '@mui/icons-material/LoginRounded';
 import {
   Alert,
+  Box,
   Button,
-  Card,
-  CardContent,
   Stack,
   TextField,
   Typography,
@@ -63,50 +63,66 @@ export const LoginForm = () => {
   };
 
   return (
-    <Card>
-      <CardContent className={styles.content}>
-        <Stack component="form" className={styles.form} onSubmit={handleSubmit}>
-          <Stack className={styles.intro}>
-            <Typography variant="h5">Увійти</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Поверніться до своїх сесій і продовжуйте оцінювання разом із командою.
-            </Typography>
-          </Stack>
+    <Box className={styles.card}>
+      <Stack component="form" className={styles.form} onSubmit={handleSubmit}>
+        <Box className={styles.badge}>Welcome back</Box>
 
-          {submitError ? <Alert severity="error">{submitError}</Alert> : null}
+        <Stack className={styles.intro}>
+          <Box className={[styles.iconShell, styles.iconBlue].join(' ')}>
+            <LoginRoundedIcon fontSize="inherit" />
+          </Box>
 
-          <TextField
-            label="Email"
-            type="email"
-            value={values.email}
-            onChange={handleFieldChange('email')}
-            error={Boolean(errors.email)}
-            helperText={errors.email}
-            autoComplete="email"
-            placeholder="name@company.com"
-          />
+          <Typography className={styles.title}>Увійти</Typography>
 
-          <TextField
-            label="Пароль"
-            type="password"
-            value={values.password}
-            onChange={handleFieldChange('password')}
-            error={Boolean(errors.password)}
-            helperText={errors.password}
-            autoComplete="current-password"
-            placeholder="Ваш пароль"
-          />
-
-          <Stack className={styles.actions}>
-            <Button type="submit" variant="contained" disabled={submitting}>
-              {submitting ? 'Входимо...' : 'Увійти'}
-            </Button>
-            <Button component={RouterLink} to={appRoutes.register} variant="text" color="secondary">
-              Ще немає акаунта? Створити
-            </Button>
-          </Stack>
+          <Typography className={styles.subtitle}>
+            Поверніться до своїх сесій і продовжуйте оцінювання разом із командою.
+          </Typography>
         </Stack>
-      </CardContent>
-    </Card>
+
+        {submitError ? (
+          <Alert severity="error" className={styles.alert}>
+            {submitError}
+          </Alert>
+        ) : null}
+
+        <TextField
+          className={styles.field}
+          label="Email"
+          type="email"
+          value={values.email}
+          onChange={handleFieldChange('email')}
+          error={Boolean(errors.email)}
+          helperText={errors.email}
+          autoComplete="email"
+          placeholder="name@company.com"
+        />
+
+        <TextField
+          className={styles.field}
+          label="Пароль"
+          type="password"
+          value={values.password}
+          onChange={handleFieldChange('password')}
+          error={Boolean(errors.password)}
+          helperText={errors.password}
+          autoComplete="current-password"
+          placeholder="Ваш пароль"
+        />
+
+        <Stack className={styles.actions}>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={submitting}
+            className={[styles.primaryButton, styles.primaryBlue].join(' ')}
+          >
+            {submitting ? 'Входимо...' : 'Увійти'}
+          </Button>
+          <Button component={RouterLink} to={appRoutes.register} variant="text" className={styles.secondaryButton}>
+            Ще немає акаунта? Створити
+          </Button>
+        </Stack>
+      </Stack>
+    </Box>
   );
 };

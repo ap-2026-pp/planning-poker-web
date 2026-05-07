@@ -1,9 +1,9 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
+import HowToRegRoundedIcon from '@mui/icons-material/HowToRegRounded';
 import {
   Alert,
+  Box,
   Button,
-  Card,
-  CardContent,
   Stack,
   TextField,
   Typography,
@@ -68,61 +68,78 @@ export const RegisterForm = () => {
   };
 
   return (
-    <Card>
-      <CardContent className={styles.content}>
-        <Stack component="form" className={styles.form} onSubmit={handleSubmit}>
-          <Stack className={styles.intro}>
-            <Typography variant="h5">Створити акаунт</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Усе просто: email, пароль і ви вже готові створювати кімнати для командних оцінок.
-            </Typography>
-          </Stack>
+    <Box className={styles.card}>
+      <Stack component="form" className={styles.form} onSubmit={handleSubmit}>
+        <Box className={styles.badge}>New account</Box>
 
-          {submitError ? <Alert severity="error">{submitError}</Alert> : null}
+        <Stack className={styles.intro}>
+          <Box className={[styles.iconShell, styles.iconPurple].join(' ')}>
+            <HowToRegRoundedIcon fontSize="inherit" />
+          </Box>
 
-          <TextField
-            label="Email"
-            type="email"
-            value={values.email}
-            onChange={handleFieldChange('email')}
-            error={Boolean(errors.email)}
-            helperText={errors.email}
-            autoComplete="email"
-            placeholder="name@company.com"
-          />
+          <Typography className={styles.title}>Створити акаунт</Typography>
 
-          <TextField
-            label="Пароль"
-            type="password"
-            value={values.password}
-            onChange={handleFieldChange('password')}
-            error={Boolean(errors.password)}
-            helperText={errors.password}
-            autoComplete="new-password"
-            placeholder="Щонайменше 6 символів"
-          />
-
-          <TextField
-            label="Підтвердження пароля"
-            type="password"
-            value={values.confirmPassword}
-            onChange={handleFieldChange('confirmPassword')}
-            error={Boolean(errors.confirmPassword)}
-            helperText={errors.confirmPassword}
-            autoComplete="new-password"
-            placeholder="Повторіть пароль"
-          />
-
-          <Stack className={styles.actions}>
-            <Button type="submit" variant="contained" color="secondary" disabled={submitting}>
-              {submitting ? 'Створюємо акаунт...' : 'Зареєструватися'}
-            </Button>
-            <Button component={RouterLink} to={appRoutes.login} variant="text">
-              Уже є акаунт? Увійти
-            </Button>
-          </Stack>
+          <Typography className={styles.subtitle}>
+            Усе просто: email, пароль і ви вже готові створювати кімнати для командних оцінок.
+          </Typography>
         </Stack>
-      </CardContent>
-    </Card>
+
+        {submitError ? (
+          <Alert severity="error" className={styles.alert}>
+            {submitError}
+          </Alert>
+        ) : null}
+
+        <TextField
+          className={styles.field}
+          label="Email"
+          type="email"
+          value={values.email}
+          onChange={handleFieldChange('email')}
+          error={Boolean(errors.email)}
+          helperText={errors.email}
+          autoComplete="email"
+          placeholder="name@company.com"
+        />
+
+        <TextField
+          className={styles.field}
+          label="Пароль"
+          type="password"
+          value={values.password}
+          onChange={handleFieldChange('password')}
+          error={Boolean(errors.password)}
+          helperText={errors.password}
+          autoComplete="new-password"
+          placeholder="Щонайменше 6 символів"
+        />
+
+        <TextField
+          className={styles.field}
+          label="Підтвердження пароля"
+          type="password"
+          value={values.confirmPassword}
+          onChange={handleFieldChange('confirmPassword')}
+          error={Boolean(errors.confirmPassword)}
+          helperText={errors.confirmPassword}
+          autoComplete="new-password"
+          placeholder="Повторіть пароль"
+        />
+
+        <Stack className={styles.actions}>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={submitting}
+            className={[styles.primaryButton, styles.primaryPurple].join(' ')}
+          >
+            {submitting ? 'Створюємо акаунт...' : 'Зареєструватися'}
+          </Button>
+          <Button component={RouterLink} to={appRoutes.login} variant="text" className={styles.secondaryButton}>
+            Уже є акаунт? Увійти
+          </Button>
+        </Stack>
+      </Stack>
+    </Box>
   );
 };
