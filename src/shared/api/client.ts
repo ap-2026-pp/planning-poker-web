@@ -1,7 +1,7 @@
 import axios, { type AxiosError, type AxiosRequestConfig } from 'axios';
 
 import { env } from '@shared/config/env';
-import { getAccessToken } from '@shared/auth';
+import { getAccessToken, getGuestAccessToken } from '@shared/auth';
 import { isApiEnvelope } from '@shared/model/api';
 
 const apiClient = axios.create({
@@ -12,7 +12,7 @@ const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
-  const token = getAccessToken();
+  const token = getAccessToken() ?? getGuestAccessToken();
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;

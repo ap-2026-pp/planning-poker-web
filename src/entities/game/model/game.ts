@@ -36,6 +36,12 @@ export type JoinGamePayload = {
   displayName?: string;
 };
 
+export type JoinGameResponse = {
+  game: Game;
+  currentParticipantId: string;
+  guestAccessToken?: string | null;
+};
+
 export type GameInvite = {
   gameId: string;
   inviteCode?: string | null;

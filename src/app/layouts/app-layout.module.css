@@ -35,6 +35,17 @@
   padding-bottom: 32px;
 }
 
+.gameRoomContent {
+  width: 100%;
+  max-width: 1536px;
+  margin-inline: auto;
+  padding-inline: 24px;
+  box-sizing: border-box;
+  min-height: calc(100vh - 88px);
+  display: flex;
+  flex-direction: column;
+}
+
 .defaultContent {
   padding-block: 24px 40px;
 }
@@ -44,7 +55,15 @@
     padding-bottom: 48px;
   }
 
+
   .defaultContent {
     padding-block: 40px;
+  }
+}
+
+@media (max-width: 899px) {
+  .gameRoomContent {
+    padding-inline: 16px;
+    min-height: calc(100vh - 78px);
   }
 }

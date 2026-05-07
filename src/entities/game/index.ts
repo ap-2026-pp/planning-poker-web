@@ -4,4 +4,5 @@ export {
   type Game,
   type GameInvite,
   type JoinGamePayload,
+  type JoinGameResponse,
 } from './model/game';

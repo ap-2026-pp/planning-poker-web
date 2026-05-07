@@ -1,18 +1,17 @@
 import {
   Alert,
+  Box,
   Button,
-  Card,
-  CardContent,
-  Grid,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { joinGameRequest } from '@shared/api';
-import { useSession } from '@shared/auth';
+import { clearGuestAccessToken, setGuestAccessToken } from '@shared/auth';
 import { appRoutes } from '@shared/config/routes';
 import { validateSchema, type FormErrors } from '@shared/utils/yup';
 import { joinGameSchema } from '../model/join-game-schema';
@@ -30,7 +29,6 @@ const initialValues: JoinGameFormValues = {
 
 export const JoinGameForm = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useSession();
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState<FormErrors<JoinGameFormValues>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -48,18 +46,29 @@ export const JoinGameForm = () => {
     setSubmitting(true);
 
     try {
-      const nextErrors = await validateSchema(joinGameSchema, values);
+      const normalizedValues = {
+        inviteCode: values.inviteCode.trim(),
+        displayName: values.displayName.trim(),
+      };
+
+      const nextErrors = await validateSchema(joinGameSchema, normalizedValues);
 
       if (Object.keys(nextErrors).length) {
         setErrors(nextErrors);
         return;
       }
 
-      const game = await joinGameRequest(values.inviteCode, {
-        displayName: values.displayName || undefined,
+      const response = await joinGameRequest(normalizedValues.inviteCode, {
+        displayName: normalizedValues.displayName || undefined,
       });
 
-      await navigate(appRoutes.gameRoom(game.id));
+      if (response.guestAccessToken) {
+        setGuestAccessToken(response.guestAccessToken);
+      } else {
+        clearGuestAccessToken();
+      }
+
+      await navigate(appRoutes.gameRoom(response.game.id));
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Не вдалося приєднатися до гри');
     } finally {
@@ -68,54 +77,51 @@ export const JoinGameForm = () => {
   };
 
   return (
-    <Card>
-      <CardContent className={styles.content}>
-        <Stack component="form" className={styles.form} onSubmit={handleSubmit}>
-          <Stack className={styles.intro}>
-            <Typography variant="h5">Приєднатися до гри</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Уведіть код кімнати й заходьте в сесію разом з командою.
-            </Typography>
-          </Stack>
+    <Box className={styles.card}>
+      <Stack component="form" className={styles.form} onSubmit={handleSubmit}>
+        <Stack className={styles.intro}>
+          <Box className={[styles.iconShell, styles.iconBlue].join(' ')}>
+            <ArrowForwardRoundedIcon fontSize="inherit" />
+          </Box>
 
-          {!isAuthenticated ? (
-            <Alert severity="info">
-              Для входу в кімнату потрібно спочатку увійти в акаунт.
-            </Alert>
-          ) : null}
-
-          {submitError ? <Alert severity="error">{submitError}</Alert> : null}
-
-          <Grid container spacing={2}>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <TextField
-                label="Код кімнати"
-                value={values.inviteCode}
-                onChange={handleFieldChange('inviteCode')}
-                error={Boolean(errors.inviteCode)}
-                helperText={errors.inviteCode}
-                fullWidth
-                placeholder="Наприклад, TEAM-248"
-              />
-            </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <TextField
-                label="Імʼя в кімнаті"
-                value={values.displayName}
-                onChange={handleFieldChange('displayName')}
-                error={Boolean(errors.displayName)}
-                helperText={errors.displayName}
-                fullWidth
-                placeholder="Як вас бачитиме команда"
-              />
-            </Grid>
-          </Grid>
-
-          <Button type="submit" variant="contained" color="secondary" disabled={submitting || !isAuthenticated}>
-            {submitting ? 'Заходимо...' : 'Увійти в кімнату'}
-          </Button>
+          <Typography className={styles.title}>Приєднатися до гри</Typography>
         </Stack>
-      </CardContent>
-    </Card>
+
+        {submitError ? (
+          <Alert severity="error" className={styles.alert}>
+            {submitError}
+          </Alert>
+        ) : null}
+
+        <TextField
+          className={styles.field}
+          label="Код кімнати"
+          value={values.inviteCode}
+          onChange={handleFieldChange('inviteCode')}
+          error={Boolean(errors.inviteCode)}
+          helperText={errors.inviteCode}
+          placeholder="Наприклад, TEAM-248"
+        />
+
+        <TextField
+          className={styles.field}
+          label="Імʼя в кімнаті (опціонально)"
+          value={values.displayName}
+          onChange={handleFieldChange('displayName')}
+          error={Boolean(errors.displayName)}
+          helperText={errors.displayName}
+          placeholder="Як вас бачитиме команда"
+        />
+
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={submitting}
+          className={[styles.primaryButton, styles.primaryBlue].join(' ')}
+        >
+          {submitting ? 'Заходимо...' : 'Увійти в кімнату'}
+        </Button>
+      </Stack>
+    </Box>
   );
 };

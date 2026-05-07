@@ -1,0 +1,79 @@
+.featureCard {
+  min-height: 190px;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(31, 33, 54, 0.82) 0%, rgba(24, 25, 43, 0.78) 100%);
+  box-shadow: 0 24px 44px rgba(5, 8, 20, 0.22);
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.featureIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  margin-bottom: 18px;
+}
+
+.iconPurple {
+  background: linear-gradient(180deg, #a66fff 0%, #8b56f6 100%);
+  box-shadow: 0 18px 28px rgba(147, 97, 255, 0.28);
+}
+
+.iconGreen {
+  background: linear-gradient(180deg, #3dae57 0%, #287e3b 100%);
+  box-shadow: 0 18px 28px rgba(50, 162, 77, 0.24);
+}
+
+.iconBlue {
+  background: linear-gradient(180deg, #347be5 0%, #2564c3 100%);
+  box-shadow: 0 18px 28px rgba(56, 118, 230, 0.24);
+}
+
+.featureIconGlyph {
+  font-size: 28px !important;
+  line-height: 1;
+}
+
+.featureTitle {
+  font-size: 1.12rem !important;
+  line-height: 1.18 !important;
+  font-weight: 800 !important;
+  color: #f8f5ff !important;
+  margin-bottom: 10px !important;
+}
+
+.featureDescription {
+  color: rgba(226, 220, 245, 0.78) !important;
+  font-size: 0.98rem !important;
+  line-height: 1.52 !important;
+}
+
+@media (min-width: 900px) {
+  .featureCard {
+    min-height: 206px;
+    padding: 24px;
+  }
+
+  .featureIcon {
+    width: 60px;
+    height: 60px;
+    border-radius: 20px;
+  }
+
+  .featureIconGlyph {
+    font-size: 30px !important;
+  }
+
+  .featureTitle {
+    font-size: 1.18rem !important;
+  }
+
+  .featureDescription {
+    font-size: 1rem !important;
+  }
+}

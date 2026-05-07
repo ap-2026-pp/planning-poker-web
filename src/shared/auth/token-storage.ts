@@ -1,6 +1,7 @@
 import type { StoredSession } from './auth-contracts';
 
 const SESSION_KEY = 'planning-poker.session';
+const GUEST_TOKEN_COOKIE_KEY = 'guestToken';
 const GUEST_TOKEN_COOKIE_NAMES = ['guestToken', 'guest_token', 'guest-token'];
 
 export const getStoredSession = (): StoredSession | null => {
@@ -28,15 +29,49 @@ export const clearStoredSession = () => {
 
 export const getAccessToken = () => getStoredSession()?.accessToken ?? null;
 
-export const hasGuestTokenCookie = () => {
+export const getGuestAccessToken = () => {
   if (typeof document === 'undefined') {
-    return false;
+    return null;
   }
 
-  const cookies = document.cookie
+  const entries = document.cookie
     .split(';')
-    .map((item) => item.trim().split('=')[0])
-    .filter(Boolean);
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .map((item) => {
+      const [key, ...valueParts] = item.split('=');
+      return [key, valueParts.join('=')] as const;
+    });
 
-  return GUEST_TOKEN_COOKIE_NAMES.some((cookieName) => cookies.includes(cookieName));
+  for (const cookieName of GUEST_TOKEN_COOKIE_NAMES) {
+    const match = entries.find(([key]) => key === cookieName);
+
+    if (match?.[1]) {
+      return decodeURIComponent(match[1]);
+    }
+  }
+
+  return null;
+};
+
+export const setGuestAccessToken = (token: string) => {
+  if (typeof document === 'undefined') {
+    return;
+  }
+
+  document.cookie = `${GUEST_TOKEN_COOKIE_KEY}=${encodeURIComponent(token)}; Path=/; SameSite=Lax`;
+};
+
+export const clearGuestAccessToken = () => {
+  if (typeof document === 'undefined') {
+    return;
+  }
+
+  GUEST_TOKEN_COOKIE_NAMES.forEach((cookieName) => {
+    document.cookie = `${cookieName}=; Max-Age=0; Path=/; SameSite=Lax`;
+  });
+};
+
+export const hasGuestTokenCookie = () => {
+  return Boolean(getGuestAccessToken());
 };

@@ -11,4 +11,6 @@ export type GameParticipant = {
   role: ParticipantRole;
   joinedAt: string;
   isConnected: boolean;
+  isActive?: boolean;
+  voteValue?: string;
 };

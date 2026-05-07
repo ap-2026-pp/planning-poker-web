@@ -1,0 +1,245 @@
+.widgetCard {
+  position: relative;
+  overflow: hidden;
+  min-height: 248px;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(31, 33, 54, 0.88) 0%, rgba(24, 25, 43, 0.84) 100%);
+  box-shadow: 0 24px 44px rgba(5, 8, 20, 0.24);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.widgetCardFeatured {
+  min-height: 300px;
+  border-color: rgba(193, 142, 255, 0.24);
+  background:
+    radial-gradient(circle at top right, rgba(166, 111, 255, 0.22) 0%, transparent 40%),
+    linear-gradient(180deg, rgba(44, 31, 72, 0.96) 0%, rgba(24, 21, 43, 0.96) 100%);
+  box-shadow:
+    0 28px 56px rgba(5, 8, 20, 0.34),
+    0 0 0 1px rgba(193, 142, 255, 0.08);
+}
+
+.widgetCardFeatured::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 84% 18%, rgba(214, 183, 255, 0.16) 0%, transparent 30%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 48%);
+  pointer-events: none;
+}
+
+.featuredBadge {
+  position: relative;
+  z-index: 1;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  margin-bottom: 18px;
+  padding-inline: 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 177, 255, 0.24);
+  background: rgba(212, 177, 255, 0.08);
+  color: #f3e8ff;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.widgetIcon {
+  position: relative;
+  z-index: 1;
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.iconPurple {
+  background: linear-gradient(180deg, #a66fff 0%, #8b56f6 100%);
+  box-shadow: 0 18px 28px rgba(147, 97, 255, 0.28);
+}
+
+.iconGreen {
+  background: linear-gradient(180deg, #3dae57 0%, #287e3b 100%);
+  box-shadow: 0 18px 28px rgba(50, 162, 77, 0.24);
+}
+
+.iconBlue {
+  background: linear-gradient(180deg, #347be5 0%, #2564c3 100%);
+  box-shadow: 0 18px 28px rgba(56, 118, 230, 0.24);
+}
+
+.widgetIconFeatured {
+  width: 66px;
+  height: 66px;
+  border-radius: 22px;
+  box-shadow:
+    0 22px 34px rgba(147, 97, 255, 0.24),
+    0 0 0 6px rgba(193, 142, 255, 0.08);
+}
+
+.widgetIconGlyph {
+  font-size: 28px !important;
+  line-height: 1;
+}
+
+.widgetTitle {
+  position: relative;
+  z-index: 1;
+  font-size: 1.24rem !important;
+  line-height: 1.18 !important;
+  font-weight: 800 !important;
+  color: #f8f5ff !important;
+  margin-bottom: 12px !important;
+}
+
+.widgetTitleFeatured {
+  font-size: 1.45rem !important;
+}
+
+.widgetDescription {
+  position: relative;
+  z-index: 1;
+  color: rgba(226, 220, 245, 0.8) !important;
+  font-size: 1rem !important;
+  line-height: 1.55 !important;
+  margin-bottom: 20px !important;
+}
+
+.widgetDescriptionFeatured {
+  color: rgba(238, 230, 250, 0.92) !important;
+  font-size: 1.05rem !important;
+  line-height: 1.6 !important;
+}
+
+.widgetButton {
+  position: relative;
+  z-index: 1;
+  margin-top: auto !important;
+  width: 100%;
+  min-height: 58px !important;
+  border-radius: 14px !important;
+  font-size: 1.02rem !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+}
+
+.widgetButtonPurple {
+  background: linear-gradient(90deg, #a66fff 0%, #8b56f6 100%) !important;
+  box-shadow: 0 18px 30px rgba(147, 97, 255, 0.28) !important;
+}
+
+.widgetButtonGreen {
+  background: linear-gradient(90deg, #42b95b 0%, #2f9d4a 100%) !important;
+  box-shadow: 0 18px 30px rgba(50, 162, 77, 0.24) !important;
+}
+
+.widgetButtonBlue {
+  background: linear-gradient(90deg, #347be5 0%, #256dce 100%) !important;
+  box-shadow: 0 18px 30px rgba(56, 118, 230, 0.24) !important;
+}
+
+.widgetButtonFeatured {
+  min-height: 66px !important;
+  border-radius: 18px !important;
+  font-size: 1.12rem !important;
+  box-shadow: 0 22px 36px rgba(147, 97, 255, 0.32) !important;
+}
+
+.widgetButtonPurple:hover,
+.widgetButtonGreen:hover,
+.widgetButtonBlue:hover {
+  transform: translateY(-1px);
+}
+
+@media (min-width: 900px) {
+  .widgetCardFeatured {
+    min-height: 360px;
+    padding: 30px 28px;
+    transform: translateY(-6px);
+  }
+
+  .featuredBadge {
+    min-height: 40px;
+    margin-bottom: 20px;
+    padding-inline: 16px;
+    font-size: 0.84rem;
+  }
+
+  .widgetIcon {
+    width: 60px;
+    height: 60px;
+    border-radius: 20px;
+  }
+
+  .widgetIconFeatured {
+    width: 76px;
+    height: 76px;
+    border-radius: 24px;
+  }
+
+  .widgetIconGlyph {
+    font-size: 30px !important;
+  }
+
+  .widgetTitleFeatured {
+    font-size: 1.72rem !important;
+  }
+
+  .widgetDescriptionFeatured {
+    font-size: 1.12rem !important;
+  }
+
+  .widgetButtonFeatured {
+    min-height: 72px !important;
+    font-size: 1.2rem !important;
+  }
+}
+
+@media (max-width: 1199px) {
+  .widgetCardFeatured {
+    min-height: 320px;
+  }
+}
+
+@media (max-width: 899px) {
+  .widgetCardFeatured {
+    min-height: 340px;
+    padding: 26px 22px;
+    border-radius: 30px;
+  }
+
+  .featuredBadge {
+    min-height: 40px;
+    margin-bottom: 20px;
+  }
+
+  .widgetIconFeatured {
+    width: 72px;
+    height: 72px;
+    border-radius: 24px;
+  }
+
+  .widgetTitleFeatured {
+    font-size: 1.62rem !important;
+  }
+
+  .widgetDescriptionFeatured {
+    font-size: 1.08rem !important;
+  }
+
+  .widgetButtonFeatured {
+    min-height: 70px !important;
+    border-radius: 18px !important;
+    font-size: 1.16rem !important;
+  }
+}

@@ -1,0 +1,284 @@
+.sidebarPanel {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  background: transparent;
+  padding: 22px;
+}
+
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.sidebarHeaderTitle {
+  color: #f8f4ff !important;
+  font-size: 1.22rem !important;
+  font-weight: 800 !important;
+}
+
+.sidebarCloseButton {
+  color: #f8f4ff !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.sidebarTabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebarTab {
+  min-height: 48px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: rgba(221, 213, 238, 0.74);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sidebarTabActive {
+  color: #f9f5ff;
+  border-bottom-color: #a96fff;
+}
+
+.sidebarTabIcon {
+  font-size: 1.35rem !important;
+}
+
+.sidebarContent {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.addIssueButton {
+  margin-top: 18px;
+  min-height: 58px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.03);
+  color: #f8f5ff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.issueList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 18px;
+}
+
+.issueCard {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 18px;
+}
+
+.issueHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.issueDot {
+  width: 12px;
+  height: 12px;
+  margin-top: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.issueTone0 {
+  background: #a96fff;
+}
+
+.issueTone1 {
+  background: #4391ff;
+}
+
+.issueTone2 {
+  background: #ff8a4c;
+}
+
+.issueTone3 {
+  background: #2bd4b6;
+}
+
+.issueText {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.issueTitle {
+  color: #f8f4ff !important;
+  font-size: 1.15rem !important;
+  line-height: 1.25 !important;
+  font-weight: 800 !important;
+}
+
+.issueDescription {
+  color: rgba(219, 210, 236, 0.82) !important;
+  font-size: 0.98rem !important;
+  line-height: 1.55 !important;
+}
+
+.issueFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.issueMeta {
+  color: rgba(214, 203, 235, 0.78) !important;
+  font-size: 0.93rem !important;
+}
+
+.issueCodeBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f1e9ff;
+  font-size: 0.86rem;
+  font-weight: 800;
+  padding-inline: 10px;
+}
+
+.sidebarFooter,
+.issueEmptyState {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 12px 6px;
+  text-align: center;
+}
+
+.footerIconWrap {
+  width: 116px;
+  height: 116px;
+  border-radius: 28px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 32% 26%, rgba(173, 121, 255, 0.16) 0%, transparent 44%),
+    rgba(255, 255, 255, 0.02);
+}
+
+.footerIcon {
+  font-size: 4rem !important;
+  color: rgba(159, 110, 255, 0.62) !important;
+}
+
+.footerTitle {
+  color: #f7f2ff !important;
+  font-size: 1.25rem !important;
+  font-weight: 800 !important;
+}
+
+.footerDescription {
+  color: rgba(216, 206, 235, 0.82) !important;
+  font-size: 1rem !important;
+}
+
+.playerList {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 18px;
+}
+
+.playerListItem {
+  min-height: 82px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 14px 16px;
+}
+
+.playerIdentity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.playerPresenceWrap {
+  position: relative;
+}
+
+.playerPresence {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(18, 20, 36, 0.94);
+}
+
+.playerPresenceOnline {
+  background: #30d4b0;
+}
+
+.playerPresenceOffline {
+  background: rgba(168, 156, 192, 0.45);
+}
+
+.playerListAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, #9167ff 0%, #7249e1 100%);
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.playerListText {
+  min-width: 0;
+}
+
+.playerListName {
+  color: #f8f4ff !important;
+  font-size: 1.04rem !important;
+  font-weight: 800 !important;
+  line-height: 1.25 !important;
+  word-break: break-word;
+}
+
+.playerListRole {
+  margin-top: 4px !important;
+  color: rgba(216, 206, 235, 0.78) !important;
+  font-size: 0.94rem !important;
+}

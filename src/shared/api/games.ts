@@ -3,11 +3,13 @@ import type {
   Game,
   GameInvite,
   JoinGamePayload,
+  JoinGameResponse,
 } from '@entities/game';
 import type { VotingHistoryList } from '@entities/history';
 import type { Issue } from '@entities/issue';
 import type { GameParticipant } from '@entities/participant';
 
+import { clearGuestAccessToken } from '@shared/auth';
 import { apiClientService } from './client';
 
 export const createGameRequest = (payload: CreateGamePayload) =>
@@ -20,7 +22,7 @@ export const getGameInviteRequest = (gameId: string) =>
   apiClientService.get<GameInvite>(`/game/${gameId}/invite`);
 
 export const joinGameRequest = (inviteCode: string, payload: JoinGamePayload) =>
-  apiClientService.post<Game, JoinGamePayload>(`/games/join/${inviteCode}`, payload);
+  apiClientService.post<JoinGameResponse, JoinGamePayload>(`/games/join/${inviteCode}`, payload);
 
 export const getParticipantsRequest = (gameId: string) =>
   apiClientService.get<GameParticipant[]>(`/games/${gameId}/participants`);
@@ -33,8 +35,13 @@ export const updateDisplayNameRequest = (gameId: string, displayName: string) =>
     }
   );
 
-export const leaveGameRequest = (gameId: string) =>
-  apiClientService.delete<void>(`/games/${gameId}/participants/me`);
+export const leaveGameRequest = async (gameId: string) => {
+  try {
+    return await apiClientService.delete<void>(`/games/${gameId}/participants/me`);
+  } finally {
+    clearGuestAccessToken();
+  }
+};
 
 export const setSpectatorModeRequest = (gameId: string, isSpectator: boolean) =>
   apiClientService.patch<void, boolean>(`/games/${gameId}/participants/me/spectator`, isSpectator);

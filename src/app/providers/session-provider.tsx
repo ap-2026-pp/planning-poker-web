@@ -7,6 +7,7 @@ import {
 import { Box, CircularProgress } from '@mui/material';
 
 import {
+  clearGuestAccessToken,
   clearStoredSession,
   getStoredSession,
   hasGuestTokenCookie,
@@ -73,12 +74,14 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
 
   const login = async (payload: LoginPayload) => {
     const session = await loginRequest(payload);
+    clearGuestAccessToken();
     setStoredSession(session);
     await hydrateUser(session);
   };
 
   const register = async (payload: RegisterPayload) => {
     const session = await registerRequest(payload);
+    clearGuestAccessToken();
     setStoredSession(session);
     await hydrateUser(session);
   };
@@ -87,6 +90,7 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
     try {
       await logoutRequest();
     } finally {
+      clearGuestAccessToken();
       markGuest();
     }
   };
