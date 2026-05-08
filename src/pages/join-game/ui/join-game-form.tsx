@@ -11,7 +11,11 @@ import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { joinGameRequest } from '@shared/api';
-import { clearGuestAccessToken, setGuestAccessToken } from '@shared/auth';
+import {
+  clearGuestAccessToken,
+  setCurrentRoomParticipantSession,
+  setGuestAccessToken,
+} from '@shared/auth';
 import { appRoutes } from '@shared/config/routes';
 import { validateSchema, type FormErrors } from '@shared/utils/yup';
 import { joinGameSchema } from '../model/join-game-schema';
@@ -68,6 +72,7 @@ export const JoinGameForm = () => {
         clearGuestAccessToken();
       }
 
+      setCurrentRoomParticipantSession(response.game.id, response.currentParticipantId);
       await navigate(appRoutes.gameRoom(response.game.id));
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Не вдалося приєднатися до гри');

@@ -25,7 +25,7 @@ type HeroHeaderProps = {
   headerVars: Record<string, string>;
   isHomePage: boolean;
   isAuthenticated: boolean;
-  userEmail?: string;
+  userLabel: string;
   userInitials: string;
   onLogout: () => Promise<void>;
   onOpenMobileMenu: () => void;
@@ -35,7 +35,7 @@ export const HeroHeader = ({
   headerVars,
   isHomePage,
   isAuthenticated,
-  userEmail,
+  userLabel,
   userInitials,
   onLogout,
   onOpenMobileMenu,
@@ -69,9 +69,9 @@ export const HeroHeader = ({
         <div className={styles.actions}>
           {isAuthenticated ? (
             <Stack direction="row" spacing={2} alignItems="center">
-              <Box className={styles.profile}>
+              <Box component={RouterLink} to={appRoutes.account} className={styles.profile}>
                 <Avatar className={styles.profileAvatar}>{userInitials}</Avatar>
-                <Typography className={styles.profileEmail}>{userEmail}</Typography>
+                <Typography className={styles.profileEmail}>{userLabel}</Typography>
                 <KeyboardArrowDownRoundedIcon className={styles.profileArrow} />
               </Box>
 

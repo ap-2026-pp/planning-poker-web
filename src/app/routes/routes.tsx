@@ -8,6 +8,7 @@ import styles from './routes.module.css';
 const MainPage = lazy(() => import('@pages/main').then((module) => ({ default: module.MainPage })));
 const LoginPage = lazy(() => import('@pages/login').then((module) => ({ default: module.LoginPage })));
 const RegisterPage = lazy(() => import('@pages/register').then((module) => ({ default: module.RegisterPage })));
+const AccountPage = lazy(() => import('@pages/account').then((module) => ({ default: module.AccountPage })));
 const CreateGamePage = lazy(() =>
   import('@pages/create-game').then((module) => ({ default: module.CreateGamePage }))
 );
@@ -54,6 +55,14 @@ export const AppRoutes = () =>
           element: (
             <Suspense fallback={<RouterFallback />}>
               <RegisterPage />
+            </Suspense>
+          ),
+        },
+        {
+          path: 'account',
+          element: (
+            <Suspense fallback={<RouterFallback />}>
+              <AccountPage />
             </Suspense>
           ),
         },

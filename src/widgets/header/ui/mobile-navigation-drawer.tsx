@@ -10,7 +10,7 @@ type MobileNavigationDrawerProps = {
   open: boolean;
   isHeroPage: boolean;
   isAuthenticated: boolean;
-  userEmail?: string;
+  userLabel: string;
   userInitials: string;
   onClose: () => void;
   onLogout: () => Promise<void>;
@@ -20,7 +20,7 @@ export const MobileNavigationDrawer = ({
   open,
   isHeroPage,
   isAuthenticated,
-  userEmail,
+  userLabel,
   userInitials,
   onClose,
   onLogout,
@@ -43,10 +43,20 @@ export const MobileNavigationDrawer = ({
 
         {isAuthenticated ? (
           <>
-            <Box className={styles.drawerProfile}>
+            <Box component={RouterLink} to={appRoutes.account} onClick={onClose} className={styles.drawerProfile}>
               <Avatar className={styles.profileAvatar}>{userInitials}</Avatar>
-              <Typography className={styles.drawerProfileText}>{userEmail}</Typography>
+              <Typography className={styles.drawerProfileText}>{userLabel}</Typography>
             </Box>
+
+            <Button
+              component={RouterLink}
+              to={appRoutes.account}
+              variant="text"
+              onClick={onClose}
+              className={isHeroPage ? styles.outlineButton : styles.defaultTextButton}
+            >
+              Мій акаунт
+            </Button>
 
             <Button
               component={RouterLink}

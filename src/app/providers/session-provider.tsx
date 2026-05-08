@@ -7,6 +7,7 @@ import {
 import { Box, CircularProgress } from '@mui/material';
 
 import {
+  clearCurrentRoomParticipantSession,
   clearGuestAccessToken,
   clearStoredSession,
   getStoredSession,
@@ -74,6 +75,7 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
 
   const login = async (payload: LoginPayload) => {
     const session = await loginRequest(payload);
+    clearCurrentRoomParticipantSession();
     clearGuestAccessToken();
     setStoredSession(session);
     await hydrateUser(session);
@@ -81,6 +83,7 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
 
   const register = async (payload: RegisterPayload) => {
     const session = await registerRequest(payload);
+    clearCurrentRoomParticipantSession();
     clearGuestAccessToken();
     setStoredSession(session);
     await hydrateUser(session);
@@ -90,6 +93,7 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
     try {
       await logoutRequest();
     } finally {
+      clearCurrentRoomParticipantSession();
       clearGuestAccessToken();
       markGuest();
     }

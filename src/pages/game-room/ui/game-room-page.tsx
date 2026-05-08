@@ -17,7 +17,6 @@ export const GameRoomPage = () => {
 
       <Box className={styles.mainColumn}>
         <GameRoomSurface
-          gameId={room.gameId}
           inviteCode={room.inviteCode}
           copiedItem={room.copiedItem}
           onlineParticipantsCount={room.onlineParticipantsCount}

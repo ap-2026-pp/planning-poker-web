@@ -14,7 +14,15 @@ import { MobileNavigationDrawer } from './mobile-navigation-drawer';
 export const Header = () => {
   const { user, isAuthenticated, logout } = useSession();
   const { pathname } = useLocation();
-  const { roomTitle, openInviteDialog, toggleSidebar, leaveRoom } = useGameRoomShell();
+  const {
+    roomTitle,
+    roomParticipant,
+    openInviteDialog,
+    toggleSidebar,
+    leaveRoom,
+    renameRoomParticipant,
+    toggleRoomParticipantSpectatorMode,
+  } = useGameRoomShell();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isHomePage = pathname === appRoutes.home;
   const isGameRoomPage = isGameRoomRoute(pathname);
@@ -24,14 +32,24 @@ export const Header = () => {
     pathname === appRoutes.register ||
     pathname === appRoutes.joinGame ||
     isGameRoomPage;
-  const userInitials = useMemo(() => getUserInitials(user?.email), [user?.email]);
+  const userLabel = user?.displayName || user?.email || 'Акаунт';
+  const userInitials = useMemo(
+    () => getUserInitials(user?.displayName || user?.email),
+    [user?.displayName, user?.email],
+  );
   const headerVars = getHeaderVars(isHeroPage);
 
   if (isGameRoomPage) {
     return (
       <GameRoomHeader
+        accountLabel={isAuthenticated ? 'Мій акаунт' : 'Увійти в акаунт'}
+        accountTo={isAuthenticated ? appRoutes.account : appRoutes.login}
+        fallbackParticipantLabel={isAuthenticated ? userLabel : 'Гість'}
         headerVars={headerVars}
+        onRenameRoomParticipant={renameRoomParticipant}
+        onToggleRoomParticipantSpectatorMode={toggleRoomParticipantSpectatorMode}
         roomTitle={roomTitle}
+        roomParticipant={roomParticipant}
         onOpenInviteDialog={openInviteDialog}
         onToggleSidebar={toggleSidebar}
         onLeaveRoom={() => {
@@ -50,7 +68,7 @@ export const Header = () => {
           headerVars={headerVars}
           isHomePage={isHomePage}
           isAuthenticated={isAuthenticated}
-          userEmail={user?.email}
+          userLabel={userLabel}
           userInitials={userInitials}
           onLogout={logout}
           onOpenMobileMenu={() => setMobileMenuOpen(true)}
@@ -59,7 +77,7 @@ export const Header = () => {
         <DefaultHeader
           headerVars={headerVars}
           isAuthenticated={isAuthenticated}
-          userEmail={user?.email}
+          userLabel={userLabel}
           onLogout={logout}
           onOpenMobileMenu={() => setMobileMenuOpen(true)}
         />
@@ -69,7 +87,7 @@ export const Header = () => {
         open={mobileMenuOpen}
         isHeroPage={isHeroPage}
         isAuthenticated={isAuthenticated}
-        userEmail={user?.email}
+        userLabel={userLabel}
         userInitials={userInitials}
         onClose={() => setMobileMenuOpen(false)}
         onLogout={logout}

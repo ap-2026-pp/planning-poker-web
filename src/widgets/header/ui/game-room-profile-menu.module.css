@@ -1,0 +1,156 @@
+.menuPaper {
+  width: min(360px, calc(100vw - 24px));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px !important;
+  background: linear-gradient(180deg, rgba(28, 23, 49, 0.98) 0%, rgba(19, 18, 36, 0.98) 100%) !important;
+  box-shadow: 0 28px 54px rgba(4, 8, 18, 0.42) !important;
+  color: #f8f3ff;
+  overflow: hidden;
+}
+
+.menuContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+}
+
+.menuIdentity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+}
+
+.menuAvatar {
+  width: 44px !important;
+  height: 44px !important;
+  background: linear-gradient(180deg, #a66fff 0%, #8b56f6 100%) !important;
+  color: #fdfbff !important;
+  font-weight: 800 !important;
+}
+
+.menuIdentityText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.menuNameRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+.menuName {
+  color: #f8f3ff !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 1;
+}
+
+.editButton {
+  color: #f8f3ff !important;
+  cursor: pointer !important;
+  flex-shrink: 0;
+}
+
+.editButton:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.menuCaption {
+  color: rgba(231, 223, 248, 0.7) !important;
+  font-size: 0.86rem !important;
+}
+
+.menuItem {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px !important;
+  border-radius: 12px !important;
+  color: #f8f3ff !important;
+  cursor: pointer !important;
+}
+
+.menuItem:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.switchRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.switchText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.switchTitle {
+  color: #f8f3ff !important;
+  font-size: 0.98rem !important;
+  font-weight: 700 !important;
+}
+
+.switchHint {
+  color: rgba(231, 223, 248, 0.7) !important;
+  font-size: 0.8rem !important;
+  line-height: 1.45 !important;
+}
+
+.dialogPaper {
+  width: min(480px, calc(100vw - 24px));
+  border-radius: 22px !important;
+  background: linear-gradient(180deg, rgba(28, 23, 49, 0.98) 0%, rgba(19, 18, 36, 0.98) 100%) !important;
+  color: #f8f3ff !important;
+}
+
+.dialogContent {
+  padding: 24px !important;
+}
+
+.dialogForm {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.dialogHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dialogTitle {
+  color: #f8f3ff !important;
+  font-size: 1.2rem !important;
+  font-weight: 800 !important;
+}
+
+.dialogDescription {
+  color: rgba(231, 223, 248, 0.74) !important;
+  font-size: 0.94rem !important;
+  line-height: 1.5 !important;
+}
+
+.dialogActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}

@@ -3,7 +3,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 
 import { appRoutes, isGameRoomRoute } from '@shared/config/routes';
-import { GameRoomShellContext, type LeaveRoomHandler } from '@shared/lib';
+import {
+  GameRoomShellContext,
+  type GameRoomParticipantSummary,
+  type LeaveRoomHandler,
+  type RenameRoomParticipantHandler,
+  type ToggleRoomParticipantSpectatorModeHandler,
+} from '@shared/lib';
 import { Header } from '@widgets/header';
 import styles from './app-layout.module.css';
 
@@ -19,16 +25,24 @@ export const AppLayout = () => {
     isGameRoomPage;
 
   const [roomTitle, setRoomTitle] = useState('Кімната гри');
+  const [roomParticipant, setRoomParticipantState] = useState<GameRoomParticipantSummary | null>(null);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isInviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [leaveRoom, setLeaveRoomState] = useState<LeaveRoomHandler>(null);
+  const [renameRoomParticipant, setRenameRoomParticipantState] =
+    useState<RenameRoomParticipantHandler>(null);
+  const [toggleRoomParticipantSpectatorMode, setToggleRoomParticipantSpectatorModeState] =
+    useState<ToggleRoomParticipantSpectatorModeHandler>(null);
 
   useEffect(() => {
     if (!isGameRoomPage) {
       setRoomTitle('Кімната гри');
+      setRoomParticipantState(null);
       setSidebarOpen(false);
       setInviteDialogOpen(false);
       setLeaveRoomState(null);
+      setRenameRoomParticipantState(null);
+      setToggleRoomParticipantSpectatorModeState(null);
     }
   }, [isGameRoomPage]);
 
@@ -56,10 +70,27 @@ export const AppLayout = () => {
     setLeaveRoomState(() => handler);
   }, []);
 
+  const setRoomParticipant = useCallback((participant: GameRoomParticipantSummary | null) => {
+    setRoomParticipantState(participant);
+  }, []);
+
+  const setRenameRoomParticipant = useCallback((handler: RenameRoomParticipantHandler) => {
+    setRenameRoomParticipantState(() => handler);
+  }, []);
+
+  const setToggleRoomParticipantSpectatorMode = useCallback(
+    (handler: ToggleRoomParticipantSpectatorModeHandler) => {
+      setToggleRoomParticipantSpectatorModeState(() => handler);
+    },
+    [],
+  );
+
   const gameRoomShellValue = useMemo(
     () => ({
       roomTitle,
       setRoomTitle,
+      roomParticipant,
+      setRoomParticipant,
       isSidebarOpen,
       openSidebar,
       closeSidebar,
@@ -69,9 +100,15 @@ export const AppLayout = () => {
       closeInviteDialog,
       leaveRoom,
       setLeaveRoom,
+      renameRoomParticipant,
+      setRenameRoomParticipant,
+      toggleRoomParticipantSpectatorMode,
+      setToggleRoomParticipantSpectatorMode,
     }),
     [
       roomTitle,
+      roomParticipant,
+      setRoomParticipant,
       isSidebarOpen,
       openSidebar,
       closeSidebar,
@@ -81,6 +118,10 @@ export const AppLayout = () => {
       closeInviteDialog,
       leaveRoom,
       setLeaveRoom,
+      renameRoomParticipant,
+      setRenameRoomParticipant,
+      toggleRoomParticipantSpectatorMode,
+      setToggleRoomParticipantSpectatorMode,
     ]
   );
 

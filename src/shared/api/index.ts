@@ -1,8 +1,10 @@
 export {
+  changePasswordRequest,
   getCurrentUserRequest,
   loginRequest,
   logoutRequest,
   registerRequest,
+  updateCurrentUserDisplayNameRequest,
 } from './auth';
 export { apiClientService } from './client';
 export {

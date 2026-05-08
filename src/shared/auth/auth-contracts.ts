@@ -5,6 +5,11 @@ export type LoginPayload = {
 
 export type RegisterPayload = LoginPayload;
 
+export type ChangePasswordPayload = {
+  oldPassword: string;
+  newPassword: string;
+};
+
 export type StoredSession = {
   accessToken: string;
   refreshToken: string;

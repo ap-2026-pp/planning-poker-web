@@ -1,18 +1,13 @@
-import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import QuestionMarkRoundedIcon from '@mui/icons-material/QuestionMarkRounded';
-import { Box, Button, Stack, Typography } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { Box, Stack, Typography } from '@mui/material';
 
 import type { Issue } from '@entities/issue';
 import type { GameParticipant } from '@entities/participant';
-import { appRoutes } from '@shared/config/routes';
-import { getParticipantInitials, roleLabels } from '../model/game-room';
 import type { PositionedParticipant } from '../model/participant-layout';
 import styles from './game-room-surface.module.css';
 
 type GameRoomSurfaceProps = {
-  gameId: string;
   inviteCode: string;
   copiedItem: 'code' | 'invite-link' | null;
   onlineParticipantsCount: number;
@@ -41,7 +36,6 @@ const PlayerVotePreview = ({ hasVoted }: PlayerVotePreviewProps) => (
 );
 
 export const GameRoomSurface = ({
-  gameId,
   inviteCode,
   copiedItem,
   onlineParticipantsCount,
@@ -63,16 +57,6 @@ export const GameRoomSurface = ({
         <Box className={styles.metaPill}>{onlineParticipantsCount} онлайн</Box>
         <Box className={styles.metaPill}>{votingSystemLabel}</Box>
       </Stack>
-
-      <Button
-        component={RouterLink}
-        to={appRoutes.votingHistory(gameId)}
-        variant="outlined"
-        startIcon={<HistoryRoundedIcon />}
-        className={styles.historyAction}
-      >
-        Історія оцінок
-      </Button>
     </Box>
 
     <Box className={styles.roundLine}>

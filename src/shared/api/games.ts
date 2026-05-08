@@ -9,7 +9,7 @@ import type { VotingHistoryList } from '@entities/history';
 import type { Issue } from '@entities/issue';
 import type { GameParticipant } from '@entities/participant';
 
-import { clearGuestAccessToken } from '@shared/auth';
+import { clearCurrentRoomParticipantSession, clearGuestAccessToken } from '@shared/auth';
 import { apiClientService } from './client';
 
 export const createGameRequest = (payload: CreateGamePayload) =>
@@ -39,6 +39,7 @@ export const leaveGameRequest = async (gameId: string) => {
   try {
     return await apiClientService.delete<void>(`/games/${gameId}/participants/me`);
   } finally {
+    clearCurrentRoomParticipantSession();
     clearGuestAccessToken();
   }
 };

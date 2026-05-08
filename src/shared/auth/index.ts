@@ -1,4 +1,14 @@
-export type { LoginPayload, RegisterPayload, StoredSession } from './auth-contracts';
+export type {
+  ChangePasswordPayload,
+  LoginPayload,
+  RegisterPayload,
+  StoredSession,
+} from './auth-contracts';
+export {
+  clearCurrentRoomParticipantSession,
+  getCurrentRoomParticipantSession,
+  setCurrentRoomParticipantSession,
+} from './current-room-participant';
 export { SessionContext } from './session-context';
 export type { AuthStatus, SessionContextValue } from './session-context';
 export {

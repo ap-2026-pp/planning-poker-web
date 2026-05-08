@@ -6,7 +6,7 @@ export enum ParticipantRole {
 
 export type GameParticipant = {
   id: string;
-  userId: string;
+  userId: string | null;
   displayName: string;
   role: ParticipantRole;
   joinedAt: string;

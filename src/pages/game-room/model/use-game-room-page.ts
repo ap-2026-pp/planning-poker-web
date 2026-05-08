@@ -3,14 +3,21 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import type { Game, GameInvite } from '@entities/game';
 import type { Issue } from '@entities/issue';
-import type { GameParticipant } from '@entities/participant';
+import { ParticipantRole, type GameParticipant } from '@entities/participant';
 import {
   getGameInviteRequest,
   getGameRequest,
   getIssuesRequest,
   getParticipantsRequest,
   leaveGameRequest,
+  setSpectatorModeRequest,
+  updateDisplayNameRequest,
 } from '@shared/api';
+import {
+  getCurrentRoomParticipantSession,
+  setCurrentRoomParticipantSession,
+  useSession,
+} from '@shared/auth';
 import { appRoutes } from '@shared/config/routes';
 import { useGameRoomShell } from '@shared/lib';
 import {
@@ -30,13 +37,17 @@ import {
 export const useGameRoomPage = () => {
   const { gameId = '' } = useParams();
   const navigate = useNavigate();
+  const { user } = useSession();
   const {
     setRoomTitle,
+    setRoomParticipant,
     isSidebarOpen,
     closeSidebar,
     isInviteDialogOpen,
     closeInviteDialog,
     setLeaveRoom,
+    setRenameRoomParticipant,
+    setToggleRoomParticipantSpectatorMode,
   } = useGameRoomShell();
   const [game, setGame] = useState<Game | null>(null);
   const [participants, setParticipants] = useState<GameParticipant[]>([]);
@@ -49,6 +60,7 @@ export const useGameRoomPage = () => {
   const [copiedItem, setCopiedItem] = useState<CopiedItem>(null);
   const [isMobileLayout, setIsMobileLayout] = useState(false);
   const resetCopiedTimeoutRef = useRef<number | null>(null);
+  const storedParticipantSession = getCurrentRoomParticipantSession();
 
   useEffect(() => {
     const syncLayout = () => {
@@ -165,6 +177,28 @@ export const useGameRoomPage = () => {
     () => [...participants].sort(sortParticipants),
     [participants],
   );
+  const currentParticipant = useMemo(() => {
+    const storedParticipantId =
+      storedParticipantSession?.gameId === gameId ? storedParticipantSession.participantId : null;
+
+    if (storedParticipantId) {
+      const storedParticipant = sortedParticipants.find(
+        (participant) => participant.id === storedParticipantId,
+      );
+
+      if (storedParticipant) {
+        return storedParticipant;
+      }
+    }
+
+    if (user?.id) {
+      return (
+        sortedParticipants.find((participant) => participant.userId === user.id) ?? null
+      );
+    }
+
+    return null;
+  }, [gameId, sortedParticipants, storedParticipantSession?.gameId, storedParticipantSession?.participantId, user?.id]);
   const onlineParticipants = useMemo(
     () => sortedParticipants.filter(isParticipantOnline),
     [sortedParticipants],
@@ -188,6 +222,55 @@ export const useGameRoomPage = () => {
   const roundLabel = getRoundLabel(sortedIssues, activeIssueIndex);
   const votingSystemLabel = getGameRoomVotingLabel(game?.votingSystem);
   const deckValues = getGameRoomDeck(game?.votingSystem);
+
+  useEffect(() => {
+    if (!currentParticipant) {
+      setRoomParticipant(null);
+      return;
+    }
+
+    setCurrentRoomParticipantSession(gameId, currentParticipant.id);
+    setRoomParticipant({
+      displayName: currentParticipant.displayName,
+      isMaster: currentParticipant.role === ParticipantRole.Master,
+      isSpectator: currentParticipant.role === ParticipantRole.Spectator,
+    });
+  }, [currentParticipant, gameId, setRoomParticipant]);
+
+  useEffect(
+    () => () => {
+      setRoomParticipant(null);
+    },
+    [setRoomParticipant],
+  );
+
+  useEffect(() => {
+    setRenameRoomParticipant(async (displayName) => {
+      const updatedParticipant = await updateDisplayNameRequest(gameId, displayName.trim());
+
+      setParticipants((current) =>
+        current.map((participant) =>
+          participant.id === updatedParticipant.id ? updatedParticipant : participant,
+        ),
+      );
+      setCurrentRoomParticipantSession(gameId, updatedParticipant.id);
+    });
+
+    return () => {
+      setRenameRoomParticipant(null);
+    };
+  }, [gameId, setRenameRoomParticipant]);
+
+  useEffect(() => {
+    setToggleRoomParticipantSpectatorMode(async (isSpectator) => {
+      await setSpectatorModeRequest(gameId, isSpectator);
+      setParticipants(await getParticipantsRequest(gameId));
+    });
+
+    return () => {
+      setToggleRoomParticipantSpectatorMode(null);
+    };
+  }, [gameId, setToggleRoomParticipantSpectatorMode]);
 
   const setCopiedState = (nextValue: CopiedItem) => {
     setCopiedItem(nextValue);

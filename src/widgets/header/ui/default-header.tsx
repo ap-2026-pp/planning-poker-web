@@ -1,5 +1,5 @@
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
-import { AppBar, Button, Container, IconButton, Stack, Toolbar, Typography } from '@mui/material';
+import { AppBar, Button, Container, IconButton, Stack, Toolbar } from '@mui/material';
 import type { CSSProperties } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -10,7 +10,7 @@ import styles from './header.module.css';
 type DefaultHeaderProps = {
   headerVars: Record<string, string>;
   isAuthenticated: boolean;
-  userEmail?: string;
+  userLabel: string;
   onLogout: () => Promise<void>;
   onOpenMobileMenu: () => void;
 };
@@ -18,7 +18,7 @@ type DefaultHeaderProps = {
 export const DefaultHeader = ({
   headerVars,
   isAuthenticated,
-  userEmail,
+  userLabel,
   onLogout,
   onOpenMobileMenu,
 }: DefaultHeaderProps) => (
@@ -47,7 +47,9 @@ export const DefaultHeader = ({
           <Stack direction="row" spacing={1.5} alignItems="center">
             {isAuthenticated ? (
               <>
-                <Typography className={styles.drawerProfileText}>{userEmail}</Typography>
+                <Button component={RouterLink} to={appRoutes.account} variant="text" className={styles.defaultTextButton}>
+                  {userLabel}
+                </Button>
                 <Button variant="outlined" color="secondary" onClick={() => void onLogout()} className={styles.defaultOutlineButton}>
                   Вийти
                 </Button>
