@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useGameRoomRealtime } from './use-game-room-realtime';
 
 import type { Game, GameInvite } from '@entities/game';
 import type { Issue } from '@entities/issue';
@@ -33,6 +34,10 @@ import {
   getParticipantPositions,
   getParticipantVisibilityLimit,
 } from './participant-layout';
+import {
+  removeGameRoomParticipant,
+  upsertGameRoomParticipant,
+} from './game-room-realtime';
 
 export const useGameRoomPage = () => {
   const { gameId = '' } = useParams();
@@ -60,6 +65,7 @@ export const useGameRoomPage = () => {
   const [copiedItem, setCopiedItem] = useState<CopiedItem>(null);
   const [isMobileLayout, setIsMobileLayout] = useState(false);
   const resetCopiedTimeoutRef = useRef<number | null>(null);
+  const currentParticipantIdRef = useRef<string | null>(null);
   const storedParticipantSession = getCurrentRoomParticipantSession();
 
   useEffect(() => {
@@ -224,6 +230,18 @@ export const useGameRoomPage = () => {
   const deckValues = getGameRoomDeck(game?.votingSystem);
 
   useEffect(() => {
+    const storedParticipantId =
+      storedParticipantSession?.gameId === gameId ? storedParticipantSession.participantId : null;
+
+    currentParticipantIdRef.current = currentParticipant?.id ?? storedParticipantId ?? null;
+  }, [
+    currentParticipant?.id,
+    gameId,
+    storedParticipantSession?.gameId,
+    storedParticipantSession?.participantId,
+  ]);
+
+  useEffect(() => {
     if (!currentParticipant) {
       setRoomParticipant(null);
       return;
@@ -298,6 +316,36 @@ export const useGameRoomPage = () => {
       setCopiedItem(null);
     }
   };
+
+  const handleParticipantJoined = useCallback((participant: GameParticipant) => {
+    setParticipants((current) => upsertGameRoomParticipant(current, participant));
+  }, []);
+
+  const handleMasterChanged = useCallback((participant: GameParticipant) => {
+    setParticipants((current) => upsertGameRoomParticipant(current, participant));
+  }, []);
+
+  const handleParticipantRemoved = useCallback(
+    (participantId: string) => {
+      setParticipants((current) => removeGameRoomParticipant(current, participantId));
+
+      if (currentParticipantIdRef.current === participantId) {
+        setQrDialogOpen(false);
+        closeSidebar();
+        closeInviteDialog();
+        void navigate(appRoutes.home, { replace: true });
+      }
+    },
+    [closeInviteDialog, closeSidebar, navigate],
+  );
+
+  useGameRoomRealtime({
+    gameId,
+    onParticipantJoined: handleParticipantJoined,
+    onParticipantLeft: handleParticipantRemoved,
+    onParticipantKicked: handleParticipantRemoved,
+    onMasterChanged: handleMasterChanged,
+  });
 
   return {
     gameId,

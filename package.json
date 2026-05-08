@@ -15,6 +15,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@fontsource/manrope": "^5.2.7",
+    "@microsoft/signalr": "^10.0.0",
     "@mui/icons-material": "^7.3.5",
     "@mui/material": "^7.3.5",
     "axios": "^1.13.2",
@@ -32,4 +33,3 @@
     "vite": "^7.1.7"
   }
 }
-
