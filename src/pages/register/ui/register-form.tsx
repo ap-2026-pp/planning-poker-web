@@ -8,9 +8,9 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 
-import { useSession } from '@shared/auth';
+import { buildAuthRedirectPath, getAuthReturnTo, useSession } from '@shared/auth';
 import { appRoutes } from '@shared/config/routes';
 import { validateSchema, type FormErrors } from '@shared/utils/yup';
 import { registerSchema } from '../model/register-schema';
@@ -30,11 +30,14 @@ const initialValues: RegisterFormValues = {
 
 export const RegisterForm = () => {
   const navigate = useNavigate();
+  const { search } = useLocation();
   const { register } = useSession();
   const [values, setValues] = useState<RegisterFormValues>(initialValues);
   const [errors, setErrors] = useState<FormErrors<RegisterFormValues>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const returnTo = getAuthReturnTo(search);
+  const loginTo = buildAuthRedirectPath(appRoutes.login, returnTo);
 
   const handleFieldChange =
     (field: keyof RegisterFormValues) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -59,7 +62,7 @@ export const RegisterForm = () => {
         email: values.email,
         password: values.password,
       });
-      await navigate(appRoutes.createGame);
+      await navigate(returnTo || appRoutes.home, { replace: true });
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Не вдалося зареєструватися');
     } finally {
@@ -135,7 +138,7 @@ export const RegisterForm = () => {
           >
             {submitting ? 'Створюємо акаунт...' : 'Зареєструватися'}
           </Button>
-          <Button component={RouterLink} to={appRoutes.login} variant="text" className={styles.secondaryButton}>
+          <Button component={RouterLink} to={loginTo} variant="text" className={styles.secondaryButton}>
             Уже є акаунт? Увійти
           </Button>
         </Stack>

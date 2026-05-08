@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { useSession } from '@shared/auth';
+import { buildAuthRedirectPath, useSession } from '@shared/auth';
 import { appRoutes, isGameRoomRoute } from '@shared/config/routes';
 import { useGameRoomShell } from '@shared/lib';
 import { getHeaderVars } from '../model/header-appearance';
@@ -30,6 +30,7 @@ export const Header = () => {
     pathname === appRoutes.home ||
     pathname === appRoutes.login ||
     pathname === appRoutes.register ||
+    pathname === appRoutes.createGame ||
     pathname === appRoutes.joinGame ||
     isGameRoomPage;
   const userLabel = user?.displayName || user?.email || 'Акаунт';
@@ -42,8 +43,10 @@ export const Header = () => {
   if (isGameRoomPage) {
     return (
       <GameRoomHeader
-        accountLabel={isAuthenticated ? 'Мій акаунт' : 'Увійти в акаунт'}
-        accountTo={isAuthenticated ? appRoutes.account : appRoutes.login}
+        accountLabel={isAuthenticated ? 'Мій акаунт' : 'Привʼязати акаунт'}
+        accountTo={
+          isAuthenticated ? appRoutes.account : buildAuthRedirectPath(appRoutes.login, pathname)
+        }
         fallbackParticipantLabel={isAuthenticated ? userLabel : 'Гість'}
         headerVars={headerVars}
         onRenameRoomParticipant={renameRoomParticipant}

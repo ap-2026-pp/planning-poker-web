@@ -9,4 +9,8 @@ export const appRoutes = {
   votingHistory: (gameId: string) => `/games/${gameId}/history`,
 };
 
-export const isGameRoomRoute = (pathname: string) => /^\/games\/[^/]+$/.test(pathname);
+export const isGameRoomRoute = (pathname: string) => {
+  const match = pathname.match(/^\/games\/([^/]+)$/);
+
+  return Boolean(match && match[1] !== 'create');
+};

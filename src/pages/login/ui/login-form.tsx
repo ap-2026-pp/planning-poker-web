@@ -8,9 +8,9 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 
-import { useSession } from '@shared/auth';
+import { buildAuthRedirectPath, getAuthReturnTo, useSession } from '@shared/auth';
 import { appRoutes } from '@shared/config/routes';
 import { validateSchema, type FormErrors } from '@shared/utils/yup';
 import { loginSchema } from '../model/login-schema';
@@ -28,11 +28,14 @@ const initialValues: LoginFormValues = {
 
 export const LoginForm = () => {
   const navigate = useNavigate();
+  const { search } = useLocation();
   const { login } = useSession();
   const [values, setValues] = useState<LoginFormValues>(initialValues);
   const [errors, setErrors] = useState<FormErrors<LoginFormValues>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const returnTo = getAuthReturnTo(search);
+  const registerTo = buildAuthRedirectPath(appRoutes.register, returnTo);
 
   const handleFieldChange =
     (field: keyof LoginFormValues) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -54,7 +57,7 @@ export const LoginForm = () => {
       }
 
       await login(values);
-      await navigate(appRoutes.createGame);
+      await navigate(returnTo || appRoutes.home, { replace: true });
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Не вдалося увійти');
     } finally {
@@ -118,7 +121,7 @@ export const LoginForm = () => {
           >
             {submitting ? 'Входимо...' : 'Увійти'}
           </Button>
-          <Button component={RouterLink} to={appRoutes.register} variant="text" className={styles.secondaryButton}>
+          <Button component={RouterLink} to={registerTo} variant="text" className={styles.secondaryButton}>
             Ще немає акаунта? Створити
           </Button>
         </Stack>

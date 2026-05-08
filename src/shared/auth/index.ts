@@ -4,6 +4,7 @@ export type {
   RegisterPayload,
   StoredSession,
 } from './auth-contracts';
+export { buildAuthRedirectPath, getAuthReturnTo } from './auth-redirect';
 export {
   clearCurrentRoomParticipantSession,
   getCurrentRoomParticipantSession,

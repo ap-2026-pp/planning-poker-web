@@ -21,6 +21,7 @@ export const AppLayout = () => {
     pathname === appRoutes.home ||
     pathname === appRoutes.login ||
     pathname === appRoutes.register ||
+    pathname === appRoutes.createGame ||
     pathname === appRoutes.joinGame ||
     isGameRoomPage;
 
