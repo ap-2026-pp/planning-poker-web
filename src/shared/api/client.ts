@@ -1,7 +1,7 @@
-import axios, { type AxiosError, type AxiosRequestConfig } from 'axios';
+import axios, { AxiosHeaders, type AxiosError, type AxiosRequestConfig, type InternalAxiosRequestConfig } from 'axios';
 
 import { env } from '@shared/config/env';
-import { getAccessToken, getGuestAccessToken } from '@shared/auth';
+import { getGuestAccessToken, getStoredSession, getValidAccessToken, refreshStoredSession } from '@shared/auth';
 import { isApiEnvelope } from '@shared/model/api';
 
 const apiClient = axios.create({
@@ -11,11 +11,30 @@ const apiClient = axios.create({
   },
 });
 
-apiClient.interceptors.request.use((config) => {
-  const token = getAccessToken() ?? getGuestAccessToken();
+type RetriableRequestConfig = InternalAxiosRequestConfig & {
+  _retry?: boolean;
+};
+
+const setAuthorizationHeader = (
+  config: AxiosRequestConfig | InternalAxiosRequestConfig,
+  token: string,
+) => {
+  if (config.headers instanceof AxiosHeaders) {
+    config.headers.set('Authorization', `Bearer ${token}`);
+    return;
+  }
+
+  config.headers = {
+    ...config.headers,
+    Authorization: `Bearer ${token}`,
+  };
+};
+
+apiClient.interceptors.request.use(async (config) => {
+  const token = (await getValidAccessToken()) ?? getGuestAccessToken();
 
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    setAuthorizationHeader(config, token);
   }
 
   return config;
@@ -47,7 +66,34 @@ const toErrorMessage = (error: AxiosError<unknown>) => {
 
 apiClient.interceptors.response.use(
   (response) => response,
-  (error: AxiosError<unknown>) => Promise.reject(new Error(toErrorMessage(error)))
+  async (error: AxiosError<unknown>) => {
+    const originalRequest = error.config as RetriableRequestConfig | undefined;
+    const isUnauthorized = error.response?.status === 401;
+    const isRefreshRequest = originalRequest?.url?.includes('/auth/refresh');
+
+    if (
+      isUnauthorized &&
+      originalRequest &&
+      !originalRequest._retry &&
+      !isRefreshRequest &&
+      getStoredSession()?.refreshToken
+    ) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshedSession = await refreshStoredSession(true);
+
+        if (refreshedSession?.accessToken) {
+          setAuthorizationHeader(originalRequest, refreshedSession.accessToken);
+          return apiClient(originalRequest);
+        }
+      } catch {
+        // handled by session refresh manager
+      }
+    }
+
+    return Promise.reject(new Error(toErrorMessage(error)));
+  }
 );
 
 const unwrap = <T>(payload: unknown): T => {

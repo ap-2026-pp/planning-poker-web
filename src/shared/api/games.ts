@@ -27,6 +27,15 @@ export const joinGameRequest = (inviteCode: string, payload: JoinGamePayload) =>
 export const getParticipantsRequest = (gameId: string) =>
   apiClientService.get<GameParticipant[]>(`/games/${gameId}/participants`);
 
+export const deleteGameParticipantRequest = (gameId: string, participantId: string) =>
+  apiClientService.delete<void>(`/games/${gameId}/participants/${participantId}`);
+
+export const transferMasterRequest = (gameId: string, participantId: string) =>
+  apiClientService.patch<void, undefined>(
+    `/games/${gameId}/participants/${participantId}/transfer-master`,
+    undefined,
+  );
+
 export const updateDisplayNameRequest = (gameId: string, displayName: string) =>
   apiClientService.put<GameParticipant, { displayName: string }>(
     `/games/${gameId}/participants/me/display-name`,

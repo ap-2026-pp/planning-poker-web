@@ -6,7 +6,7 @@ import {
 } from '@microsoft/signalr';
 
 type CreateSignalRConnectionOptions = {
-  getAccessToken?: () => string | null;
+  getAccessToken?: () => string | null | Promise<string | null>;
 };
 
 const signalRLogLevel = import.meta.env.DEV ? LogLevel.Information : LogLevel.Warning;
@@ -17,7 +17,7 @@ export const createSignalRConnection = (
 ) =>
   new HubConnectionBuilder()
     .withUrl(hubUrl, {
-      accessTokenFactory: () => options.getAccessToken?.() ?? '',
+      accessTokenFactory: async () => (await options.getAccessToken?.()) ?? '',
     })
     .withAutomaticReconnect()
     .configureLogging(signalRLogLevel)

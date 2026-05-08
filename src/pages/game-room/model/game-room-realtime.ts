@@ -1,5 +1,5 @@
-import type { GameParticipant } from '@entities/participant';
-import { getAccessToken, getGuestAccessToken } from '@shared/auth';
+import { ParticipantRole, type GameParticipant } from '@entities/participant';
+import { getGuestAccessToken, getValidAccessToken } from '@shared/auth';
 import { env } from '@shared/config/env';
 
 export const gameRoomRealtimeEventNames = {
@@ -15,7 +15,7 @@ export const buildGameRoomHubUrl = (gameId: string) => {
 };
 
 export const getGameRoomRealtimeAccessToken = () => {
-  return getAccessToken() ?? getGuestAccessToken();
+  return getValidAccessToken().then((token) => token ?? getGuestAccessToken());
 };
 
 export const upsertGameRoomParticipant = (
@@ -38,4 +38,38 @@ export const removeGameRoomParticipant = (
   participantId: GameParticipant['id'],
 ) => {
   return participants.filter((participant) => participant.id !== participantId);
+};
+
+export const applyGameRoomMasterChange = (
+  participants: GameParticipant[],
+  participantUpdate: GameParticipant,
+) => {
+  if (participantUpdate.role !== ParticipantRole.Master) {
+    return upsertGameRoomParticipant(participants, participantUpdate);
+  }
+
+  const normalizedParticipants = participants.map((participant) => {
+    if (participant.id === participantUpdate.id) {
+      return { ...participant, ...participantUpdate, role: ParticipantRole.Master };
+    }
+
+    if (participant.role === ParticipantRole.Master) {
+      return {
+        ...participant,
+        role: ParticipantRole.Player,
+      };
+    }
+
+    return participant;
+  });
+
+  const hasParticipant = normalizedParticipants.some(
+    (participant) => participant.id === participantUpdate.id,
+  );
+
+  if (hasParticipant) {
+    return normalizedParticipants;
+  }
+
+  return [...normalizedParticipants, participantUpdate];
 };

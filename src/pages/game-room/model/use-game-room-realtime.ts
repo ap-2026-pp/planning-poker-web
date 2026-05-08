@@ -25,6 +25,21 @@ export const useGameRoomRealtime = ({
   onMasterChanged,
 }: UseGameRoomRealtimeParams) => {
   const connectionRef = useRef<HubConnection | null>(null);
+  const handlersRef = useRef({
+    onParticipantJoined,
+    onParticipantLeft,
+    onParticipantKicked,
+    onMasterChanged,
+  });
+
+  useEffect(() => {
+    handlersRef.current = {
+      onParticipantJoined,
+      onParticipantLeft,
+      onParticipantKicked,
+      onMasterChanged,
+    };
+  }, [onMasterChanged, onParticipantJoined, onParticipantKicked, onParticipantLeft]);
 
   useEffect(() => {
     if (!gameId) {
@@ -38,22 +53,22 @@ export const useGameRoomRealtime = ({
     connectionRef.current = connection;
 
     connection.on(gameRoomRealtimeEventNames.participantJoined, (participant: GameParticipant) => {
-      void onParticipantJoined?.(participant);
+      void handlersRef.current.onParticipantJoined?.(participant);
     });
 
     connection.on(gameRoomRealtimeEventNames.participantLeft, (participantId: GameParticipant['id']) => {
-      void onParticipantLeft?.(participantId);
+      void handlersRef.current.onParticipantLeft?.(participantId);
     });
 
     connection.on(
       gameRoomRealtimeEventNames.participantKicked,
       (participantId: GameParticipant['id']) => {
-        void onParticipantKicked?.(participantId);
+        void handlersRef.current.onParticipantKicked?.(participantId);
       },
     );
 
     connection.on(gameRoomRealtimeEventNames.masterChanged, (participant: GameParticipant) => {
-      void onMasterChanged?.(participant);
+      void handlersRef.current.onMasterChanged?.(participant);
     });
 
     const connect = async () => {
@@ -75,5 +90,5 @@ export const useGameRoomRealtime = ({
       void stopSignalRConnection(connection);
       connectionRef.current = null;
     };
-  }, [gameId, onParticipantJoined, onParticipantLeft, onParticipantKicked, onMasterChanged]);
+  }, [gameId]);
 };

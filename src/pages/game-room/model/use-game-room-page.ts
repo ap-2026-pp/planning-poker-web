@@ -6,15 +6,19 @@ import type { Game, GameInvite } from '@entities/game';
 import type { Issue } from '@entities/issue';
 import { ParticipantRole, type GameParticipant } from '@entities/participant';
 import {
+  deleteGameParticipantRequest,
   getGameInviteRequest,
   getGameRequest,
   getIssuesRequest,
   getParticipantsRequest,
   leaveGameRequest,
   setSpectatorModeRequest,
+  transferMasterRequest,
   updateDisplayNameRequest,
 } from '@shared/api';
 import {
+  clearCurrentRoomParticipantSession,
+  clearGuestAccessToken,
   getCurrentRoomParticipantSession,
   setCurrentRoomParticipantSession,
   useSession,
@@ -35,9 +39,15 @@ import {
   getParticipantVisibilityLimit,
 } from './participant-layout';
 import {
+  applyGameRoomMasterChange,
   removeGameRoomParticipant,
   upsertGameRoomParticipant,
 } from './game-room-realtime';
+
+type RoomNotification = {
+  message: string;
+  tone: 'info' | 'success' | 'warning';
+};
 
 export const useGameRoomPage = () => {
   const { gameId = '' } = useParams();
@@ -64,8 +74,12 @@ export const useGameRoomPage = () => {
   const [isQrDialogOpen, setQrDialogOpen] = useState(false);
   const [copiedItem, setCopiedItem] = useState<CopiedItem>(null);
   const [isMobileLayout, setIsMobileLayout] = useState(false);
+  const [selectedParticipantId, setSelectedParticipantId] = useState<string | null>(null);
+  const [pendingParticipantActionId, setPendingParticipantActionId] = useState<string | null>(null);
+  const [notification, setNotification] = useState<RoomNotification | null>(null);
   const resetCopiedTimeoutRef = useRef<number | null>(null);
   const currentParticipantIdRef = useRef<string | null>(null);
+  const participantsRef = useRef<GameParticipant[]>([]);
   const storedParticipantSession = getCurrentRoomParticipantSession();
 
   useEffect(() => {
@@ -228,6 +242,20 @@ export const useGameRoomPage = () => {
   const roundLabel = getRoundLabel(sortedIssues, activeIssueIndex);
   const votingSystemLabel = getGameRoomVotingLabel(game?.votingSystem);
   const deckValues = getGameRoomDeck(game?.votingSystem);
+  const isCurrentParticipantMaster = currentParticipant?.role === ParticipantRole.Master;
+
+  useEffect(() => {
+    participantsRef.current = participants;
+  }, [participants]);
+
+  useEffect(() => {
+    if (
+      selectedParticipantId &&
+      !participants.some((participant) => participant.id === selectedParticipantId)
+    ) {
+      setSelectedParticipantId(null);
+    }
+  }, [participants, selectedParticipantId]);
 
   useEffect(() => {
     const storedParticipantId =
@@ -319,33 +347,126 @@ export const useGameRoomPage = () => {
 
   const handleParticipantJoined = useCallback((participant: GameParticipant) => {
     setParticipants((current) => upsertGameRoomParticipant(current, participant));
+    setNotification({
+      message: `${participant.displayName} приєднався(-лася) до кімнати`,
+      tone: 'success',
+    });
   }, []);
 
   const handleMasterChanged = useCallback((participant: GameParticipant) => {
-    setParticipants((current) => upsertGameRoomParticipant(current, participant));
+    const previousParticipant = participantsRef.current.find((entry) => entry.id === participant.id);
+
+    setParticipants((current) => applyGameRoomMasterChange(current, participant));
+
+    if (participant.role === ParticipantRole.Master && previousParticipant?.role !== ParticipantRole.Master) {
+      setNotification({
+        message: `${participant.displayName} тепер керує кімнатою`,
+        tone: 'info',
+      });
+    }
   }, []);
 
   const handleParticipantRemoved = useCallback(
-    (participantId: string) => {
-      setParticipants((current) => removeGameRoomParticipant(current, participantId));
+    (participantId: string, reason: 'left' | 'kicked') => {
+      const participant = participantsRef.current.find((entry) => entry.id === participantId);
+      const remainingParticipants = removeGameRoomParticipant(participantsRef.current, participantId);
+      const expectedCurrentParticipantId =
+        currentParticipantIdRef.current ??
+        (storedParticipantSession?.gameId === gameId ? storedParticipantSession.participantId : null);
+      const hasCurrentParticipant =
+        (expectedCurrentParticipantId
+          ? remainingParticipants.some((entry) => entry.id === expectedCurrentParticipantId)
+          : false) ||
+        (user?.id ? remainingParticipants.some((entry) => entry.userId === user.id) : false);
 
-      if (currentParticipantIdRef.current === participantId) {
+      setParticipants(remainingParticipants);
+      setSelectedParticipantId((current) => (current === participantId ? null : current));
+
+      if (participant) {
+        setNotification({
+          message:
+            reason === 'kicked'
+              ? `${participant.displayName} був(ла) видалений(а) з кімнати`
+              : `${participant.displayName} покинув(-ла) кімнату`,
+          tone: reason === 'kicked' ? 'warning' : 'info',
+        });
+      }
+
+      if (!hasCurrentParticipant) {
+        clearCurrentRoomParticipantSession();
+        clearGuestAccessToken();
         setQrDialogOpen(false);
         closeSidebar();
         closeInviteDialog();
         void navigate(appRoutes.home, { replace: true });
       }
     },
-    [closeInviteDialog, closeSidebar, navigate],
+    [closeInviteDialog, closeSidebar, gameId, navigate, storedParticipantSession?.gameId, storedParticipantSession?.participantId, user?.id],
+  );
+
+  const handleRealtimeParticipantLeft = useCallback(
+    (participantId: string) => {
+      handleParticipantRemoved(participantId, 'left');
+    },
+    [handleParticipantRemoved],
+  );
+
+  const handleRealtimeParticipantKicked = useCallback(
+    (participantId: string) => {
+      handleParticipantRemoved(participantId, 'kicked');
+    },
+    [handleParticipantRemoved],
   );
 
   useGameRoomRealtime({
     gameId,
     onParticipantJoined: handleParticipantJoined,
-    onParticipantLeft: handleParticipantRemoved,
-    onParticipantKicked: handleParticipantRemoved,
+    onParticipantLeft: handleRealtimeParticipantLeft,
+    onParticipantKicked: handleRealtimeParticipantKicked,
     onMasterChanged: handleMasterChanged,
   });
+
+  const selectParticipant = useCallback((participantId: string) => {
+    setSelectedParticipantId((current) => (current === participantId ? null : participantId));
+  }, []);
+
+  const removeParticipant = useCallback(
+    async (participantId: string) => {
+      setPendingParticipantActionId(participantId);
+
+      try {
+        await deleteGameParticipantRequest(gameId, participantId);
+        setSelectedParticipantId(null);
+      } catch (requestError) {
+        setError(
+          requestError instanceof Error ? requestError.message : 'Не вдалося видалити учасника',
+        );
+      } finally {
+        setPendingParticipantActionId(null);
+      }
+    },
+    [gameId],
+  );
+
+  const transferMaster = useCallback(
+    async (participantId: string) => {
+      setPendingParticipantActionId(participantId);
+
+      try {
+        await transferMasterRequest(gameId, participantId);
+        setSelectedParticipantId(null);
+      } catch (requestError) {
+        setError(
+          requestError instanceof Error
+            ? requestError.message
+            : 'Не вдалося передати права master',
+        );
+      } finally {
+        setPendingParticipantActionId(null);
+      }
+    },
+    [gameId],
+  );
 
   return {
     gameId,
@@ -366,6 +487,13 @@ export const useGameRoomPage = () => {
     inviteUrl,
     qrCodeImage,
     onlineParticipantsCount: onlineParticipants.length,
+    currentParticipantId: currentParticipant?.id ?? null,
+    isCurrentParticipantMaster,
+    selectedParticipantId,
+    pendingParticipantActionId,
+    selectParticipant,
+    removeParticipant,
+    transferMaster,
     sortedParticipants,
     sortedIssues,
     positionedParticipants,
@@ -374,5 +502,7 @@ export const useGameRoomPage = () => {
     roundLabel,
     votingSystemLabel,
     deckValues,
+    notification,
+    closeNotification: () => setNotification(null),
   };
 };

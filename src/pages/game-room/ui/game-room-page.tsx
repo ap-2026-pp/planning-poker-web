@@ -1,4 +1,4 @@
-import { Alert, Box, Drawer, Stack } from '@mui/material';
+import { Alert, Box, Drawer, Snackbar, Stack } from '@mui/material';
 
 import { useGameRoomPage } from '../model/use-game-room-page';
 import { GameRoomInviteDialog } from './game-room-invite-dialog';
@@ -20,6 +20,10 @@ export const GameRoomPage = () => {
           inviteCode={room.inviteCode}
           copiedItem={room.copiedItem}
           onlineParticipantsCount={room.onlineParticipantsCount}
+          currentParticipantId={room.currentParticipantId}
+          isCurrentParticipantMaster={room.isCurrentParticipantMaster}
+          selectedParticipantId={room.selectedParticipantId}
+          pendingParticipantActionId={room.pendingParticipantActionId}
           votingSystemLabel={room.votingSystemLabel}
           roundLabel={room.roundLabel}
           activeIssue={room.activeIssue}
@@ -27,6 +31,9 @@ export const GameRoomPage = () => {
           overflowParticipants={room.overflowParticipants}
           deckValues={room.deckValues}
           onCopyCode={() => room.copyText(room.inviteCode, 'code')}
+          onParticipantSelect={room.selectParticipant}
+          onRemoveParticipant={room.removeParticipant}
+          onTransferMaster={room.transferMaster}
         />
       </Box>
 
@@ -66,6 +73,22 @@ export const GameRoomPage = () => {
         onClose={room.closeQrDialog}
         onCopyInviteLink={() => room.copyText(room.inviteUrl, 'invite-link')}
       />
+
+      <Snackbar
+        open={Boolean(room.notification)}
+        autoHideDuration={3200}
+        onClose={room.closeNotification}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={room.closeNotification}
+          severity={room.notification?.tone ?? 'info'}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {room.notification?.message}
+        </Alert>
+      </Snackbar>
     </Stack>
   );
 };

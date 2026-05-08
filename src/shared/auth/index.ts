@@ -22,4 +22,9 @@ export {
   setGuestAccessToken,
   setStoredSession,
 } from './token-storage';
+export {
+  getValidAccessToken,
+  refreshStoredSession,
+  subscribeToSessionInvalidated,
+} from './session-refresh';
 export { useSession } from './use-session';

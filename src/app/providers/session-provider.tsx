@@ -13,6 +13,7 @@ import {
   getStoredSession,
   hasGuestTokenCookie,
   setStoredSession,
+  subscribeToSessionInvalidated,
   type StoredSession,
   SessionContext,
 } from '@shared/auth';
@@ -57,6 +58,12 @@ const useSessionBootstrap = () => {
 
   useEffect(() => {
     void hydrateUser();
+  }, []);
+
+  useEffect(() => {
+    return subscribeToSessionInvalidated(() => {
+      markGuest();
+    });
   }, []);
 
   return {

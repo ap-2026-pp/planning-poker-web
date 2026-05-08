@@ -8,6 +8,7 @@ export {
 } from './auth';
 export { apiClientService } from './client';
 export {
+  deleteGameParticipantRequest,
   createGameRequest,
   getGameInviteRequest,
   getGameRequest,
@@ -17,5 +18,6 @@ export {
   joinGameRequest,
   leaveGameRequest,
   setSpectatorModeRequest,
+  transferMasterRequest,
   updateDisplayNameRequest,
 } from './games';
