@@ -46,13 +46,14 @@ export const GameRoomDisplayNameDialog = ({
             value={value}
             onChange={(event) => onChange(event.target.value)}
             fullWidth
+            className={styles.field}
           />
 
           <Stack direction="row" className={styles.dialogActions}>
-            <Button variant="outlined" onClick={onClose}>
+            <Button variant="outlined" onClick={onClose} className={styles.cancelButton}>
               Скасувати
             </Button>
-            <Button type="submit" variant="contained" disabled={isSubmitting}>
+            <Button type="submit" variant="contained" disabled={isSubmitting} className={styles.submitButton}>
               {isSubmitting ? 'Зберігаємо...' : 'Зберегти'}
             </Button>
           </Stack>

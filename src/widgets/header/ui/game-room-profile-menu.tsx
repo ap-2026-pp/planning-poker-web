@@ -87,6 +87,7 @@ export const GameRoomProfileMenu = ({
           checked={isSpectator}
           disabled={isSpectatorDisabled || isSpectatorPending}
           onChange={(_event, checked) => onToggleSpectatorMode(checked)}
+          className={styles.spectatorSwitch}
         />
       </Box>
 

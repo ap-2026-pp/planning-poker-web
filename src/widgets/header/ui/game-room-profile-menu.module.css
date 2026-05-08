@@ -114,6 +114,15 @@
   line-height: 1.45 !important;
 }
 
+.spectatorSwitch :global(.MuiSwitch-switchBase.Mui-checked) {
+   color: #9167ff !important;
+}
+
+.spectatorSwitch :global(.MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track) {
+  background-color: #443076;
+  opacity: 1;
+}
+
 .dialogPaper {
   width: min(480px, calc(100vw - 24px));
   border-radius: 22px !important;
@@ -153,4 +162,92 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+}
+
+.primaryPurple {
+  background: linear-gradient(90deg, #a66fff 0%, #8b56f6 100%) !important;
+  box-shadow: 0 22px 38px rgba(147, 97, 255, 0.32) !important;
+}
+
+.secondaryButton {
+  min-height: 52px !important;
+  border-radius: 14px !important;
+  color: #f8f3ff !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.secondaryButton:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+.cancelButton {
+  min-height: 52px !important;
+  border-radius: 14px !important;
+  color: #f8f3ff !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.cancelButton:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+.submitButton {
+  color: #f8f3ff !important;
+  border-radius: 14px !important;
+  background: linear-gradient(90deg, #a66fff 0%, #8b56f6 100%) !important;
+  box-shadow: 0 22px 38px rgba(147, 97, 255, 0.32) !important;
+}
+
+.alert :global(.MuiAlert-icon) {
+  color: #ff9db2 !important;
+}
+
+.field :global(.MuiInputLabel-root) {
+  color: rgba(226, 220, 245, 0.74) !important;
+}
+
+.field :global(.MuiInputLabel-root.Mui-focused) {
+  color: #dec7ff !important;
+}
+
+.field :global(.MuiOutlinedInput-root) {
+  color: #f8f5ff !important;
+  border-radius: 18px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  transition: background-color 180ms ease, box-shadow 180ms ease !important;
+}
+
+.field :global(.MuiOutlinedInput-root:hover) {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.field :global(.MuiOutlinedInput-root.Mui-focused) {
+  background: rgba(16, 17, 31, 0.92) !important;
+  box-shadow: 0 0 0 6px rgba(147, 97, 255, 0.14) !important;
+}
+
+.field :global(.MuiOutlinedInput-notchedOutline) {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.field :global(.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline) {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.field :global(.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline) {
+  border-color: rgba(193, 142, 255, 0.88) !important;
+}
+
+.field :global(.MuiOutlinedInput-input::placeholder) {
+  color: rgba(226, 220, 245, 0.42);
+  opacity: 1;
+}
+
+.field :global(.MuiFormHelperText-root) {
+  margin-inline: 4px !important;
+  color: #ffb4c5 !important;
 }

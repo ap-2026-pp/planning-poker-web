@@ -96,8 +96,8 @@
 }
 
 .field :global(.MuiOutlinedInput-root.Mui-focused) {
-  background: rgba(16, 17, 31, 0.92) !important;
-  box-shadow: 0 0 0 6px rgba(56, 118, 230, 0.14) !important;
+  background: rgba(22, 16, 31, 0.92) !important;
+  box-shadow: 0 0 0 6px rgba(131, 56, 230, 0.14) !important;
 }
 
 .field :global(.MuiOutlinedInput-notchedOutline) {
