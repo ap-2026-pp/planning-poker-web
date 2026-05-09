@@ -35,14 +35,13 @@ import {
   type SidebarView,
 } from './game-room';
 import {
-  getParticipantPositions,
-  getParticipantVisibilityLimit,
-} from './participant-layout';
-import {
-  applyGameRoomMasterChange,
   removeGameRoomParticipant,
   upsertGameRoomParticipant,
 } from './game-room-realtime';
+import {
+  getParticipantPositions,
+  getParticipantVisibilityLimit,
+} from './participant-layout';
 
 type RoomNotification = {
   message: string;
@@ -358,11 +357,22 @@ export const useGameRoomPage = () => {
   const handleUserUpdated = useCallback((participant: GameParticipant) => {
     const previousParticipant = participantsRef.current.find((entry) => entry.id === participant.id);
 
-    setParticipants((current) => applyGameRoomMasterChange(current, participant));
+    setParticipants((current) => upsertGameRoomParticipant(current, participant));
 
     if (participant.role === ParticipantRole.Master && previousParticipant?.role !== ParticipantRole.Master) {
       setNotification({
         message: `${participant.displayName} тепер керує кімнатою`,
+        tone: 'info',
+      });
+      return;
+    }
+
+    if (
+      previousParticipant &&
+      previousParticipant.displayName !== participant.displayName
+    ) {
+      setNotification({
+        message: `${participant.displayName} змінив(ла) своє імʼя`,
         tone: 'info',
       });
     }

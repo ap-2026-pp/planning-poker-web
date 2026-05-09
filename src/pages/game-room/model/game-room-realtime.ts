@@ -7,6 +7,7 @@ export const gameRoomRealtimeEventNames = {
   participantLeft: 'ParticipantLeft',
   participantKicked: 'ParticipantKicked',
   userUpdated: 'UserUpdated',
+  participantUpdated: 'ParticipantUpdated',
   gameUpdated: 'GameUpdated',
 } as const;
 

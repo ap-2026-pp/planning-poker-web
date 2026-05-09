@@ -76,6 +76,10 @@ export const useGameRoomRealtime = ({
       void handlersRef.current.onUserUpdated?.(participant);
     });
 
+    connection.on(gameRoomRealtimeEventNames.participantUpdated, (participant: GameParticipant) => {
+      void handlersRef.current.onUserUpdated?.(participant);
+    });
+
     connection.on(gameRoomRealtimeEventNames.gameUpdated, (updatedGame: Game | string) => {
       void handlersRef.current.onGameUpdated?.(updatedGame);
     });
@@ -95,6 +99,7 @@ export const useGameRoomRealtime = ({
       connection.off(gameRoomRealtimeEventNames.participantLeft);
       connection.off(gameRoomRealtimeEventNames.participantKicked);
       connection.off(gameRoomRealtimeEventNames.userUpdated);
+      connection.off(gameRoomRealtimeEventNames.participantUpdated);
       connection.off(gameRoomRealtimeEventNames.gameUpdated);
 
       void stopSignalRConnection(connection);
