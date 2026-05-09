@@ -20,10 +20,12 @@ import { Link as RouterLink } from 'react-router-dom';
 import { appRoutes } from '@shared/config/routes';
 import { BrandMark } from '@shared/ui/BrandMark';
 import styles from './header.module.css';
+import { UserGamesMenu } from './user-games-menu';
 
 type HeroHeaderProps = {
   headerVars: Record<string, string>;
   isHomePage: boolean;
+  isMyGamesPage: boolean;
   isAuthenticated: boolean;
   userLabel: string;
   userInitials: string;
@@ -34,6 +36,7 @@ type HeroHeaderProps = {
 export const HeroHeader = ({
   headerVars,
   isHomePage,
+  isMyGamesPage,
   isAuthenticated,
   userLabel,
   userInitials,
@@ -64,6 +67,10 @@ export const HeroHeader = ({
             <HomeRoundedIcon fontSize="small" />
             <span>Головна</span>
           </Box>
+
+          {isAuthenticated && (
+            <UserGamesMenu variant="hero" isMyGamesPage={isMyGamesPage} />
+          )}
         </Stack>
 
         <div className={styles.actions}>

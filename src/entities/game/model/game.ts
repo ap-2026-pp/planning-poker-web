@@ -1,6 +1,8 @@
 import type { Issue } from '@entities/issue';
 import type { GameParticipant } from '@entities/participant';
 
+import type { ParticipantRole } from '@entities/participant';
+
 export enum VotingSystem {
   Fibonacci = 0,
   TShirtSizes = 1,
@@ -32,6 +34,15 @@ export type CreateGamePayload = {
   showCountdownAnimation: boolean;
 };
 
+export type UpdateGamePayload = {
+  name: string;
+  votingSystem: VotingSystem;
+  autoRevealCards: boolean;
+  showAverage: boolean;
+  showCountdownAnimation: boolean;
+  isActive: boolean;
+};
+
 export type JoinGamePayload = {
   displayName?: string;
 };
@@ -47,4 +58,18 @@ export type GameInvite = {
   inviteCode?: string | null;
   inviteUrl?: string | null;
   qrCodeBase64?: string | null;
+};
+
+export enum UserGamesScope {
+  Created = 'Created',
+  Participated = 'Participated',
+  All = 'All',
+}
+
+export type UserGame = {
+  id: string;
+  name: string;
+  joinedAt: string;
+  sessionRole: ParticipantRole;
+  isActive: boolean;
 };

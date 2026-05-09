@@ -52,8 +52,8 @@
 .homeLinkActive::after {
   content: '';
   position: absolute;
-  left: 14px;
-  right: 14px;
+  left: 10px;
+  right: 5px;
   bottom: 12px;
   height: 4px;
   border-radius: 999px;
@@ -156,6 +156,186 @@
   color: #0c2230 !important;
   border-color: rgba(12, 34, 48, 0.12) !important;
   background: rgba(255, 255, 255, 0.7) !important;
+}
+
+.gamesTriggerHero,
+.gamesTriggerDefault {
+  min-height: 48px !important;
+  border-radius: 12px !important;
+  text-transform: none !important;
+  font-weight: 700 !important;
+}
+
+.gamesTriggerHero {
+  color: #f8f3ff !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.gamesTriggerDefault {
+  color: #0c2230 !important;
+}
+
+.gamesTriggerDefaultLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 12px;
+  color: #0c2230;
+  text-decoration: none;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.gamesMenuPaper {
+  width: min(92vw, 420px);
+  margin-top: 12px;
+  border-radius: 22px !important;
+  border: 1px solid rgba(12, 34, 48, 0.08);
+  background: linear-gradient(180deg, rgba(247, 250, 253, 0.98) 0%, rgba(241, 246, 251, 0.98) 100%) !important;
+  box-shadow: 0 24px 54px rgba(12, 34, 48, 0.16) !important;
+}
+
+.gamesMenuHeader,
+.gamesMenuFooter {
+  padding: 18px 18px 0;
+}
+
+.gamesMenuTitle {
+  color: #0c2230 !important;
+  font-size: 1rem !important;
+  font-weight: 800 !important;
+  margin-bottom: 12px !important;
+}
+
+.gamesMenuBody {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 12px 8px;
+  max-height: min(60vh, 520px);
+  overflow: auto;
+}
+
+.gamesScopeButton,
+.gamesScopeButtonActive {
+  min-height: 34px !important;
+  border-radius: 999px !important;
+  padding-inline: 12px !important;
+  text-transform: none !important;
+  font-weight: 700 !important;
+}
+
+.gamesScopeButton {
+  color: #3b5261 !important;
+}
+
+.gamesScopeButtonActive {
+  color: #ffffff !important;
+  background: linear-gradient(90deg, #347be5 0%, #256dce 100%) !important;
+}
+
+.gamesAlert {
+  margin-inline: 6px !important;
+}
+
+.gamesState {
+  gap: 12px;
+  min-height: 120px;
+  padding: 16px 12px;
+}
+
+.gamesStateText {
+  color: #536875 !important;
+  text-align: center;
+}
+
+.gameMenuItem {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: start;
+  padding: 6px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.gameMenuPrimary {
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+  padding: 12px !important;
+  border-radius: 14px !important;
+  text-transform: none !important;
+}
+
+.gameMenuPrimaryCopy {
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+}
+
+.gameMenuName {
+  color: #0c2230 !important;
+  font-size: 0.98rem !important;
+  font-weight: 800 !important;
+  text-align: left;
+}
+
+.gameMenuMeta,
+.gameMenuHint {
+  color: #5a6f7c !important;
+  font-size: 0.83rem !important;
+  text-align: left;
+}
+
+.gameBadgeActive,
+.gameBadgeInactive {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.gameBadgeActive {
+  color: #11613d;
+  background: rgba(56, 185, 117, 0.16);
+}
+
+.gameBadgeInactive {
+  color: #7b4b10;
+  background: rgba(232, 173, 82, 0.2);
+}
+
+.gameMenuActions {
+  padding-top: 6px;
+}
+
+.gameIconButton,
+.gameIconButtonDanger {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px !important;
+}
+
+.gameIconButton {
+  color: #256dce !important;
+}
+
+.gameIconButtonDanger {
+  color: #c53d5a !important;
+}
+
+.gamesCreateButton {
+  width: 100%;
+  min-height: 46px !important;
+  border-radius: 14px !important;
+  margin-bottom: 18px !important;
+  color: #ffffff !important;
+  background: linear-gradient(90deg, #347be5 0%, #256dce 100%) !important;
 }
 
 .menuButton {

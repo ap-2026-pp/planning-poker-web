@@ -17,13 +17,17 @@ export const AppLayout = () => {
   const { pathname } = useLocation();
 
   const isGameRoomPage = isGameRoomRoute(pathname);
+  const isEditGamePage = /^\/games\/[^/]+\/edit$/.test(pathname);
+
   const isHeroPage =
     pathname === appRoutes.home ||
     pathname === appRoutes.login ||
     pathname === appRoutes.register ||
+    pathname === appRoutes.myGames ||
     pathname === appRoutes.createGame ||
     pathname === appRoutes.joinGame ||
-    isGameRoomPage;
+    isGameRoomPage ||
+    isEditGamePage;
 
   const [roomTitle, setRoomTitle] = useState('Кімната гри');
   const [roomParticipant, setRoomParticipantState] = useState<GameRoomParticipantSummary | null>(null);

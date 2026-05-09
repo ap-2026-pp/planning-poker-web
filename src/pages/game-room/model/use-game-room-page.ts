@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useGameRoomRealtime } from './use-game-room-realtime';
 
 import type { Game, GameInvite } from '@entities/game';
@@ -52,7 +52,9 @@ type RoomNotification = {
 export const useGameRoomPage = () => {
   const { gameId = '' } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useSession();
+  const from = (location.state as { from?: string } | null)?.from;
   const {
     setRoomTitle,
     setRoomParticipant,
@@ -169,7 +171,7 @@ export const useGameRoomPage = () => {
         setQrDialogOpen(false);
         closeSidebar();
         closeInviteDialog();
-        await navigate(appRoutes.home);
+        await navigate(from || appRoutes.home, { replace: true });
       } catch (requestError) {
         setError(requestError instanceof Error ? requestError.message : 'Не вдалося вийти з гри');
       }
@@ -178,7 +180,7 @@ export const useGameRoomPage = () => {
     return () => {
       setLeaveRoom(null);
     };
-  }, [closeInviteDialog, closeSidebar, gameId, navigate, setLeaveRoom]);
+  }, [closeInviteDialog, closeSidebar, from, gameId, navigate, setLeaveRoom]);
 
   useEffect(
     () => () => {

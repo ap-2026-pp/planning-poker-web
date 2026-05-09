@@ -10,6 +10,8 @@ export { apiClientService } from './client';
 export {
   deleteGameParticipantRequest,
   createGameRequest,
+  deleteGameRequest,
+  getUserGamesRequest,
   getGameInviteRequest,
   getGameRequest,
   getIssuesRequest,
@@ -17,7 +19,9 @@ export {
   getVotingHistoryRequest,
   joinGameRequest,
   leaveGameRequest,
+  reconnectToGameRequest,
   setSpectatorModeRequest,
   transferMasterRequest,
+  updateGameRequest,
   updateDisplayNameRequest,
 } from './games';

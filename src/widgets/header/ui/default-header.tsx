@@ -6,6 +6,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { appRoutes } from '@shared/config/routes';
 import { BrandMark } from '@shared/ui/BrandMark';
 import styles from './header.module.css';
+import { UserGamesMenu } from './user-games-menu';
 
 type DefaultHeaderProps = {
   headerVars: Record<string, string>;
@@ -47,6 +48,7 @@ export const DefaultHeader = ({
           <Stack direction="row" spacing={1.5} alignItems="center">
             {isAuthenticated ? (
               <>
+                <UserGamesMenu variant="default" isMyGamesPage={false} />
                 <Button component={RouterLink} to={appRoutes.account} variant="text" className={styles.defaultTextButton}>
                   {userLabel}
                 </Button>

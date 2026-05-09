@@ -25,14 +25,18 @@ export const Header = () => {
   } = useGameRoomShell();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isHomePage = pathname === appRoutes.home;
+  const isMyGamesPage = pathname === appRoutes.myGames;
   const isGameRoomPage = isGameRoomRoute(pathname);
+  const isEditGamePage = /^\/games\/[^/]+\/edit$/.test(pathname);
   const isHeroPage =
     pathname === appRoutes.home ||
     pathname === appRoutes.login ||
     pathname === appRoutes.register ||
+    pathname === appRoutes.myGames ||
     pathname === appRoutes.createGame ||
     pathname === appRoutes.joinGame ||
-    isGameRoomPage;
+    isGameRoomPage ||
+    isEditGamePage;
   const userLabel = user?.displayName || user?.email || 'Акаунт';
   const userInitials = useMemo(
     () => getUserInitials(user?.displayName || user?.email),
@@ -70,6 +74,7 @@ export const Header = () => {
         <HeroHeader
           headerVars={headerVars}
           isHomePage={isHomePage}
+          isMyGamesPage={isMyGamesPage}
           isAuthenticated={isAuthenticated}
           userLabel={userLabel}
           userInitials={userInitials}

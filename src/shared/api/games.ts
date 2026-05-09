@@ -4,6 +4,9 @@ import type {
   GameInvite,
   JoinGamePayload,
   JoinGameResponse,
+  UpdateGamePayload,
+  UserGame,
+  UserGamesScope,
 } from '@entities/game';
 import type { VotingHistoryList } from '@entities/history';
 import type { Issue } from '@entities/issue';
@@ -18,11 +21,27 @@ export const createGameRequest = (payload: CreateGamePayload) =>
 export const getGameRequest = (gameId: string) =>
   apiClientService.get<Game>(`/game/${gameId}`);
 
+export const updateGameRequest = (gameId: string, payload: UpdateGamePayload) =>
+  apiClientService.put<Game, UpdateGamePayload>(`/game/${gameId}`, payload);
+
+export const deleteGameRequest = (gameId: string) =>
+  apiClientService.delete<void>(`/game/${gameId}`);
+
 export const getGameInviteRequest = (gameId: string) =>
   apiClientService.get<GameInvite>(`/game/${gameId}/invite`);
 
+export const getUserGamesRequest = (scope: UserGamesScope) =>
+  apiClientService.get<UserGame[]>('/games/my', {
+    params: {
+      scope,
+    },
+  });
+
 export const joinGameRequest = (inviteCode: string, payload: JoinGamePayload) =>
   apiClientService.post<JoinGameResponse, JoinGamePayload>(`/games/join/${inviteCode}`, payload);
+
+export const reconnectToGameRequest = (gameId: string) =>
+  apiClientService.post<JoinGameResponse, undefined>(`/games/${gameId}/reconnect`, undefined);
 
 export const getParticipantsRequest = (gameId: string) =>
   apiClientService.get<GameParticipant[]>(`/games/${gameId}/participants`);

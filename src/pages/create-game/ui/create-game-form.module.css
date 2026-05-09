@@ -38,6 +38,12 @@
   padding: 28px 24px;
 }
 
+.loadingState {
+  min-height: 320px;
+  gap: 16px;
+  padding: 28px 24px;
+}
+
 .intro {
   display: flex;
   flex-direction: column;

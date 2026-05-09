@@ -9,8 +9,14 @@ const MainPage = lazy(() => import('@pages/main').then((module) => ({ default: m
 const LoginPage = lazy(() => import('@pages/login').then((module) => ({ default: module.LoginPage })));
 const RegisterPage = lazy(() => import('@pages/register').then((module) => ({ default: module.RegisterPage })));
 const AccountPage = lazy(() => import('@pages/account').then((module) => ({ default: module.AccountPage })));
+const MyGamesPage = lazy(() =>
+  import('@pages/my-games').then((module) => ({ default: module.MyGamesPage }))
+);
 const CreateGamePage = lazy(() =>
   import('@pages/create-game').then((module) => ({ default: module.CreateGamePage }))
+);
+const EditGamePage = lazy(() =>
+  import('@pages/edit-game').then((module) => ({ default: module.EditGamePage }))
 );
 const JoinGamePage = lazy(() => import('@pages/join-game').then((module) => ({ default: module.JoinGamePage })));
 const GameRoomPage = lazy(() =>
@@ -67,10 +73,26 @@ export const AppRoutes = () =>
           ),
         },
         {
+          path: 'games',
+          element: (
+            <Suspense fallback={<RouterFallback />}>
+              <MyGamesPage />
+            </Suspense>
+          ),
+        },
+        {
           path: 'games/create',
           element: (
             <Suspense fallback={<RouterFallback />}>
               <CreateGamePage />
+            </Suspense>
+          ),
+        },
+        {
+          path: 'games/:gameId/edit',
+          element: (
+            <Suspense fallback={<RouterFallback />}>
+              <EditGamePage />
             </Suspense>
           ),
         },

@@ -50,6 +50,16 @@ export const MobileNavigationDrawer = ({
 
             <Button
               component={RouterLink}
+              to={appRoutes.myGames}
+              variant="text"
+              onClick={onClose}
+              className={isHeroPage ? styles.outlineButton : styles.defaultTextButton}
+            >
+              Ігри
+            </Button>
+
+            <Button
+              component={RouterLink}
               to={appRoutes.account}
               variant="text"
               onClick={onClose}
