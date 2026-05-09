@@ -6,7 +6,8 @@ export const gameRoomRealtimeEventNames = {
   participantJoined: 'ParticipantJoined',
   participantLeft: 'ParticipantLeft',
   participantKicked: 'ParticipantKicked',
-  masterChanged: 'MasterChanged',
+  userUpdated: 'UserUpdated',
+  gameUpdated: 'GameUpdated',
 } as const;
 
 export const buildGameRoomHubUrl = (gameId: string) => {

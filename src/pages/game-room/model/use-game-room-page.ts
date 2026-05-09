@@ -355,7 +355,7 @@ export const useGameRoomPage = () => {
     });
   }, []);
 
-  const handleMasterChanged = useCallback((participant: GameParticipant) => {
+  const handleUserUpdated = useCallback((participant: GameParticipant) => {
     const previousParticipant = participantsRef.current.find((entry) => entry.id === participant.id);
 
     setParticipants((current) => applyGameRoomMasterChange(current, participant));
@@ -420,12 +420,24 @@ export const useGameRoomPage = () => {
     [handleParticipantRemoved],
   );
 
+  const handleGameUpdated = useCallback((updatedGame: Game | string) => {
+    if (typeof updatedGame !== 'string') {
+      setGame(updatedGame);
+    }
+
+    setNotification({
+      message: 'Налаштування гри оновлено',
+      tone: 'success',
+    });
+  }, []);
+
   useGameRoomRealtime({
     gameId,
     onParticipantJoined: handleParticipantJoined,
     onParticipantLeft: handleRealtimeParticipantLeft,
     onParticipantKicked: handleRealtimeParticipantKicked,
-    onMasterChanged: handleMasterChanged,
+    onUserUpdated: handleUserUpdated,
+    onGameUpdated: handleGameUpdated,
   });
 
   const selectParticipant = useCallback((participantId: string) => {

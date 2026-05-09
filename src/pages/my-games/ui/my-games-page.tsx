@@ -14,7 +14,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 import { UserGamesScope, type UserGame } from '@entities/game';
@@ -32,6 +32,7 @@ import {
 } from '@shared/auth';
 import { appRoutes } from '@shared/config/routes';
 import { formatDateTime } from '@shared/utils/time';
+import { useUserGamesRealtime } from '../model/use-user-games-realtime';
 import styles from './my-games-page.module.css';
 
 const scopeOptions = [
@@ -123,6 +124,52 @@ export const MyGamesPage = () => {
       setJoiningGameId(null);
     }
   };
+
+  const handleGameUpdated = useCallback(
+    (updatedGame: UserGame | { id: string; isDeleted?: boolean } | string) => {
+      if (typeof updatedGame === 'string') {
+        setGames((current) => current.filter((game) => game.id !== updatedGame));
+        setOwnedGameIds((current) => {
+          const next = new Set(current);
+          next.delete(updatedGame);
+          return next;
+        });
+        return;
+      }
+
+      if ('isDeleted' in updatedGame && updatedGame.isDeleted) {
+        setGames((current) => current.filter((game) => game.id !== updatedGame.id));
+        setOwnedGameIds((current) => {
+          const next = new Set(current);
+          next.delete(updatedGame.id);
+          return next;
+        });
+        return;
+      }
+
+      if ('name' in updatedGame) {
+        setGames((current) => {
+          const existingIndex = current.findIndex((game) => game.id === updatedGame.id);
+          if (existingIndex >= 0) {
+            const next = [...current];
+            next[existingIndex] = updatedGame;
+            return next;
+          } else {
+            return [...current, updatedGame];
+          }
+        });
+
+        if (updatedGame.sessionRole === ParticipantRole.Master) {
+          setOwnedGameIds((current) => new Set([...current, updatedGame.id]));
+        }
+      }
+    },
+    [],
+  );
+
+  useUserGamesRealtime({
+    onGameUpdated: handleGameUpdated,
+  });
 
   const handleDelete = async () => {
     if (!deleteTarget || !ownedGameIds.has(deleteTarget.id)) {

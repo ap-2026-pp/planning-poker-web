@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { HubConnection } from '@microsoft/signalr';
 
+import type { Game } from '@entities/game';
 import type { GameParticipant } from '@entities/participant';
 import { createSignalRConnection, startSignalRConnection, stopSignalRConnection } from '@shared/realtime';
 import {
@@ -14,7 +15,8 @@ type UseGameRoomRealtimeParams = {
   onParticipantJoined?: (participant: GameParticipant) => void | Promise<void>;
   onParticipantLeft?: (participantId: GameParticipant['id']) => void | Promise<void>;
   onParticipantKicked?: (participantId: GameParticipant['id']) => void | Promise<void>;
-  onMasterChanged?: (participant: GameParticipant) => void | Promise<void>;
+  onUserUpdated?: (participant: GameParticipant) => void | Promise<void>;
+  onGameUpdated?: (updatedGame: Game | string) => void | Promise<void>;
 };
 
 export const useGameRoomRealtime = ({
@@ -22,14 +24,16 @@ export const useGameRoomRealtime = ({
   onParticipantJoined,
   onParticipantLeft,
   onParticipantKicked,
-  onMasterChanged,
+  onUserUpdated,
+  onGameUpdated,
 }: UseGameRoomRealtimeParams) => {
   const connectionRef = useRef<HubConnection | null>(null);
   const handlersRef = useRef({
     onParticipantJoined,
     onParticipantLeft,
     onParticipantKicked,
-    onMasterChanged,
+    onUserUpdated,
+    onGameUpdated,
   });
 
   useEffect(() => {
@@ -37,9 +41,10 @@ export const useGameRoomRealtime = ({
       onParticipantJoined,
       onParticipantLeft,
       onParticipantKicked,
-      onMasterChanged,
+      onUserUpdated,
+      onGameUpdated,
     };
-  }, [onMasterChanged, onParticipantJoined, onParticipantKicked, onParticipantLeft]);
+  }, [onGameUpdated, onUserUpdated, onParticipantJoined, onParticipantKicked, onParticipantLeft]);
 
   useEffect(() => {
     if (!gameId) {
@@ -67,8 +72,12 @@ export const useGameRoomRealtime = ({
       },
     );
 
-    connection.on(gameRoomRealtimeEventNames.masterChanged, (participant: GameParticipant) => {
-      void handlersRef.current.onMasterChanged?.(participant);
+    connection.on(gameRoomRealtimeEventNames.userUpdated, (participant: GameParticipant) => {
+      void handlersRef.current.onUserUpdated?.(participant);
+    });
+
+    connection.on(gameRoomRealtimeEventNames.gameUpdated, (updatedGame: Game | string) => {
+      void handlersRef.current.onGameUpdated?.(updatedGame);
     });
 
     const connect = async () => {
@@ -85,7 +94,8 @@ export const useGameRoomRealtime = ({
       connection.off(gameRoomRealtimeEventNames.participantJoined);
       connection.off(gameRoomRealtimeEventNames.participantLeft);
       connection.off(gameRoomRealtimeEventNames.participantKicked);
-      connection.off(gameRoomRealtimeEventNames.masterChanged);
+      connection.off(gameRoomRealtimeEventNames.userUpdated);
+      connection.off(gameRoomRealtimeEventNames.gameUpdated);
 
       void stopSignalRConnection(connection);
       connectionRef.current = null;
