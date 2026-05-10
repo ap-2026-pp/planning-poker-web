@@ -1,4 +1,5 @@
 import { Alert, Box, Drawer, Snackbar, Stack } from '@mui/material';
+import { useEffect, useState } from 'react';
 
 import { useGameRoomPage } from '../model/use-game-room-page';
 import { GameRoomInviteDialog } from './game-room-invite-dialog';
@@ -10,11 +11,21 @@ import styles from './game-room-page.module.css';
 
 export const GameRoomPage = () => {
   const room = useGameRoomPage();
+  const [showLoading, setShowLoading] = useState(false);
+
+  useEffect(() => {
+    if (room.loading) {
+      const timer = setTimeout(() => setShowLoading(true), 300);
+      return () => clearTimeout(timer);
+    } else {
+      setShowLoading(false);
+    }
+  }, [room.loading]);
 
   return (
     <Stack className={styles.root}>
       <ConnectionStatus status={room.connectionStatus} onRetry={room.retryConnection} />
-      {room.loading ? <Alert severity="info">Завантажую кімнату...</Alert> : null}
+      {showLoading ? <Alert severity="info">Завантажую кімнату...</Alert> : null}
       {room.error ? <Alert severity="warning">{room.error}</Alert> : null}
 
       <Box className={styles.mainColumn}>
