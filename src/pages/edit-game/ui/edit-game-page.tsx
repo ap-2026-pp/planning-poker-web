@@ -1,10 +1,9 @@
-import { Box } from '@mui/material';
 import { Navigate, useParams } from 'react-router-dom';
 
 import { useSession } from '@shared/auth';
 import { appRoutes } from '@shared/config/routes';
+import { FormPageLayout } from '@shared/ui/form-layout';
 import { GameForm } from '@pages/create-game/ui/game-form';
-import styles from '@pages/create-game/ui/create-game-page.module.css';
 
 export const EditGamePage = () => {
   const { isAuthenticated } = useSession();
@@ -19,14 +18,8 @@ export const EditGamePage = () => {
   }
 
   return (
-    <Box className={styles.root}>
-      <Box className={styles.backdrop} />
-
-      <Box className={styles.cardWrap}>
-        <Box className={styles.cardColumn}>
-          <GameForm mode="edit" gameId={gameId} />
-        </Box>
-      </Box>
-    </Box>
+    <FormPageLayout>
+      <GameForm mode="edit" gameId={gameId} />
+    </FormPageLayout>
   );
 };

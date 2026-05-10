@@ -78,21 +78,26 @@ const useSessionBootstrap = () => {
 
 export const SessionProvider = ({ children }: PropsWithChildren) => {
   const { user, status, setUser, setStatus, hydrateUser, markGuest } = useSessionBootstrap();
+
   const isGuestSession = status === 'guest' || (!user && hasGuestTokenCookie());
 
   const login = async (payload: LoginPayload) => {
     const session = await loginRequest(payload);
+
     clearCurrentRoomParticipantSession();
     clearGuestAccessToken();
     setStoredSession(session);
+
     await hydrateUser(session);
   };
 
   const register = async (payload: RegisterPayload) => {
     const session = await registerRequest(payload);
+
     clearCurrentRoomParticipantSession();
     clearGuestAccessToken();
     setStoredSession(session);
+
     await hydrateUser(session);
   };
 
@@ -118,6 +123,11 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
+  const updateCurrentUser = (currentUser: User) => {
+    setUser(currentUser);
+    setStatus('authenticated');
+  };
+
   const value = useMemo(
     () => ({
       user,
@@ -128,8 +138,9 @@ export const SessionProvider = ({ children }: PropsWithChildren) => {
       register,
       logout,
       refreshCurrentUser,
+      updateCurrentUser,
     }),
-    [isGuestSession, status, user]
+    [isGuestSession, status, user],
   );
 
   if (status === 'loading') {

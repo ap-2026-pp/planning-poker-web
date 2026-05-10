@@ -14,6 +14,7 @@ export type SessionContextValue = {
   register: (payload: RegisterPayload) => Promise<void>;
   logout: () => Promise<void>;
   refreshCurrentUser: () => Promise<void>;
+  updateCurrentUser: (user: User) => void;
 };
 
 export const SessionContext = createContext<SessionContextValue | null>(null);

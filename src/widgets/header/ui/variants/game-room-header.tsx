@@ -27,7 +27,6 @@ type GameRoomHeaderProps = {
   accountTo: string;
   fallbackParticipantLabel: string;
   headerVars: Record<string, string>;
-  isAuthenticated: boolean;
   onRenameRoomParticipant: RenameRoomParticipantHandler;
   onToggleRoomParticipantSpectatorMode: ToggleRoomParticipantSpectatorModeHandler;
   roomTitle: string;
@@ -43,7 +42,6 @@ export const GameRoomHeader = ({
   accountTo,
   fallbackParticipantLabel,
   headerVars,
-  isAuthenticated,
   onRenameRoomParticipant,
   onToggleRoomParticipantSpectatorMode,
   roomTitle,

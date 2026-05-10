@@ -39,6 +39,7 @@ export const Header = () => {
     pathname === appRoutes.myGames ||
     pathname === appRoutes.createGame ||
     pathname === appRoutes.joinGame ||
+    pathname === appRoutes.account ||
     isGameRoomPage ||
     isEditGamePage;
 
@@ -58,7 +59,6 @@ export const Header = () => {
         accountTo={isAuthenticated ? appRoutes.account : buildAuthRedirectPath(appRoutes.login, pathname)}
         fallbackParticipantLabel={isAuthenticated ? userLabel : 'Гість'}
         headerVars={headerVars}
-        isAuthenticated={isAuthenticated}
         onRenameRoomParticipant={renameRoomParticipant}
         onToggleRoomParticipantSpectatorMode={toggleRoomParticipantSpectatorMode}
         roomTitle={roomTitle}

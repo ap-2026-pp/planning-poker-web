@@ -1,196 +1,54 @@
-.card {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  border-radius: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(180deg, rgba(31, 33, 54, 0.94) 0%, rgba(24, 25, 43, 0.92) 100%);
-  box-shadow: 0 28px 50px rgba(5, 8, 20, 0.32);
-}
-
-.card::before {
-  content: '';
-  position: absolute;
-  top: -96px;
-  right: -40px;
-  width: 248px;
-  height: 248px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(171, 112, 255, 0.24) 0%, transparent 72%);
-  pointer-events: none;
-}
-
-.card::after {
-  content: '';
-  position: absolute;
-  inset: auto 24px 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.12) 50%, transparent 100%);
-  pointer-events: none;
-}
-
-.form {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-  padding: 28px 24px;
-}
-
 .loadingState {
-  min-height: 320px;
+  min-height: 360px;
   gap: 16px;
-  padding: 28px 24px;
-}
-
-.intro {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.iconShell {
-  width: 74px;
-  height: 74px;
-  border-radius: 20px;
-  display: grid;
-  place-items: center;
-  color: #ffffff;
-  font-size: 38px !important;
-}
-
-.iconPurple {
-  background: linear-gradient(180deg, #b97bff 0%, #8b56f6 100%);
-  box-shadow: 0 24px 34px rgba(147, 97, 255, 0.28);
-}
-
-.title {
-  color: #f8f5ff !important;
-  font-size: 2rem !important;
-  line-height: 1.08 !important;
-  font-weight: 800 !important;
-}
-
-.alert {
-  border: 1px solid rgba(255, 126, 153, 0.22) !important;
-  background: rgba(140, 28, 55, 0.18) !important;
-  color: #ffe8ee !important;
-}
-
-.alert :global(.MuiAlert-icon) {
-  color: #ff9db2 !important;
-}
-
-.field :global(.MuiInputLabel-root) {
-  color: rgba(226, 220, 245, 0.74) !important;
-}
-
-.field :global(.MuiInputLabel-root.Mui-focused) {
-  color: #e0c6ff !important;
-}
-
-.field :global(.MuiOutlinedInput-root) {
-  color: #f8f5ff !important;
-  border-radius: 18px !important;
-  background: rgba(255, 255, 255, 0.06) !important;
-  transition: background-color 180ms ease, box-shadow 180ms ease !important;
-}
-
-.field :global(.MuiOutlinedInput-root:hover) {
-  background: rgba(255, 255, 255, 0.08) !important;
-}
-
-.field :global(.MuiOutlinedInput-root.Mui-focused) {
-  background: rgba(22, 16, 31, 0.92) !important;
-  box-shadow: 0 0 0 6px rgba(151, 94, 255, 0.14) !important;
-}
-
-.field :global(.MuiOutlinedInput-notchedOutline) {
-  border-color: rgba(255, 255, 255, 0.12) !important;
-}
-
-.field :global(.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline) {
-  border-color: rgba(255, 255, 255, 0.2) !important;
-}
-
-.field :global(.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline) {
-  border-color: rgba(217, 182, 255, 0.88) !important;
-}
-
-.field :global(.MuiOutlinedInput-input::placeholder) {
-  color: rgba(226, 220, 245, 0.42);
-  opacity: 1;
-}
-
-.field :global(.MuiFormHelperText-root) {
-  margin-inline: 4px !important;
-  color: #ffb4c5 !important;
-}
-
-.field :global(.MuiSelect-icon) {
-  color: rgba(240, 233, 252, 0.72) !important;
+  padding: 36px 32px;
 }
 
 .advancedSection {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .advancedToggle {
   width: 100%;
   display: flex !important;
-  align-items: center;
-  justify-content: space-between;
+  justify-content: space-between !important;
+  align-items: center !important;
   gap: 16px;
-  padding: 18px 18px !important;
-  border-radius: 24px !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  background: rgba(255, 255, 255, 0.03) !important;
-  text-align: left;
+  padding: 18px !important;
+  text-align: left !important;
 }
 
 .advancedCopy {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
   align-items: flex-start;
+  gap: 4px;
 }
 
 .advancedTitle {
   color: #f8f5ff !important;
-  font-size: 1rem !important;
-  font-weight: 700 !important;
-  line-height: 1.25 !important;
+  font-weight: 800 !important;
 }
 
 .advancedHint {
-  color: rgba(226, 220, 245, 0.72) !important;
-  font-size: 0.84rem !important;
+  color: rgba(226, 220, 245, 0.68) !important;
+  font-size: 0.9rem !important;
   line-height: 1.45 !important;
 }
 
 .advancedIcon {
-  flex-shrink: 0;
-  color: rgba(240, 233, 252, 0.82);
-  transition: transform 180ms ease, color 180ms ease;
+  color: #d9c2ff;
+  transition: transform 180ms ease;
 }
 
 .advancedIconExpanded {
   transform: rotate(180deg);
-  color: #d7b5ff;
 }
 
 .optionsPanel {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 14px;
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
+  gap: 12px;
+  padding: 0 18px 18px;
 }
 
 .optionRow {
@@ -198,60 +56,36 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 12px 14px;
+  padding: 14px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .optionCopy {
-  display: flex;
-  flex-direction: column;
   gap: 4px;
-  min-width: 0;
 }
 
 .optionTitle {
   color: #f8f5ff !important;
-  font-size: 0.98rem !important;
   font-weight: 700 !important;
-  line-height: 1.25 !important;
 }
 
 .optionHint {
-  color: rgba(226, 220, 245, 0.72) !important;
-  font-size: 0.84rem !important;
-  line-height: 1.45 !important;
+  color: rgba(226, 220, 245, 0.64) !important;
+  font-size: 0.86rem !important;
+  line-height: 1.4 !important;
 }
 
 .optionSwitch :global(.MuiSwitch-switchBase.Mui-checked) {
-  color: #c590ff !important;
+  color: #b97bff !important;
 }
 
 .optionSwitch :global(.MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track) {
-  background-color: rgba(177, 108, 255, 0.58) !important;
+  background-color: #8b56f6 !important;
 }
 
-.primaryButton {
-  min-height: 60px !important;
-  border-radius: 14px !important;
-  font-size: 1.05rem !important;
-  font-weight: 800 !important;
-  color: #ffffff !important;
-  margin-top: 4px !important;
-}
-
-.primaryPurple {
-  background: linear-gradient(90deg, #b97bff 0%, #8b56f6 100%) !important;
-  box-shadow: 0 22px 38px rgba(147, 97, 255, 0.28) !important;
-}
-
-@media (min-width: 900px) {
-  .form {
-    gap: 24px;
-    padding: 36px 32px;
-  }
-
-  .title {
-    font-size: 2.35rem !important;
+@media (max-width: 600px) {
+  .optionRow {
+    align-items: flex-start;
   }
 }

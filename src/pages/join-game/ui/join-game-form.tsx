@@ -1,12 +1,5 @@
-import {
-  Alert,
-  Box,
-  Button,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import { Button, TextField } from '@mui/material';
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,9 +10,10 @@ import {
   setGuestAccessToken,
 } from '@shared/auth';
 import { appRoutes } from '@shared/config/routes';
+import { FormCard } from '@shared/ui/form-layout';
 import { validateSchema, type FormErrors } from '@shared/utils/yup';
 import { joinGameSchema } from '../model/join-game-schema';
-import styles from './join-game-form.module.css';
+import styles from '@shared/ui/form-layout/form-layout.module.css';
 
 type JoinGameFormValues = {
   inviteCode: string;
@@ -33,7 +27,8 @@ const initialValues: JoinGameFormValues = {
 
 export const JoinGameForm = () => {
   const navigate = useNavigate();
-  const [values, setValues] = useState(initialValues);
+
+  const [values, setValues] = useState<JoinGameFormValues>(initialValues);
   const [errors, setErrors] = useState<FormErrors<JoinGameFormValues>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -82,42 +77,13 @@ export const JoinGameForm = () => {
   };
 
   return (
-    <Box className={styles.card}>
-      <Stack component="form" className={styles.form} onSubmit={handleSubmit}>
-        <Stack className={styles.intro}>
-          <Box className={[styles.iconShell, styles.iconBlue].join(' ')}>
-            <ArrowForwardRoundedIcon fontSize="inherit" />
-          </Box>
-
-          <Typography className={styles.title}>Приєднатися до гри</Typography>
-        </Stack>
-
-        {submitError ? (
-          <Alert severity="error" className={styles.alert}>
-            {submitError}
-          </Alert>
-        ) : null}
-
-        <TextField
-          className={styles.field}
-          label="Код кімнати"
-          value={values.inviteCode}
-          onChange={handleFieldChange('inviteCode')}
-          error={Boolean(errors.inviteCode)}
-          helperText={errors.inviteCode}
-          placeholder="Наприклад, TEAM-248"
-        />
-
-        <TextField
-          className={styles.field}
-          label="Імʼя в кімнаті (опціонально)"
-          value={values.displayName}
-          onChange={handleFieldChange('displayName')}
-          error={Boolean(errors.displayName)}
-          helperText={errors.displayName}
-          placeholder="Як вас бачитиме команда"
-        />
-
+    <FormCard
+      title="Приєднатися до гри"
+      icon={<ArrowForwardRoundedIcon fontSize="inherit" />}
+      accent="blue"
+      submitError={submitError}
+      onSubmit={handleSubmit}
+      actions={
         <Button
           type="submit"
           variant="contained"
@@ -126,7 +92,27 @@ export const JoinGameForm = () => {
         >
           {submitting ? 'Заходимо...' : 'Увійти в кімнату'}
         </Button>
-      </Stack>
-    </Box>
+      }
+    >
+      <TextField
+        className={styles.field}
+        label="Код кімнати"
+        value={values.inviteCode}
+        onChange={handleFieldChange('inviteCode')}
+        error={Boolean(errors.inviteCode)}
+        helperText={errors.inviteCode}
+        placeholder="Наприклад, TEAM-248"
+      />
+
+      <TextField
+        className={styles.field}
+        label="Імʼя в кімнаті (опціонально)"
+        value={values.displayName}
+        onChange={handleFieldChange('displayName')}
+        error={Boolean(errors.displayName)}
+        helperText={errors.displayName}
+        placeholder="Як вас бачитиме команда"
+      />
+    </FormCard>
   );
 };
