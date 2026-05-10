@@ -1,0 +1,151 @@
+import { Box, Typography } from '@mui/material';
+import { useState } from 'react';
+
+import type { Issue } from '@entities/issue';
+import { type IssueDraft } from '../model/types';
+import { IssueFormCard } from './issue-form-card';
+import { IssuesActionsMenu } from './issues-actions-menu';
+import { IssuesEmptyState } from './issues-empty-state';
+import { IssuesList } from './issues-list';
+import styles from '@widgets/game-room-sidebar/ui/game-room-sidebar.module.css';
+
+type IssuesSidebarSectionProps = {
+  issues: Issue[];
+  isCurrentParticipantMaster: boolean;
+  onAddIssue?: (payload: { title: string }) => Promise<void>;
+  onUpdateIssue?: (
+    issueId: string,
+    payload: { title: string; code?: string; description?: string },
+  ) => Promise<void>;
+};
+
+const initialDraft: IssueDraft = {
+  title: '',
+  code: '',
+  description: '',
+};
+
+export const IssuesSidebarSection = ({
+  issues,
+  isCurrentParticipantMaster,
+  onAddIssue,
+  onUpdateIssue,
+}: IssuesSidebarSectionProps) => {
+  const [issueMode, setIssueMode] = useState<'list' | 'create' | 'edit'>('list');
+  const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
+  const [isSubmittingIssue, setIsSubmittingIssue] = useState(false);
+  const [issueDraft, setIssueDraft] = useState<IssueDraft>(initialDraft);
+
+  const resetIssueDraft = () => {
+    setIssueDraft(initialDraft);
+  };
+
+  const openCreateIssue = () => {
+    resetIssueDraft();
+    setSelectedIssueId(null);
+    setIssueMode('create');
+  };
+
+  const openEditIssue = (issue: Issue) => {
+    setSelectedIssueId(issue.id);
+    setIssueDraft({
+      title: issue.title ?? '',
+      code: issue.code ?? '',
+      description: issue.description ?? '',
+    });
+    setIssueMode('edit');
+  };
+
+  const closeIssueForm = () => {
+    resetIssueDraft();
+    setSelectedIssueId(null);
+    setIssueMode('list');
+  };
+
+  const handleCreateIssue = async () => {
+    if (!issueDraft.title.trim() || !onAddIssue) {
+      return;
+    }
+
+    try {
+      setIsSubmittingIssue(true);
+      await onAddIssue({ title: issueDraft.title.trim() });
+      closeIssueForm();
+    } finally {
+      setIsSubmittingIssue(false);
+    }
+  };
+
+  const handleUpdateIssue = async () => {
+    if (!selectedIssueId || !issueDraft.title.trim() || !onUpdateIssue) {
+      return;
+    }
+
+    try {
+      setIsSubmittingIssue(true);
+      await onUpdateIssue(selectedIssueId, {
+        title: issueDraft.title.trim(),
+        code: issueDraft.code.trim() || undefined,
+        description: issueDraft.description.trim() || undefined,
+      });
+      closeIssueForm();
+    } finally {
+      setIsSubmittingIssue(false);
+    }
+  };
+
+  return (
+    <Box className={styles.sidebarContent}>
+      <Box className={styles.issuesToolbar}>
+        <Box>
+          <Typography className={styles.issuesTitle}>Issues</Typography>
+          <Typography className={styles.issuesSubtitle}>
+            {issues.length} {issues.length === 1 ? 'issue' : 'issues'}
+          </Typography>
+        </Box>
+
+        <IssuesActionsMenu isCurrentParticipantMaster={isCurrentParticipantMaster} />
+      </Box>
+
+      <Box className={styles.issuesScrollArea}>
+        {issueMode === 'create' ? (
+          <IssueFormCard
+            mode="create"
+            draft={issueDraft}
+            isSubmitting={isSubmittingIssue}
+            onChange={setIssueDraft}
+            onCancel={closeIssueForm}
+            onSubmit={() => void handleCreateIssue()}
+          />
+        ) : null}
+
+        {issueMode === 'edit' ? (
+          <IssueFormCard
+            mode="edit"
+            draft={issueDraft}
+            isSubmitting={isSubmittingIssue}
+            onChange={setIssueDraft}
+            onCancel={closeIssueForm}
+            onSubmit={() => void handleUpdateIssue()}
+          />
+        ) : null}
+
+        {issueMode === 'list' ? (
+          !issues.length ? (
+            <IssuesEmptyState
+              isCurrentParticipantMaster={isCurrentParticipantMaster}
+              onAddIssue={openCreateIssue}
+            />
+          ) : (
+            <IssuesList
+              issues={issues}
+              isCurrentParticipantMaster={isCurrentParticipantMaster}
+              onEditIssue={openEditIssue}
+              onAddAnotherIssue={openCreateIssue}
+            />
+          )
+        ) : null}
+      </Box>
+    </Box>
+  );
+};

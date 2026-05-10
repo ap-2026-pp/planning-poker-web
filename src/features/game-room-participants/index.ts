@@ -1,0 +1,1 @@
+export { ParticipantsSidebarSection } from './ui/participants-sidebar-section';
