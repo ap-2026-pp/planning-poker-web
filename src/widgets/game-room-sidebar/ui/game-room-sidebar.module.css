@@ -1,6 +1,8 @@
 .sidebarPanel {
   display: flex;
   min-height: 100%;
+  height: 100%;
+  min-width: 0;
   flex-direction: column;
   background: transparent;
   padding: 22px;
@@ -61,6 +63,7 @@
 .sidebarContent {
   display: flex;
   flex: 1;
+  min-height: 0;
   flex-direction: column;
 }
 
@@ -84,7 +87,6 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding-top: 18px;
 }
 
 .issueCard {
@@ -174,12 +176,11 @@
 
 .sidebarFooter,
 .issueEmptyState {
-  margin-top: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  padding: 28px 12px 6px;
+  padding: 0 12px;
   text-align: center;
 }
 
@@ -210,12 +211,34 @@
   font-size: 1rem !important;
 }
 
+.playersScrollArea {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-top: 18px;
+}
+
 .playerList {
   display: flex;
   flex: 1;
+  min-height: 0;
   flex-direction: column;
   gap: 14px;
-  padding-top: 18px;
+}
+
+.playersEmptyState {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 12px;
+  text-align: center;
 }
 
 .playerListItem {
@@ -293,6 +316,10 @@
   background: #30d4b0;
 }
 
+.playerPresenceOffline {
+  background: rgba(160, 166, 184, 0.55);
+}
+
 .playerListAvatar {
   width: 48px;
   height: 48px;
@@ -316,4 +343,265 @@
   margin-top: 4px !important;
   color: rgba(216, 206, 235, 0.78) !important;
   font-size: 0.94rem !important;
+}
+
+.issuesToolbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  box-shadow: 0 10px 24px rgba(4, 6, 16, 0.22);
+}
+
+.issuesTitle {
+  color: #f8f4ff !important;
+  font-size: 1.4rem !important;
+  font-weight: 800 !important;
+}
+
+.issuesSubtitle {
+  margin-top: 4px !important;
+  color: rgba(216, 206, 235, 0.72) !important;
+  font-size: 0.96rem !important;
+  font-weight: 700 !important;
+}
+
+.issuesMenuButton {
+  color: #f8f4ff !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.issuesMenuPaper {
+  min-width: 280px !important;
+  border-radius: 18px !important;
+  background: rgba(39, 47, 58, 0.98) !important;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 22px 50px rgba(3, 6, 16, 0.34) !important;
+  padding: 8px !important;
+}
+
+.issuesMenuItem {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  min-height: 52px !important;
+  border-radius: 14px !important;
+  color: #e9e2f8 !important;
+  font-size: 1rem !important;
+}
+
+.issuesMenuItemDanger {
+  color: #ff4c85 !important;
+}
+
+.issueFormCard {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 18px;
+  padding: 28px 24px;
+  border-radius: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(
+    180deg,
+    rgba(31, 33, 54, 0.94) 0%,
+    rgba(24, 25, 43, 0.92) 100%
+  );
+  box-shadow: 0 28px 50px rgba(5, 8, 20, 0.32);
+  position: relative;
+  overflow: hidden;
+}
+
+.issueFormCard::before {
+  content: '';
+  position: absolute;
+  top: -92px;
+  right: -48px;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(90, 155, 255, 0.2) 0%, transparent 72%);
+  pointer-events: none;
+}
+
+.issueFormCard::after {
+  content: '';
+  position: absolute;
+  inset: auto 24px 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.issueField {
+  position: relative;
+  z-index: 1;
+}
+
+.issueField :global(.MuiOutlinedInput-root) {
+  color: #f8f5ff !important;
+  border-radius: 18px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  transition:
+    background-color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+.issueField :global(.MuiOutlinedInput-root:hover) {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.issueField :global(.MuiOutlinedInput-root.Mui-focused) {
+  background: rgba(22, 16, 31, 0.92) !important;
+  box-shadow: 0 0 0 6px rgba(56, 118, 230, 0.16) !important;
+}
+
+.issueField :global(.MuiOutlinedInput-notchedOutline) {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.issueField :global(.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline) {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.issueField :global(.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline) {
+  border-color: rgba(134, 185, 255, 0.88) !important;
+}
+
+.issueField :global(.MuiInputBase-input::placeholder),
+.issueField :global(textarea::placeholder) {
+  color: rgba(226, 220, 245, 0.42) !important;
+  opacity: 1;
+}
+
+.issueField :global(.MuiInputBase-input),
+.issueField :global(.MuiOutlinedInput-input),
+.issueField :global(textarea) {
+  color: #f8f5ff !important;
+}
+
+.issueFormActions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.issuePrimaryButton,
+.issueSecondaryButton {
+  min-height: 60px;
+  border-radius: 14px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-transform: none;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease;
+}
+
+.issuePrimaryButton {
+  border: none;
+  color: #ffffff;
+  background: linear-gradient(90deg, #347be5 0%, #256dce 100%);
+  box-shadow: 0 22px 38px rgba(56, 118, 230, 0.28);
+}
+
+.issuePrimaryButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 24px 42px rgba(56, 118, 230, 0.32);
+}
+
+.issueSecondaryButton {
+  border: 1px solid rgba(134, 185, 255, 0.24);
+  background: rgba(255, 255, 255, 0.04);
+  color: #d9ecff;
+}
+
+.issueSecondaryButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(173, 113, 255, 0.08);
+}
+
+.issuePrimaryButton:disabled,
+.issueSecondaryButton:disabled {
+  opacity: 0.64;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.addAnotherIssueButton {
+  margin-top: 18px;
+  min-height: 58px;
+  border: 0;
+  background: transparent;
+  color: rgba(232, 228, 241, 0.9);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.playerListRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.playerListItemOffline {
+  opacity: 0.72;
+}
+
+.playerRemoveButton {
+  color: rgba(255, 214, 225, 0.94) !important;
+  background: rgba(255, 96, 129, 0.12) !important;
+  border: 1px solid rgba(255, 96, 129, 0.18) !important;
+}
+
+.issuesEmptyLayout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+}
+
+.issuesEmptyTop {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.issuesEmptyCenter {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.issuesScrollArea {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-top: 18px;
 }

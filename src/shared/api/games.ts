@@ -80,3 +80,19 @@ export const getIssuesRequest = (gameId: string) =>
 
 export const getVotingHistoryRequest = (gameId: string) =>
   apiClientService.get<VotingHistoryList>(`/games/${gameId}/history`);
+
+export const createIssueRequest = (gameId: string, payload: { title: string },) =>
+  apiClientService.post<Issue, { title: string }>(
+    `/games/${gameId}/issues`,
+    payload,
+  );
+
+export const updateIssueRequest = (
+  gameId: string,
+  issueId: string,
+  payload: { title: string; code?: string; description?: string },
+) =>
+  apiClientService.put<
+    Issue,
+    { title: string; code?: string; description?: string }
+  >(`/games/${gameId}/issues/${issueId}`, payload);

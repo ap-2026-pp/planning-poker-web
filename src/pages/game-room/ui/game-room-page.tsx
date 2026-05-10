@@ -72,6 +72,8 @@ export const GameRoomPage = () => {
             onSidebarViewChange={room.setSidebarView}
             onClose={room.closeSidebar}
             onRemoveParticipant={room.removeParticipant}
+            onAddIssue={room.addIssue}
+            onUpdateIssue={room.updateIssue}
           />
         </Box>
       </Drawer>

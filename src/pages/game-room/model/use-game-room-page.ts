@@ -15,6 +15,8 @@ import {
   setSpectatorModeRequest,
   transferMasterRequest,
   updateDisplayNameRequest,
+  createIssueRequest,
+  updateIssueRequest,
 } from '@shared/api';
 import {
   clearCurrentRoomParticipantSession,
@@ -492,6 +494,30 @@ export const useGameRoomPage = () => {
     });
   }, []);
 
+  const handleIssueCreated = useCallback((issue: Issue) => {
+    setIssues((current) => {
+      const exists = current.some((entry) => entry.id === issue.id);
+
+      if (exists) {
+        return current.map((entry) => (entry.id === issue.id ? issue : entry));
+      }
+
+      return [...current, issue];
+    });
+  }, []);
+
+  const handleIssueUpdated = useCallback((issue: Issue) => {
+    setIssues((current) => {
+      const exists = current.some((entry) => entry.id === issue.id);
+
+      if (!exists) {
+        return [...current, issue];
+      }
+
+      return current.map((entry) => (entry.id === issue.id ? issue : entry));
+    });
+  }, []);
+
   const realtime = useGameRoomRealtime({
     gameId,
     onParticipantJoined: handleParticipantJoined,
@@ -499,6 +525,8 @@ export const useGameRoomPage = () => {
     onParticipantKicked: handleRealtimeParticipantKicked,
     onUserUpdated: handleUserUpdated,
     onGameUpdated: handleGameUpdated,
+    onIssueCreated: handleIssueCreated,
+    onIssueUpdated: handleIssueUpdated,
     onReconnected: reloadRoom,
   });
 
@@ -544,6 +572,51 @@ export const useGameRoomPage = () => {
     [gameId],
   );
 
+  const addIssue = useCallback(
+    async (payload: { title: string }) => {
+      try {
+        await createIssueRequest(gameId, payload);
+
+        setNotification({
+          message: 'Issue успішно додано',
+          tone: 'success',
+        });
+      } catch (requestError) {
+        setError(
+          requestError instanceof Error
+            ? requestError.message
+            : 'Не вдалося додати issue',
+        );
+        throw requestError;
+      }
+    },
+    [gameId],
+  );
+
+  const updateIssue = useCallback(
+    async (
+      issueId: string,
+      payload: { title: string; code?: string; description?: string },
+    ) => {
+      try {
+        await updateIssueRequest(gameId, issueId, payload);
+
+        setNotification({
+          message: 'Issue успішно оновлено',
+          tone: 'success',
+        });
+      } catch (requestError) {
+        setError(
+          requestError instanceof Error
+            ? requestError.message
+            : 'Не вдалося оновити issue',
+        );
+        throw requestError;
+      }
+    },
+    [gameId],
+  );
+
   return {
     gameId,
     reloadRoom,
@@ -571,6 +644,8 @@ export const useGameRoomPage = () => {
     selectParticipant,
     removeParticipant,
     transferMaster,
+    addIssue,
+    updateIssue,
     sortedParticipants,
     sortedIssues,
     positionedParticipants,

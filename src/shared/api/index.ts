@@ -24,4 +24,6 @@ export {
   transferMasterRequest,
   updateGameRequest,
   updateDisplayNameRequest,
+  createIssueRequest,
+  updateIssueRequest,
 } from './games';
