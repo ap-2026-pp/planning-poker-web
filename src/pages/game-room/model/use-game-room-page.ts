@@ -232,7 +232,10 @@ export const useGameRoomPage = () => {
   const activeIssue = activeIssueIndex >= 0 ? sortedIssues[activeIssueIndex] : null;
   const roundLabel = getRoundLabel(sortedIssues, activeIssueIndex);
   const votingSystemLabel = getGameRoomVotingLabel(game?.votingSystem);
-  const deckValues = getGameRoomDeck(game?.votingSystem);
+  const deckValues = getGameRoomDeck(
+    game?.votingSystem,
+    (game as typeof game & { customCards?: string[] | null })?.customCards ?? null,
+  );
   const isCurrentParticipantMaster = currentParticipant?.role === ParticipantRole.Master;
 
   useEffect(() => {

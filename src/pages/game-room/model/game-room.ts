@@ -61,8 +61,10 @@ export const getRoundLabel = (issues: Issue[], activeIssueIndex: number) => {
   return 'Очікуємо перший issue';
 };
 
-export const getGameRoomDeck = (votingSystem?: VotingSystem | null) =>
-  getVotingSystemDeck(votingSystem ?? VotingSystem.Fibonacci);
+export const getGameRoomDeck = (
+  votingSystem?: VotingSystem | null,
+  customCards?: readonly string[] | null,
+) => getVotingSystemDeck(votingSystem ?? VotingSystem.Fibonacci, customCards);
 
 export const getGameRoomVotingLabel = (votingSystem?: VotingSystem | null) =>
   getVotingSystemLabel(votingSystem ?? VotingSystem.Fibonacci);

@@ -2,6 +2,7 @@ import { Box } from '@mui/material';
 
 import type { Issue } from '@entities/issue';
 import type { GameParticipant } from '@entities/participant';
+import type { VoteDeckCard } from '@shared/model/voting';
 import type { PositionedParticipant } from '@widgets/game-room-surface';
 import { BoardCenterState } from './board-center-state';
 import { ParticipantCard } from './participant-card';
@@ -23,7 +24,7 @@ type GameRoomSurfaceProps = {
   activeIssue: Issue | null;
   positionedParticipants: PositionedParticipant[];
   overflowParticipants: GameParticipant[];
-  deckValues: readonly string[];
+  deckValues: readonly VoteDeckCard[];
   onCopyCode: () => Promise<void>;
   onParticipantSelect: (participantId: string) => void;
   onRemoveParticipant: (participantId: string) => Promise<void>;
