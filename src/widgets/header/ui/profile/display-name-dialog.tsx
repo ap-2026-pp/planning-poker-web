@@ -1,9 +1,12 @@
 import { Alert, Button, Dialog, DialogContent, Stack, TextField, Typography } from '@mui/material';
 import { type FormEvent } from 'react';
 
-import styles from './game-room-profile-menu.module.css';
+import styles from './profile-menu.module.css';
 
-type GameRoomDisplayNameDialogProps = {
+type DisplayNameDialogProps = {
+  title: string;
+  description: string;
+  label: string;
   errorMessage: string | null;
   isOpen: boolean;
   isSubmitting: boolean;
@@ -13,7 +16,10 @@ type GameRoomDisplayNameDialogProps = {
   onSubmit: () => void;
 };
 
-export const GameRoomDisplayNameDialog = ({
+export const DisplayNameDialog = ({
+  title,
+  description,
+  label,
   errorMessage,
   isOpen,
   isSubmitting,
@@ -21,7 +27,7 @@ export const GameRoomDisplayNameDialog = ({
   onChange,
   onClose,
   onSubmit,
-}: GameRoomDisplayNameDialogProps) => {
+}: DisplayNameDialogProps) => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit();
@@ -32,17 +38,15 @@ export const GameRoomDisplayNameDialog = ({
       <DialogContent className={styles.dialogContent}>
         <Stack component="form" className={styles.dialogForm} onSubmit={handleSubmit}>
           <Stack className={styles.dialogHeader}>
-            <Typography className={styles.dialogTitle}>Змінити імʼя в кімнаті</Typography>
-            <Typography className={styles.dialogDescription}>
-              Оновіть нікнейм, під яким вас бачать у цій грі.
-            </Typography>
+            <Typography className={styles.dialogTitle}>{title}</Typography>
+            <Typography className={styles.dialogDescription}>{description}</Typography>
           </Stack>
 
           {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
 
           <TextField
             autoFocus
-            label="Імʼя в кімнаті"
+            label={label}
             value={value}
             onChange={(event) => onChange(event.target.value)}
             fullWidth

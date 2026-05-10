@@ -6,14 +6,15 @@ import { appRoutes, isGameRoomRoute } from '@shared/config/routes';
 import { useGameRoomShell } from '@shared/lib';
 import { getHeaderVars } from '../model/header-appearance';
 import { getUserInitials } from '../model/get-user-initials';
-import { DefaultHeader } from './default-header';
-import { GameRoomHeader } from './game-room-header';
-import { HeroHeader } from './hero-header';
-import { MobileNavigationDrawer } from './mobile-navigation-drawer';
+import { DefaultHeader } from './variants/default-header';
+import { GameRoomHeader } from './variants/game-room-header';
+import { HeroHeader } from './variants/hero-header';
+import { MobileNavigationDrawer } from './navigation/mobile-navigation-drawer';
 
 export const Header = () => {
   const { user, isAuthenticated, logout } = useSession();
   const { pathname } = useLocation();
+
   const {
     roomTitle,
     roomParticipant,
@@ -23,11 +24,14 @@ export const Header = () => {
     renameRoomParticipant,
     toggleRoomParticipantSpectatorMode,
   } = useGameRoomShell();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const isHomePage = pathname === appRoutes.home;
   const isMyGamesPage = pathname === appRoutes.myGames;
   const isGameRoomPage = isGameRoomRoute(pathname);
   const isEditGamePage = /^\/games\/[^/]+\/edit$/.test(pathname);
+
   const isHeroPage =
     pathname === appRoutes.home ||
     pathname === appRoutes.login ||
@@ -37,22 +41,24 @@ export const Header = () => {
     pathname === appRoutes.joinGame ||
     isGameRoomPage ||
     isEditGamePage;
+
   const userLabel = user?.displayName || user?.email || 'Акаунт';
+
   const userInitials = useMemo(
     () => getUserInitials(user?.displayName || user?.email),
     [user?.displayName, user?.email],
   );
+
   const headerVars = getHeaderVars(isHeroPage);
 
   if (isGameRoomPage) {
     return (
       <GameRoomHeader
         accountLabel={isAuthenticated ? 'Мій акаунт' : 'Привʼязати акаунт'}
-        accountTo={
-          isAuthenticated ? appRoutes.account : buildAuthRedirectPath(appRoutes.login, pathname)
-        }
+        accountTo={isAuthenticated ? appRoutes.account : buildAuthRedirectPath(appRoutes.login, pathname)}
         fallbackParticipantLabel={isAuthenticated ? userLabel : 'Гість'}
         headerVars={headerVars}
+        isAuthenticated={isAuthenticated}
         onRenameRoomParticipant={renameRoomParticipant}
         onToggleRoomParticipantSpectatorMode={toggleRoomParticipantSpectatorMode}
         roomTitle={roomTitle}
@@ -64,6 +70,7 @@ export const Header = () => {
             void leaveRoom();
           }
         }}
+        onLogout={logout}
       />
     );
   }
@@ -78,6 +85,7 @@ export const Header = () => {
           isAuthenticated={isAuthenticated}
           userLabel={userLabel}
           userInitials={userInitials}
+          showLogout={isAuthenticated}
           onLogout={logout}
           onOpenMobileMenu={() => setMobileMenuOpen(true)}
         />

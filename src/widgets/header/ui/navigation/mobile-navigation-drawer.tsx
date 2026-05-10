@@ -4,7 +4,7 @@ import { Link as RouterLink } from 'react-router-dom';
 
 import { appRoutes } from '@shared/config/routes';
 import { BrandMark } from '@shared/ui/BrandMark';
-import styles from './header.module.css';
+import styles from '../header.module.css';
 
 type MobileNavigationDrawerProps = {
   open: boolean;

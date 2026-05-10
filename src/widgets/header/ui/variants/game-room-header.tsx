@@ -3,7 +3,7 @@ import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import PersonAddAlt1RoundedIcon from '@mui/icons-material/PersonAddAlt1Rounded';
 import { AppBar, Avatar, Box, ButtonBase, IconButton, Stack, Toolbar, Typography } from '@mui/material';
-import { useEffect, useMemo, useState, type CSSProperties, type MouseEvent } from 'react';
+import { useMemo, useState, type CSSProperties } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 import { appRoutes } from '@shared/config/routes';
@@ -13,16 +13,21 @@ import type {
   ToggleRoomParticipantSpectatorModeHandler,
 } from '@shared/lib';
 import { BrandMark } from '@shared/ui/BrandMark';
-import { getUserInitials } from '../model/get-user-initials';
-import { GameRoomDisplayNameDialog } from './game-room-display-name-dialog';
-import { GameRoomProfileMenu } from './game-room-profile-menu';
-import styles from './header.module.css';
+import { getUserInitials } from '../../model/get-user-initials';
+import { useDisplayNameDialog } from '../../model/use-display-name-dialog';
+import { useProfileMenu } from '../../model/use-profile-menu';
+import { DisplayNameDialog } from '../profile/display-name-dialog';
+import styles from '../header.module.css';
+import { ProfileMenu } from '../profile/profile-menu';
+import { SpectatorModeMenuBlock } from '../profile/spectator-mode-menu-block';
+import { ThemeMenu } from '../theme/theme-menu';
 
 type GameRoomHeaderProps = {
   accountLabel: string;
   accountTo: string;
   fallbackParticipantLabel: string;
   headerVars: Record<string, string>;
+  isAuthenticated: boolean;
   onRenameRoomParticipant: RenameRoomParticipantHandler;
   onToggleRoomParticipantSpectatorMode: ToggleRoomParticipantSpectatorModeHandler;
   roomTitle: string;
@@ -30,6 +35,7 @@ type GameRoomHeaderProps = {
   onOpenInviteDialog: () => void;
   onToggleSidebar: () => void;
   onLeaveRoom: () => void;
+  onLogout: () => void;
 };
 
 export const GameRoomHeader = ({
@@ -37,6 +43,7 @@ export const GameRoomHeader = ({
   accountTo,
   fallbackParticipantLabel,
   headerVars,
+  isAuthenticated,
   onRenameRoomParticipant,
   onToggleRoomParticipantSpectatorMode,
   roomTitle,
@@ -44,78 +51,51 @@ export const GameRoomHeader = ({
   onOpenInviteDialog,
   onToggleSidebar,
   onLeaveRoom,
+  onLogout,
 }: GameRoomHeaderProps) => {
-  const [profileAnchorEl, setProfileAnchorEl] = useState<HTMLElement | null>(null);
-  const [isDisplayNameDialogOpen, setDisplayNameDialogOpen] = useState(false);
-  const [displayNameValue, setDisplayNameValue] = useState('');
-  const [displayNameError, setDisplayNameError] = useState<string | null>(null);
-  const [menuError, setMenuError] = useState<string | null>(null);
-  const [isSavingDisplayName, setSavingDisplayName] = useState(false);
   const [isUpdatingSpectatorMode, setUpdatingSpectatorMode] = useState(false);
 
+  const {
+    profileAnchorEl,
+    themeAnchorEl,
+    currentTheme,
+    menuError,
+    setMenuError,
+    isProfileMenuOpen,
+    isThemeMenuOpen,
+    handleOpenProfileMenu,
+    handleCloseProfileMenu,
+    handleOpenThemeMenu,
+    handleCloseThemeMenu,
+    handleSelectTheme,
+  } = useProfileMenu('system');
+
   const participantLabel = roomParticipant?.displayName || fallbackParticipantLabel;
+
   const participantCaption = roomParticipant?.isMaster
     ? 'Ведучий'
     : roomParticipant?.isSpectator
       ? 'Спостерігач'
       : 'Учасник';
-  const participantInitials = useMemo(() => getUserInitials(participantLabel), [participantLabel]);
 
-  useEffect(() => {
-    setDisplayNameValue(participantLabel);
-  }, [participantLabel]);
+  const participantInitials = useMemo(
+    () => getUserInitials(participantLabel),
+    [participantLabel],
+  );
 
-  const handleOpenProfileMenu = (event: MouseEvent<HTMLElement>) => {
-    setMenuError(null);
-    setProfileAnchorEl(event.currentTarget);
-  };
+  const displayNameDialog = useDisplayNameDialog({
+    initialValue: participantLabel,
+    requiredMessage: 'Імʼя в кімнаті обовʼязкове.',
+    maxLengthMessage: 'Імʼя в кімнаті не має перевищувати 200 символів.',
+    fallbackErrorMessage: 'Не вдалося оновити імʼя',
+    onSave: async (value) => {
+      if (!onRenameRoomParticipant) {
+        throw new Error('Не вдалося підготувати оновлення імені.');
+      }
 
-  const handleCloseProfileMenu = () => {
-    setProfileAnchorEl(null);
-  };
-
-  const handleOpenDisplayNameDialog = () => {
-    setDisplayNameValue(participantLabel);
-    setDisplayNameError(null);
-    handleCloseProfileMenu();
-    setDisplayNameDialogOpen(true);
-  };
-
-  const handleCloseDisplayNameDialog = () => {
-    setDisplayNameDialogOpen(false);
-    setDisplayNameError(null);
-  };
-
-  const handleSaveDisplayName = async () => {
-    const normalizedValue = displayNameValue.trim();
-
-    if (!normalizedValue) {
-      setDisplayNameError('Імʼя в кімнаті обовʼязкове.');
-      return;
-    }
-
-    if (normalizedValue.length > 200) {
-      setDisplayNameError('Імʼя в кімнаті не має перевищувати 200 символів.');
-      return;
-    }
-
-    if (!onRenameRoomParticipant) {
-      setDisplayNameError('Не вдалося підготувати оновлення імені.');
-      return;
-    }
-
-    setSavingDisplayName(true);
-    setDisplayNameError(null);
-
-    try {
-      await onRenameRoomParticipant(normalizedValue);
-      setDisplayNameDialogOpen(false);
-    } catch (error) {
-      setDisplayNameError(error instanceof Error ? error.message : 'Не вдалося оновити імʼя');
-    } finally {
-      setSavingDisplayName(false);
-    }
-  };
+      await onRenameRoomParticipant(value);
+    },
+  });
 
   const handleToggleSpectatorMode = async (isSpectator: boolean) => {
     if (!onToggleRoomParticipantSpectatorMode) {
@@ -133,6 +113,11 @@ export const GameRoomHeader = ({
     } finally {
       setUpdatingSpectatorMode(false);
     }
+  };
+
+  const handleLogout = () => {
+    handleCloseProfileMenu();
+    onLogout();
   };
 
   return (
@@ -153,7 +138,6 @@ export const GameRoomHeader = ({
             </Box>
 
             <Typography className={styles.gameRoomTitle}>{roomTitle}</Typography>
-
 
             <Stack direction="row" className={styles.gameRoomActions}>
               <ButtonBase
@@ -199,32 +183,50 @@ export const GameRoomHeader = ({
         </Toolbar>
       </AppBar>
 
-      <GameRoomProfileMenu
+      <ProfileMenu
         accountLabel={accountLabel}
         accountTo={accountTo}
         anchorEl={profileAnchorEl}
         errorMessage={menuError}
-        isOpen={Boolean(profileAnchorEl)}
-        isSpectator={roomParticipant?.isSpectator ?? false}
-        isSpectatorDisabled={roomParticipant?.isMaster ?? false}
-        isSpectatorPending={isUpdatingSpectatorMode}
-        participantCaption={participantCaption}
-        participantInitials={participantInitials}
-        participantLabel={participantLabel}
+        isOpen={isProfileMenuOpen}
+        label={participantLabel}
+        caption={participantCaption}
+        initials={participantInitials}
+        showLogout={false}
         onClose={handleCloseProfileMenu}
-        onEditName={handleOpenDisplayNameDialog}
+        onEditName={displayNameDialog.open}
+        onLogout={handleLogout}
         onNavigateToAccount={handleCloseProfileMenu}
-        onToggleSpectatorMode={handleToggleSpectatorMode}
+        onOpenThemeMenu={handleOpenThemeMenu}
+        extraContent={
+          <SpectatorModeMenuBlock
+            isSpectator={roomParticipant?.isSpectator ?? false}
+            isDisabled={roomParticipant?.isMaster ?? false}
+            isPending={isUpdatingSpectatorMode}
+            onToggle={handleToggleSpectatorMode}
+          />
+        }
       />
 
-      <GameRoomDisplayNameDialog
-        errorMessage={displayNameError}
-        isOpen={isDisplayNameDialogOpen}
-        isSubmitting={isSavingDisplayName}
-        value={displayNameValue}
-        onChange={setDisplayNameValue}
-        onClose={handleCloseDisplayNameDialog}
-        onSubmit={handleSaveDisplayName}
+      <ThemeMenu
+        anchorEl={themeAnchorEl}
+        isOpen={isThemeMenuOpen}
+        currentTheme={currentTheme}
+        onClose={handleCloseThemeMenu}
+        onSelectTheme={handleSelectTheme}
+      />
+
+      <DisplayNameDialog
+        title="Змінити імʼя в кімнаті"
+        description="Оновіть імʼя, яке бачать інші учасники гри."
+        label="Імʼя в кімнаті"
+        errorMessage={displayNameDialog.errorMessage}
+        isOpen={displayNameDialog.isOpen}
+        isSubmitting={displayNameDialog.isSubmitting}
+        value={displayNameDialog.value}
+        onChange={displayNameDialog.setValue}
+        onClose={displayNameDialog.close}
+        onSubmit={displayNameDialog.submit}
       />
     </>
   );

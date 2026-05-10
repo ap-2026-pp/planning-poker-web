@@ -3,7 +3,7 @@ import SportsEsportsRoundedIcon from '@mui/icons-material/SportsEsportsRounded';
 import { Link as RouterLink } from 'react-router-dom';
 
 import { appRoutes } from '@shared/config/routes';
-import styles from './header.module.css';
+import styles from '../header.module.css';
 
 type UserGamesMenuProps = {
   variant: 'hero' | 'default';
