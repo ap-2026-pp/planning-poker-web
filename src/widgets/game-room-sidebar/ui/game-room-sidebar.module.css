@@ -352,7 +352,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding-bottom: 14px;
+  padding: 14px 0px;
   box-shadow: 0 10px 24px rgba(4, 6, 16, 0.22);
 }
 
@@ -604,4 +604,61 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding-top: 18px;
+}
+
+.issueCardMenuButton {
+  margin-left: auto;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  color: rgba(248, 244, 255, 0.82) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.issueFooterActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.issueVoteButton {
+  min-height: 36px;
+  padding-inline: 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #347be5 0%, #256dce 100%);
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 14px 24px rgba(56, 118, 230, 0.22);
+}
+
+.issueVoteButton:disabled {
+  opacity: 0.72;
+  cursor: default;
+}
+
+.issueEstimatePanel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 96px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.issueEstimateLabel {
+  color: rgba(216, 206, 235, 0.72) !important;
+  font-size: 0.8rem !important;
+}
+
+.issueEstimateValue {
+  color: #f8f4ff !important;
+  font-size: 1rem !important;
+  font-weight: 800 !important;
 }

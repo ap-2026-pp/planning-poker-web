@@ -25,6 +25,9 @@ type GameRoomSidebarProps = {
     issueId: string,
     payload: { title: string; code?: string; description?: string },
   ) => Promise<void>;
+  onDeleteIssue?: (issueId: string) => Promise<void>;
+  onSetIssueActive?: (issueId: string) => Promise<void>;
+  onMoveIssue?: (issueId: string, direction: 'up' | 'down') => Promise<void>;
 };
 
 export const GameRoomSidebar = ({
@@ -39,6 +42,9 @@ export const GameRoomSidebar = ({
   onRemoveParticipant,
   onAddIssue,
   onUpdateIssue,
+  onDeleteIssue,
+  onSetIssueActive,
+  onMoveIssue,
 }: GameRoomSidebarProps) => {
   return (
     <Box className={styles.sidebarPanel}>
@@ -55,6 +61,9 @@ export const GameRoomSidebar = ({
           isCurrentParticipantMaster={isCurrentParticipantMaster}
           onAddIssue={onAddIssue}
           onUpdateIssue={onUpdateIssue}
+          onDeleteIssue={onDeleteIssue}
+          onSetIssueActive={onSetIssueActive}
+          onMoveIssue={onMoveIssue}
         />
       ) : (
         <ParticipantsSidebarSection

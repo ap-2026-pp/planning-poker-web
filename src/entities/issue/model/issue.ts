@@ -1,10 +1,14 @@
 export type Issue = {
   id: string;
+  gameId: string;
   code: string;
+  url?: string | null;
   title: string;
   description: string;
   order: number;
   isCurrent: boolean;
+  isRemoved: boolean;
+  createdAt: string;
   finalEstimate?: string | null;
   status?: string | null;
 };

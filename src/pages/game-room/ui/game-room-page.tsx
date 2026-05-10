@@ -74,6 +74,9 @@ export const GameRoomPage = () => {
             onRemoveParticipant={room.removeParticipant}
             onAddIssue={room.addIssue}
             onUpdateIssue={room.updateIssue}
+            onDeleteIssue={room.deleteIssue}
+            onSetIssueActive={room.setIssueActive}
+            onMoveIssue={room.reorderIssue}
           />
         </Box>
       </Drawer>

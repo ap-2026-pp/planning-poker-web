@@ -26,4 +26,7 @@ export {
   updateDisplayNameRequest,
   createIssueRequest,
   updateIssueRequest,
+  deleteIssueRequest,
+  reorderIssuesRequest,
+  setIssueActiveRequest,
 } from './games';

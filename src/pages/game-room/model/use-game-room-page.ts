@@ -17,6 +17,9 @@ import {
   updateDisplayNameRequest,
   createIssueRequest,
   updateIssueRequest,
+  deleteIssueRequest,
+  setIssueActiveRequest,
+  reorderIssuesRequest,
 } from '@shared/api';
 import {
   clearCurrentRoomParticipantSession,
@@ -508,6 +511,10 @@ export const useGameRoomPage = () => {
 
   const handleIssueUpdated = useCallback((issue: Issue) => {
     setIssues((current) => {
+      if (issue.isRemoved) {
+        return current.filter((entry) => entry.id !== issue.id);
+      }
+
       const exists = current.some((entry) => entry.id === issue.id);
 
       if (!exists) {
@@ -617,6 +624,93 @@ export const useGameRoomPage = () => {
     [gameId],
   );
 
+ const deleteIssue = useCallback(
+  async (issueId: string) => {
+    try {
+      await deleteIssueRequest(gameId, issueId);
+
+      setIssues((current) => current.filter((issue) => issue.id !== issueId));
+
+      setNotification({
+        message: 'Issue видалено',
+        tone: 'success',
+      });
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : 'Не вдалося видалити issue',
+      );
+      throw requestError;
+    }
+  },
+  [gameId],
+);
+
+  const setIssueActive = useCallback(
+    async (issueId: string) => {
+      try {
+        await setIssueActiveRequest(gameId, issueId);
+
+        setNotification({
+          message: 'Оцінювання розпочато',
+          tone: 'success',
+        });
+      } catch (requestError) {
+        setError(
+          requestError instanceof Error
+            ? requestError.message
+            : 'Не вдалося почати оцінювання',
+        );
+        throw requestError;
+      }
+    },
+    [gameId],
+  );
+
+  const reorderIssue = useCallback(
+    async (issueId: string, direction: 'up' | 'down') => {
+      const ordered = [...sortedIssues].sort((a, b) => a.order - b.order);
+      const currentIndex = ordered.findIndex((issue) => issue.id === issueId);
+
+      if (currentIndex < 0) {
+        return;
+      }
+
+      const targetIndex =
+        direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+
+      if (targetIndex < 0 || targetIndex >= ordered.length) {
+        return;
+      }
+
+      const next = [...ordered];
+      const [movedIssue] = next.splice(currentIndex, 1);
+      next.splice(targetIndex, 0, movedIssue);
+
+      const issuesIds = next.map((issue) => issue.id);
+
+      try {
+        await reorderIssuesRequest(gameId, { issuesIds });
+
+        setIssues(
+          next.map((issue, index) => ({
+            ...issue,
+            order: index + 1,
+          })),
+        );
+      } catch (requestError) {
+        setError(
+          requestError instanceof Error
+            ? requestError.message
+            : 'Не вдалося змінити порядок issue',
+        );
+        throw requestError;
+      }
+    },
+    [gameId, sortedIssues],
+  );
+
   return {
     gameId,
     reloadRoom,
@@ -646,6 +740,9 @@ export const useGameRoomPage = () => {
     transferMaster,
     addIssue,
     updateIssue,
+    deleteIssue,
+    setIssueActive,
+    reorderIssue,
     sortedParticipants,
     sortedIssues,
     positionedParticipants,

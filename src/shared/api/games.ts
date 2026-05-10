@@ -96,3 +96,21 @@ export const updateIssueRequest = (
     Issue,
     { title: string; code?: string; description?: string }
   >(`/games/${gameId}/issues/${issueId}`, payload);
+
+export const deleteIssueRequest = (gameId: string, issueId: string) =>
+  apiClientService.delete<void>(`/games/${gameId}/issues/${issueId}`);
+
+export const reorderIssuesRequest = (
+  gameId: string,
+  payload: { issuesIds: string[] },
+) =>
+  apiClientService.patch<void, { issuesIds: string[] }>(
+    `/games/${gameId}/issues/reorder`,
+    payload,
+  );
+
+export const setIssueActiveRequest = (gameId: string, issueId: string) =>
+  apiClientService.patch<void, undefined>(
+    `/games/${gameId}/issues/${issueId}/set-active`,
+    undefined,
+  );
