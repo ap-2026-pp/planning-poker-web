@@ -46,19 +46,23 @@ export const FormCard = ({
   onClose,
 }: FormCardProps) => (
   <Box className={[styles.card, cardAccentClassNames[accent]].join(' ')}>
-    {onClose ? (
-      <IconButton
-        type="button"
-        className={styles.closeButton}
-        onClick={onClose}
-        aria-label="Закрити форму"
-      >
-        <CloseRoundedIcon />
-      </IconButton>
-    ) : null}
-
     <Stack component="form" className={styles.form} onSubmit={onSubmit}>
-      {badge ? <Box className={styles.badge}>{badge}</Box> : null}
+      {badge || onClose ? (
+        <Box className={styles.cardTopRow}>
+          {badge ? <Box className={styles.badge}>{badge}</Box> : <span />}
+
+          {onClose ? (
+            <IconButton
+              type="button"
+              className={styles.closeButton}
+              onClick={onClose}
+              aria-label="Закрити форму"
+            >
+              <CloseRoundedIcon />
+            </IconButton>
+          ) : null}
+        </Box>
+      ) : null}
 
       <Stack className={styles.intro}>
         <Box className={[styles.iconShell, iconAccentClassNames[accent]].join(' ')}>

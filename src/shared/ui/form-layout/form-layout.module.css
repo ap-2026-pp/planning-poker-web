@@ -47,6 +47,13 @@
   );
 }
 
+.cardTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .cardWrap {
   position: relative;
   z-index: 1;
@@ -123,24 +130,36 @@
   --form-accent-label: #86b9ff;
   --form-accent-border: rgba(134, 185, 255, 0.88);
   --form-accent-shadow: rgba(56, 118, 230, 0.16);
+  --form-accent-soft-color: #cde0ff;
+  --form-accent-soft-bg: rgba(52, 123, 229, 0.16);
+  --form-accent-soft-border: rgba(52, 123, 229, 0.24);
 }
 
 .cardAccentPurple {
   --form-accent-label: #d7b8ff;
   --form-accent-border: rgba(185, 123, 255, 0.9);
   --form-accent-shadow: rgba(139, 86, 246, 0.18);
+  --form-accent-soft-color: #d9c2ff;
+  --form-accent-soft-bg: rgba(173, 113, 255, 0.16);
+  --form-accent-soft-border: rgba(173, 113, 255, 0.18);
 }
 
 .cardAccentGreen {
   --form-accent-label: #8ff0ba;
   --form-accent-border: rgba(89, 220, 147, 0.88);
   --form-accent-shadow: rgba(56, 185, 117, 0.16);
+  --form-accent-soft-color: #c9ffdd;
+  --form-accent-soft-bg: rgba(56, 185, 117, 0.14);
+  --form-accent-soft-border: rgba(56, 185, 117, 0.22);
 }
 
 .cardAccentOrange {
   --form-accent-label: #ffd09a;
   --form-accent-border: rgba(240, 165, 67, 0.88);
   --form-accent-shadow: rgba(240, 165, 67, 0.16);
+  --form-accent-soft-color: #ffd09a;
+  --form-accent-soft-bg: rgba(240, 165, 67, 0.14);
+  --form-accent-soft-border: rgba(240, 165, 67, 0.22);
 }
 
 .form {
@@ -156,9 +175,9 @@
   width: fit-content;
   padding: 7px 12px;
   border-radius: 999px;
-  color: #d9c2ff;
-  background: rgba(173, 113, 255, 0.16);
-  border: 1px solid rgba(173, 113, 255, 0.18);
+  color: var(--form-accent-soft-color);
+  background: var(--form-accent-soft-bg);
+  border: 1px solid var(--form-accent-soft-border);
   font-size: 0.78rem;
   line-height: 1;
   font-weight: 800;
@@ -347,21 +366,18 @@
 }
 
 .closeButton {
-  position: absolute !important;
-  top: 18px;
-  right: 18px;
-  z-index: 2;
-  width: 42px;
-  height: 42px;
-  border-radius: 14px !important;
-  color: rgba(248, 245, 255, 0.78) !important;
-  background: rgba(255, 255, 255, 0.06) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  width: 34px;
+  height: 34px;
+  padding: 4px !important;
+  color: rgba(248, 245, 255, 0.72) !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 999px !important;
 }
 
 .closeButton:hover {
   color: #ffffff !important;
-  background: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
 }
 
 @media (min-width: 900px) {
