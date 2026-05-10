@@ -13,4 +13,5 @@ export type GameParticipant = {
   isConnected: boolean;
   isActive?: boolean;
   voteValue?: string;
+  removedAt?: string;
 };

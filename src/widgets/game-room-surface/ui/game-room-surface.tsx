@@ -6,8 +6,8 @@ import { Box, CircularProgress, Stack, Typography } from '@mui/material';
 
 import type { Issue } from '@entities/issue';
 import { ParticipantRole, type GameParticipant } from '@entities/participant';
-import type { PositionedParticipant } from '../model/participant-layout';
-import { roleLabels } from '../model/game-room';
+import type { PositionedParticipant } from '../../../pages/game-room/model/participant-layout';
+import { roleLabels } from '../../../pages/game-room/model/game-room';
 import styles from './game-room-surface.module.css';
 
 type GameRoomSurfaceProps = {

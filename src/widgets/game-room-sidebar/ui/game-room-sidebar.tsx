@@ -6,9 +6,15 @@ import ViewKanbanRoundedIcon from '@mui/icons-material/ViewKanbanRounded';
 import { Box, IconButton, Stack, Typography } from '@mui/material';
 
 import type { Issue } from '@entities/issue';
-import type { GameParticipant } from '@entities/participant';
-import { getParticipantInitials, isParticipantOnline, roleLabels, type SidebarView } from '../model/game-room';
+import {
+  getParticipantInitials,
+  isParticipantOnline,
+  roleLabels,
+  type GameParticipant,
+} from '@entities/participant';
 import styles from './game-room-sidebar.module.css';
+
+export type SidebarView = 'players' | 'issues';
 
 type GameRoomSidebarProps = {
   sidebarView: SidebarView;

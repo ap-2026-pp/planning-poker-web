@@ -1,0 +1,1 @@
+export { GameRoomSidebar } from './ui/game-room-sidebar';

@@ -1,12 +1,11 @@
 import { Alert, Box, Drawer, Snackbar, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 
+import { ConnectionStatus } from '@features/connection-status';
+import { GameRoomInviteDialog, GameRoomQrDialog } from '@widgets/game-room-invite';
+import { GameRoomSidebar } from '@widgets/game-room-sidebar';
+import { GameRoomSurface } from '@widgets/game-room-surface';
 import { useGameRoomPage } from '../model/use-game-room-page';
-import { GameRoomInviteDialog } from './game-room-invite-dialog';
-import { GameRoomQrDialog } from './game-room-qr-dialog';
-import { GameRoomSurface } from './game-room-surface';
-import { GameRoomSidebar } from './game-room-sidebar';
-import { ConnectionStatus } from './connection-status';
 import styles from './game-room-page.module.css';
 
 export const GameRoomPage = () => {
@@ -15,17 +14,20 @@ export const GameRoomPage = () => {
 
   useEffect(() => {
     if (room.loading) {
-      const timer = setTimeout(() => setShowLoading(true), 300);
-      return () => clearTimeout(timer);
-    } else {
-      setShowLoading(false);
+      const timer = window.setTimeout(() => setShowLoading(true), 300);
+
+      return () => window.clearTimeout(timer);
     }
+
+    setShowLoading(false);
   }, [room.loading]);
 
   return (
     <Stack className={styles.root}>
       <ConnectionStatus status={room.connectionStatus} onRetry={room.retryConnection} />
+
       {showLoading ? <Alert severity="info">Завантажую кімнату...</Alert> : null}
+
       {room.error ? <Alert severity="warning">{room.error}</Alert> : null}
 
       <Box className={styles.mainColumn}>
