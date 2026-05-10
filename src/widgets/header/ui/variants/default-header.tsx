@@ -1,7 +1,7 @@
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import { AppBar, Button, Container, IconButton, Stack, Toolbar } from '@mui/material';
 import type { CSSProperties } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 
 import { updateCurrentUserDisplayNameRequest } from '@shared/api';
 import { useSession } from '@shared/auth';
@@ -32,6 +32,8 @@ export const DefaultHeader = ({
   onOpenMobileMenu,
 }: DefaultHeaderProps) => {
   const { user, refreshCurrentUser } = useSession();
+  const { pathname, search } = useLocation();
+  const currentPath = `${pathname}${search}`;
 
   const {
     profileAnchorEl,
@@ -111,12 +113,20 @@ export const DefaultHeader = ({
                   </>
                 ) : (
                   <>
-                    <Button component={RouterLink} to={appRoutes.login} variant="text" className={styles.defaultTextButton}>
+                    <Button
+                      component={RouterLink}
+                      to={appRoutes.login}
+                      state={{ from: currentPath }}
+                      variant="text"
+                      className={styles.defaultTextButton}
+                    >
                       Вхід
                     </Button>
+
                     <Button
                       component={RouterLink}
                       to={appRoutes.register}
+                      state={{ from: currentPath }}
                       variant="contained"
                       className={styles.filledButton}
                     >

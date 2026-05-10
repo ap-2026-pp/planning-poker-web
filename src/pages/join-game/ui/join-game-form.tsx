@@ -1,7 +1,7 @@
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import { Button, TextField } from '@mui/material';
 import { useState, type ChangeEvent, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { joinGameRequest } from '@shared/api';
 import {
@@ -20,6 +20,10 @@ type JoinGameFormValues = {
   displayName: string;
 };
 
+type LocationState = {
+  from?: string;
+};
+
 const initialValues: JoinGameFormValues = {
   inviteCode: '',
   displayName: '',
@@ -27,11 +31,18 @@ const initialValues: JoinGameFormValues = {
 
 export const JoinGameForm = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = (location.state as LocationState | null)?.from;
 
   const [values, setValues] = useState<JoinGameFormValues>(initialValues);
   const [errors, setErrors] = useState<FormErrors<JoinGameFormValues>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const handleClose = () => {
+    navigate(from || appRoutes.home, { replace: true });
+  };
 
   const handleFieldChange =
     (field: keyof JoinGameFormValues) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -83,6 +94,7 @@ export const JoinGameForm = () => {
       accent="blue"
       submitError={submitError}
       onSubmit={handleSubmit}
+      onClose={handleClose}
       actions={
         <Button
           type="submit"

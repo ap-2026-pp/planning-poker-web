@@ -223,7 +223,11 @@ export const MyGamesPage = () => {
                     variant="contained"
                     startIcon={<AddRoundedIcon />}
                     className={styles.createButton}
-                    onClick={async () => navigate(appRoutes.createGame)}
+                    onClick={() =>
+                      navigate(appRoutes.createGame, {
+                        state: { from: pathname + search },
+                      })
+                    }
                   >
                     Створити гру
                   </Button>

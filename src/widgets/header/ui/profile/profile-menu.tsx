@@ -4,7 +4,7 @@ import ManageAccountsRoundedIcon from '@mui/icons-material/ManageAccountsRounded
 import PaletteRoundedIcon from '@mui/icons-material/PaletteRounded';
 import { Alert, Avatar, Box, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import type { ReactNode } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 
 import styles from './profile-menu.module.css';
 
@@ -42,63 +42,69 @@ export const ProfileMenu = ({
   onLogout,
   onNavigateToAccount,
   onOpenThemeMenu,
-}: ProfileMenuProps) => (
-  <Menu
-    anchorEl={anchorEl}
-    open={isOpen}
-    onClose={onClose}
-    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-    MenuListProps={{ disablePadding: true }}
-    PaperProps={{ className: styles.menuPaper }}
-  >
-    <Stack className={styles.menuContent}>
-      <Box className={styles.menuIdentity}>
-        <Avatar className={styles.menuAvatar}>{initials}</Avatar>
+}: ProfileMenuProps) => {
+  const { pathname, search } = useLocation();
+  const currentPath = `${pathname}${search}`;
 
-        <Stack className={styles.menuIdentityText}>
-          <Box className={styles.menuNameRow}>
-            <Typography className={styles.menuName}>{label}</Typography>
+  return (
+    <Menu
+      anchorEl={anchorEl}
+      open={isOpen}
+      onClose={onClose}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      MenuListProps={{ disablePadding: true }}
+      PaperProps={{ className: styles.menuPaper }}
+    >
+      <Stack className={styles.menuContent}>
+        <Box className={styles.menuIdentity}>
+          <Avatar className={styles.menuAvatar}>{initials}</Avatar>
 
-            <IconButton
-              onClick={onEditName}
-              className={styles.editButton}
-              size="small"
-              aria-label="Редагувати імʼя"
-            >
-              <EditRoundedIcon fontSize="small" />
-            </IconButton>
-          </Box>
+          <Stack className={styles.menuIdentityText}>
+            <Box className={styles.menuNameRow}>
+              <Typography className={styles.menuName}>{label}</Typography>
 
-          <Typography className={styles.menuCaption}>{caption}</Typography>
-        </Stack>
-      </Box>
+              <IconButton
+                onClick={onEditName}
+                className={styles.editButton}
+                size="small"
+                aria-label="Редагувати імʼя"
+              >
+                <EditRoundedIcon fontSize="small" />
+              </IconButton>
+            </Box>
 
-      {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
+            <Typography className={styles.menuCaption}>{caption}</Typography>
+          </Stack>
+        </Box>
 
-      {extraContent}
+        {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
 
-      <MenuItem
-        component={RouterLink}
-        to={accountTo}
-        onClick={onNavigateToAccount}
-        className={styles.menuItem}
-      >
-        <ManageAccountsRoundedIcon fontSize="small" />
-        <span>{accountLabel}</span>
-      </MenuItem>
+        {extraContent}
 
-      <MenuItem onClick={onOpenThemeMenu} className={styles.menuItem}>
-        <PaletteRoundedIcon fontSize="small" />
-        <span>Вигляд</span>
-      </MenuItem>
-
-      {showLogout ? (
-        <MenuItem onClick={onLogout} className={styles.menuItem}>
-          <LogoutRoundedIcon fontSize="small" />
-          <span>Вийти з акаунта</span>
+        <MenuItem
+          component={RouterLink}
+          to={accountTo}
+          state={{ from: currentPath }}
+          onClick={onNavigateToAccount}
+          className={styles.menuItem}
+        >
+          <ManageAccountsRoundedIcon fontSize="small" />
+          <span>{accountLabel}</span>
         </MenuItem>
-      ) : null}
-    </Stack>
-  </Menu>
-);
+
+        <MenuItem onClick={onOpenThemeMenu} className={styles.menuItem}>
+          <PaletteRoundedIcon fontSize="small" />
+          <span>Вигляд</span>
+        </MenuItem>
+
+        {showLogout ? (
+          <MenuItem onClick={onLogout} className={styles.menuItem}>
+            <LogoutRoundedIcon fontSize="small" />
+            <span>Вийти з акаунта</span>
+          </MenuItem>
+        ) : null}
+      </Stack>
+    </Menu>
+  );
+};

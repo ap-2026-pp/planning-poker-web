@@ -15,23 +15,38 @@ type LoginFormValues = {
   password: string;
 };
 
+type LocationState = {
+  from?: string;
+};
+
 const initialValues: LoginFormValues = {
   email: '',
   password: '',
 };
 
+const isAuthRoute = (path?: string) =>
+  path === appRoutes.login || path === appRoutes.register;
+
 export const LoginForm = () => {
   const navigate = useNavigate();
-  const { search } = useLocation();
+  const { search, state } = useLocation();
   const { login } = useSession();
+
+  const returnTo = getAuthReturnTo(search);
+  const from = (state as LocationState | null)?.from;
+  const safeFrom = isAuthRoute(from) ? undefined : from;
+  const fallbackPath = returnTo || safeFrom || appRoutes.home;
+
+  const registerTo = buildAuthRedirectPath(appRoutes.register, fallbackPath);
 
   const [values, setValues] = useState<LoginFormValues>(initialValues);
   const [errors, setErrors] = useState<FormErrors<LoginFormValues>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const returnTo = getAuthReturnTo(search);
-  const registerTo = buildAuthRedirectPath(appRoutes.register, returnTo);
+  const handleClose = () => {
+    navigate(fallbackPath, { replace: true });
+  };
 
   const handleFieldChange =
     (field: keyof LoginFormValues) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -53,7 +68,7 @@ export const LoginForm = () => {
       }
 
       await login(values);
-      await navigate(returnTo || appRoutes.home, { replace: true });
+      await navigate(fallbackPath, { replace: true });
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Не вдалося увійти');
     } finally {
@@ -70,6 +85,7 @@ export const LoginForm = () => {
       accent="blue"
       submitError={submitError}
       onSubmit={handleSubmit}
+      onClose={handleClose}
       actions={
         <>
           <Button
@@ -84,6 +100,7 @@ export const LoginForm = () => {
           <Button
             component={RouterLink}
             to={registerTo}
+            state={{ from: fallbackPath }}
             variant="text"
             className={styles.secondaryButton}
           >

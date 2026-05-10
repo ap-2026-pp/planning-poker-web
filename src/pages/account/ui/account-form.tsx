@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
   changePasswordRequest,
@@ -38,6 +38,10 @@ type AccountPasswordValues = {
   confirmPassword: string;
 };
 
+type LocationState = {
+  from?: string;
+};
+
 const initialPasswordValues: AccountPasswordValues = {
   oldPassword: '',
   newPassword: '',
@@ -46,8 +50,11 @@ const initialPasswordValues: AccountPasswordValues = {
 
 export const AccountForm = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const { user, updateCurrentUser, logout, } = useSession();
+  const from = (location.state as LocationState | null)?.from;
+
+  const { user, updateCurrentUser, logout } = useSession();
 
   const [displayNameValues, setDisplayNameValues] = useState<AccountDisplayNameValues>({
     displayName: user?.displayName ?? '',
@@ -69,6 +76,10 @@ export const AccountForm = () => {
       displayName: user?.displayName ?? '',
     });
   }, [user?.displayName]);
+
+  const handleClose = () => {
+    navigate(from || appRoutes.home, { replace: true });
+  };
 
   const handleDisplayNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setDisplayNameValues({ displayName: event.target.value });
@@ -161,6 +172,7 @@ export const AccountForm = () => {
       accent="purple"
       submitError={displayNameSubmitError}
       onSubmit={handleDisplayNameSubmit}
+      onClose={handleClose}
     >
       {displayNameSuccessMessage ? (
         <Alert severity="success" className={formStyles.successAlert}>

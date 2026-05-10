@@ -1,4 +1,5 @@
-import { Alert, Box, Stack, Typography } from '@mui/material';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import { Alert, Box, IconButton, Stack, Typography } from '@mui/material';
 import type { FormEvent, ReactNode } from 'react';
 
 import styles from './form-layout.module.css';
@@ -15,13 +16,21 @@ type FormCardProps = {
   children: ReactNode;
   actions?: ReactNode;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onClose?: () => void;
 };
 
-const accentClassNames: Record<FormAccent, string> = {
-  blue: styles.accentBlue,
-  purple: styles.accentPurple,
-  green: styles.accentGreen,
-  orange: styles.accentOrange,
+const cardAccentClassNames: Record<FormAccent, string> = {
+  blue: styles.cardAccentBlue,
+  purple: styles.cardAccentPurple,
+  green: styles.cardAccentGreen,
+  orange: styles.cardAccentOrange,
+};
+
+const iconAccentClassNames: Record<FormAccent, string> = {
+  blue: styles.iconBlue,
+  purple: styles.iconPurple,
+  green: styles.iconGreen,
+  orange: styles.iconOrange,
 };
 
 export const FormCard = ({
@@ -34,13 +43,25 @@ export const FormCard = ({
   children,
   actions,
   onSubmit,
+  onClose,
 }: FormCardProps) => (
-  <Box className={styles.card}>
+  <Box className={[styles.card, cardAccentClassNames[accent]].join(' ')}>
+    {onClose ? (
+      <IconButton
+        type="button"
+        className={styles.closeButton}
+        onClick={onClose}
+        aria-label="Закрити форму"
+      >
+        <CloseRoundedIcon />
+      </IconButton>
+    ) : null}
+
     <Stack component="form" className={styles.form} onSubmit={onSubmit}>
       {badge ? <Box className={styles.badge}>{badge}</Box> : null}
 
       <Stack className={styles.intro}>
-        <Box className={[styles.iconShell, accentClassNames[accent]].join(' ')}>
+        <Box className={[styles.iconShell, iconAccentClassNames[accent]].join(' ')}>
           {icon}
         </Box>
 

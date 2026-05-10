@@ -87,6 +87,10 @@
     rgba(24, 25, 43, 0.92) 100%
   );
   box-shadow: 0 28px 50px rgba(5, 8, 20, 0.32);
+
+  --form-accent-label: #86b9ff;
+  --form-accent-border: rgba(134, 185, 255, 0.88);
+  --form-accent-shadow: rgba(56, 118, 230, 0.16);
 }
 
 .card::before {
@@ -113,6 +117,30 @@
     transparent 100%
   );
   pointer-events: none;
+}
+
+.cardAccentBlue {
+  --form-accent-label: #86b9ff;
+  --form-accent-border: rgba(134, 185, 255, 0.88);
+  --form-accent-shadow: rgba(56, 118, 230, 0.16);
+}
+
+.cardAccentPurple {
+  --form-accent-label: #d7b8ff;
+  --form-accent-border: rgba(185, 123, 255, 0.9);
+  --form-accent-shadow: rgba(139, 86, 246, 0.18);
+}
+
+.cardAccentGreen {
+  --form-accent-label: #8ff0ba;
+  --form-accent-border: rgba(89, 220, 147, 0.88);
+  --form-accent-shadow: rgba(56, 185, 117, 0.16);
+}
+
+.cardAccentOrange {
+  --form-accent-label: #ffd09a;
+  --form-accent-border: rgba(240, 165, 67, 0.88);
+  --form-accent-shadow: rgba(240, 165, 67, 0.16);
 }
 
 .form {
@@ -152,25 +180,21 @@
   font-size: 38px !important;
 }
 
-.accentBlue,
 .iconBlue {
   background: linear-gradient(180deg, #347be5 0%, #2564c3 100%);
   box-shadow: 0 24px 34px rgba(56, 118, 230, 0.28);
 }
 
-.accentPurple,
 .iconPurple {
   background: linear-gradient(180deg, #b97bff 0%, #8b56f6 100%);
   box-shadow: 0 24px 34px rgba(139, 86, 246, 0.28);
 }
 
-.accentGreen,
 .iconGreen {
   background: linear-gradient(180deg, #38b975 0%, #188c55 100%);
   box-shadow: 0 24px 34px rgba(56, 185, 117, 0.24);
 }
 
-.accentOrange,
 .iconOrange {
   background: linear-gradient(180deg, #f0a543 0%, #d66f24 100%);
   box-shadow: 0 24px 34px rgba(240, 165, 67, 0.24);
@@ -199,6 +223,16 @@
   color: #ff9db2 !important;
 }
 
+.successAlert {
+  border: 1px solid rgba(56, 185, 117, 0.22) !important;
+  background: rgba(24, 124, 77, 0.18) !important;
+  color: #d8ffe8 !important;
+}
+
+.successAlert :global(.MuiAlert-icon) {
+  color: #8ff0ba !important;
+}
+
 .field {
   width: 100%;
 }
@@ -208,7 +242,7 @@
 }
 
 .field :global(.MuiInputLabel-root.Mui-focused) {
-  color: #cde0ff !important;
+  color: var(--form-accent-label) !important;
 }
 
 .field :global(.MuiOutlinedInput-root) {
@@ -226,7 +260,7 @@
 
 .field :global(.MuiOutlinedInput-root.Mui-focused) {
   background: rgba(22, 16, 31, 0.92) !important;
-  box-shadow: 0 0 0 6px rgba(131, 56, 230, 0.14) !important;
+  box-shadow: 0 0 0 6px var(--form-accent-shadow) !important;
 }
 
 .field :global(.MuiOutlinedInput-notchedOutline) {
@@ -238,7 +272,7 @@
 }
 
 .field :global(.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline) {
-  border-color: rgba(134, 185, 255, 0.88) !important;
+  border-color: var(--form-accent-border) !important;
 }
 
 .field :global(.MuiOutlinedInput-input::placeholder) {
@@ -249,6 +283,19 @@
 .field :global(.MuiFormHelperText-root) {
   margin-inline: 4px !important;
   color: #ffb4c5 !important;
+}
+
+.field :global(.MuiOutlinedInput-root.Mui-disabled) {
+  color: rgba(248, 245, 255, 0.7) !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+}
+
+.field :global(.MuiInputBase-input.Mui-disabled) {
+  -webkit-text-fill-color: rgba(248, 245, 255, 0.7) !important;
+}
+
+.field :global(.MuiInputLabel-root.Mui-disabled) {
+  color: rgba(226, 220, 245, 0.48) !important;
 }
 
 .actions {
@@ -299,27 +346,22 @@
   background: rgba(173, 113, 255, 0.08) !important;
 }
 
-.successAlert {
-  border: 1px solid rgba(56, 185, 117, 0.22) !important;
-  background: rgba(24, 124, 77, 0.18) !important;
-  color: #d8ffe8 !important;
+.closeButton {
+  position: absolute !important;
+  top: 18px;
+  right: 18px;
+  z-index: 2;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px !important;
+  color: rgba(248, 245, 255, 0.78) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
-.successAlert :global(.MuiAlert-icon) {
-  color: #8ff0ba !important;
-}
-
-.field :global(.MuiOutlinedInput-root.Mui-disabled) {
-  color: rgba(248, 245, 255, 0.7) !important;
-  background: rgba(255, 255, 255, 0.035) !important;
-}
-
-.field :global(.MuiInputBase-input.Mui-disabled) {
-  -webkit-text-fill-color: rgba(248, 245, 255, 0.7) !important;
-}
-
-.field :global(.MuiInputLabel-root.Mui-disabled) {
-  color: rgba(226, 220, 245, 0.48) !important;
+.closeButton:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.1) !important;
 }
 
 @media (min-width: 900px) {

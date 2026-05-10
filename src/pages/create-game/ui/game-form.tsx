@@ -39,6 +39,10 @@ type GameFormProps = {
   gameId?: string;
 };
 
+type LocationState = {
+  from?: string;
+};
+
 const initialValues: GameFormValues = {
   name: '',
   hostDisplayName: '',
@@ -79,7 +83,7 @@ export const GameForm = ({ mode, gameId }: GameFormProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = (location.state as { from?: string } | null)?.from;
+  const from = (location.state as LocationState | null)?.from;
 
   const [values, setValues] = useState<GameFormValues>(initialValues);
   const [errors, setErrors] = useState<FormErrors<CreateGamePayload>>({});
@@ -87,6 +91,10 @@ export const GameForm = ({ mode, gameId }: GameFormProps) => {
   const [submitting, setSubmitting] = useState(false);
   const [loadingInitial, setLoadingInitial] = useState(mode === 'edit');
   const [advancedOpen, setAdvancedOpen] = useState(mode === 'edit');
+
+  const handleClose = () => {
+    navigate(from || appRoutes.myGames, { replace: true });
+  };
 
   useEffect(() => {
     if (mode !== 'edit' || !gameId) {
@@ -143,9 +151,9 @@ export const GameForm = ({ mode, gameId }: GameFormProps) => {
 
   const handleSwitchChange =
     (field: 'autoRevealCards' | 'showAverage' | 'showCountdownAnimation') =>
-    (_event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
-      setValues((current) => ({ ...current, [field]: checked }));
-    };
+      (_event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+        setValues((current) => ({ ...current, [field]: checked }));
+      };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -169,7 +177,9 @@ export const GameForm = ({ mode, gameId }: GameFormProps) => {
           showCountdownAnimation: values.showCountdownAnimation,
         });
 
-        await navigate(appRoutes.gameRoom(createdGame.id));
+        await navigate(appRoutes.gameRoom(createdGame.id), {
+          state: { from: from || appRoutes.myGames },
+        });
         return;
       }
 
@@ -196,7 +206,7 @@ export const GameForm = ({ mode, gameId }: GameFormProps) => {
 
   if (loadingInitial) {
     return (
-      <Box className={[formStyles.card, formStyles.accentPurple].join(' ')}>
+      <Box className={[formStyles.card, formStyles.cardAccentPurple].join(' ')}>
         <Stack className={styles.loadingState} alignItems="center" justifyContent="center">
           <CircularProgress color="secondary" />
           <Typography className={styles.advancedHint}>Завантажуємо параметри гри…</Typography>
@@ -212,6 +222,7 @@ export const GameForm = ({ mode, gameId }: GameFormProps) => {
       accent="purple"
       submitError={submitError}
       onSubmit={handleSubmit}
+      onClose={handleClose}
       actions={
         <Button
           type="submit"
