@@ -5,6 +5,7 @@ import { GameRoomInviteDialog } from './game-room-invite-dialog';
 import { GameRoomQrDialog } from './game-room-qr-dialog';
 import { GameRoomSurface } from './game-room-surface';
 import { GameRoomSidebar } from './game-room-sidebar';
+import { ConnectionStatus } from './connection-status';
 import styles from './game-room-page.module.css';
 
 export const GameRoomPage = () => {
@@ -12,6 +13,7 @@ export const GameRoomPage = () => {
 
   return (
     <Stack className={styles.root}>
+      <ConnectionStatus status={room.connectionStatus} onRetry={room.retryConnection} />
       {room.loading ? <Alert severity="info">Завантажую кімнату...</Alert> : null}
       {room.error ? <Alert severity="warning">{room.error}</Alert> : null}
 

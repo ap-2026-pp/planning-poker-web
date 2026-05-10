@@ -83,6 +83,48 @@ export const useGameRoomPage = () => {
   const participantsRef = useRef<GameParticipant[]>([]);
   const storedParticipantSession = getCurrentRoomParticipantSession();
 
+  const reloadRoom = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    const results = await Promise.allSettled([
+      getGameRequest(gameId),
+      getParticipantsRequest(gameId),
+      getIssuesRequest(gameId),
+      getGameInviteRequest(gameId),
+    ]);
+
+    const [gameResult, participantsResult, issuesResult, inviteResult] = results;
+
+    if (gameResult.status === 'fulfilled') {
+      setGame(gameResult.value);
+    }
+
+    if (participantsResult.status === 'fulfilled') {
+      setParticipants(participantsResult.value);
+    }
+
+    if (issuesResult.status === 'fulfilled') {
+      setIssues(issuesResult.value);
+    }
+
+    if (inviteResult.status === 'fulfilled') {
+      setInvite(inviteResult.value);
+    }
+
+    const firstFailure = results.find((result) => result.status === 'rejected');
+
+    if (firstFailure?.status === 'rejected') {
+      setError(
+        firstFailure.reason instanceof Error
+          ? firstFailure.reason.message
+          : 'Не вдалося завантажити кімнату',
+      );
+    }
+
+    setLoading(false);
+  }, [gameId]);
+
   useEffect(() => {
     const syncLayout = () => {
       setIsMobileLayout(window.innerWidth <= 640);
@@ -97,60 +139,8 @@ export const useGameRoomPage = () => {
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
-
-    const loadRoom = async () => {
-      setLoading(true);
-      setError(null);
-
-      const results = await Promise.allSettled([
-        getGameRequest(gameId),
-        getParticipantsRequest(gameId),
-        getIssuesRequest(gameId),
-        getGameInviteRequest(gameId),
-      ]);
-
-      if (!isMounted) {
-        return;
-      }
-
-      const [gameResult, participantsResult, issuesResult, inviteResult] = results;
-
-      if (gameResult.status === 'fulfilled') {
-        setGame(gameResult.value);
-      }
-
-      if (participantsResult.status === 'fulfilled') {
-        setParticipants(participantsResult.value);
-      }
-
-      if (issuesResult.status === 'fulfilled') {
-        setIssues(issuesResult.value);
-      }
-
-      if (inviteResult.status === 'fulfilled') {
-        setInvite(inviteResult.value);
-      }
-
-      const firstFailure = results.find((result) => result.status === 'rejected');
-
-      if (firstFailure?.status === 'rejected') {
-        setError(
-          firstFailure.reason instanceof Error
-            ? firstFailure.reason.message
-            : 'Не вдалося завантажити кімнату',
-        );
-      }
-
-      setLoading(false);
-    };
-
-    void loadRoom();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [gameId]);
+    void reloadRoom();
+  }, [reloadRoom]);
 
   useEffect(() => {
     setRoomTitle(game?.name || 'Кімната гри');
@@ -441,13 +431,14 @@ export const useGameRoomPage = () => {
     });
   }, []);
 
-  useGameRoomRealtime({
+  const realtime = useGameRoomRealtime({
     gameId,
     onParticipantJoined: handleParticipantJoined,
     onParticipantLeft: handleRealtimeParticipantLeft,
     onParticipantKicked: handleRealtimeParticipantKicked,
     onUserUpdated: handleUserUpdated,
     onGameUpdated: handleGameUpdated,
+    onReconnected: reloadRoom,
   });
 
   const selectParticipant = useCallback((participantId: string) => {
@@ -528,5 +519,7 @@ export const useGameRoomPage = () => {
     deckValues,
     notification,
     closeNotification: () => setNotification(null),
+    connectionStatus: realtime.connectionStatus,
+    retryConnection: realtime.retryConnection,
   };
 };
