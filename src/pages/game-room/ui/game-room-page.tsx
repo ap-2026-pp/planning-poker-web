@@ -77,6 +77,7 @@ export const GameRoomPage = () => {
             onDeleteIssue={room.deleteIssue}
             onSetIssueActive={room.setIssueActive}
             onMoveIssue={room.reorderIssue}
+            onReorderIssues={room.reorderIssues}
           />
         </Box>
       </Drawer>

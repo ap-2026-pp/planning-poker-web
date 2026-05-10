@@ -28,6 +28,7 @@ type GameRoomSidebarProps = {
   onDeleteIssue?: (issueId: string) => Promise<void>;
   onSetIssueActive?: (issueId: string) => Promise<void>;
   onMoveIssue?: (issueId: string, direction: 'up' | 'down') => Promise<void>;
+  onReorderIssues?: (issueIds: string[]) => Promise<void>;
 };
 
 export const GameRoomSidebar = ({
@@ -45,6 +46,7 @@ export const GameRoomSidebar = ({
   onDeleteIssue,
   onSetIssueActive,
   onMoveIssue,
+  onReorderIssues,
 }: GameRoomSidebarProps) => {
   return (
     <Box className={styles.sidebarPanel}>
@@ -64,6 +66,7 @@ export const GameRoomSidebar = ({
           onDeleteIssue={onDeleteIssue}
           onSetIssueActive={onSetIssueActive}
           onMoveIssue={onMoveIssue}
+          onReorderIssues={onReorderIssues}
         />
       ) : (
         <ParticipantsSidebarSection

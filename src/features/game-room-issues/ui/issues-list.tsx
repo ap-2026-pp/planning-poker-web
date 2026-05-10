@@ -1,10 +1,23 @@
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
-import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
-import { Box, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material';
-import { useMemo, useState } from 'react';
+import {
+    closestCenter,
+    DndContext,
+    type DragEndEvent,
+    PointerSensor,
+    useSensor,
+    useSensors,
+} from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { Stack } from '@mui/material';
+import { useEffect, useState } from 'react';
 
 import type { Issue } from '@entities/issue';
 import styles from '@widgets/game-room-sidebar/ui/game-room-sidebar.module.css';
+import { SortableIssueCard } from './sortable-issue-card';
 
 type IssuesListProps = {
     issues: Issue[];
@@ -14,6 +27,7 @@ type IssuesListProps = {
     onDeleteIssue?: (issueId: string) => Promise<void>;
     onSetIssueActive?: (issueId: string) => Promise<void>;
     onMoveIssue?: (issueId: string, direction: 'up' | 'down') => Promise<void>;
+    onReorderIssues?: (issueIds: string[]) => Promise<void>;
 };
 
 export const IssuesList = ({
@@ -24,117 +38,79 @@ export const IssuesList = ({
     onDeleteIssue,
     onSetIssueActive,
     onMoveIssue,
+    onReorderIssues,
 }: IssuesListProps) => {
-    const [issueMenuAnchor, setIssueMenuAnchor] = useState<HTMLElement | null>(null);
-    const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
+    const [localIssues, setLocalIssues] = useState<Issue[]>(issues);
 
-    const selectedIssue = useMemo(
-        () => issues.find((issue) => issue.id === selectedIssueId) ?? null,
-        [issues, selectedIssueId],
+    useEffect(() => {
+        setLocalIssues(issues);
+    }, [issues]);
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 6,
+            },
+        }),
     );
 
-    const selectedIssueIndex = useMemo(
-        () => issues.findIndex((issue) => issue.id === selectedIssueId),
-        [issues, selectedIssueId],
-    );
+    const handleDragEnd = async (event: DragEndEvent) => {
+        const { active, over } = event;
 
-    const canMoveUp = selectedIssueIndex > 0;
-    const canMoveDown =
-        selectedIssueIndex >= 0 && selectedIssueIndex < issues.length - 1;
+        if (!over || active.id === over.id) {
+            return;
+        }
 
-    const handleOpenMenu = (
-        event: React.MouseEvent<HTMLElement>,
-        issueId: string,
-    ) => {
-        event.stopPropagation();
-        setIssueMenuAnchor(event.currentTarget);
-        setSelectedIssueId(issueId);
-    };
+        const oldIndex = localIssues.findIndex((issue) => issue.id === active.id);
+        const newIndex = localIssues.findIndex((issue) => issue.id === over.id);
 
-    const handleCloseMenu = () => {
-        setIssueMenuAnchor(null);
-        setSelectedIssueId(null);
+        if (oldIndex < 0 || newIndex < 0) {
+            return;
+        }
+
+        const previousIssues = localIssues;
+        const reordered = arrayMove(localIssues, oldIndex, newIndex);
+
+        setLocalIssues(reordered);
+
+        try {
+            await onReorderIssues?.(reordered.map((issue) => issue.id));
+        } catch {
+            setLocalIssues(previousIssues);
+        }
     };
 
     return (
         <>
-            <Stack className={styles.issueList}>
-                {issues.map((issue, index) => (
-                    <Box
-                        key={issue.id}
-                        className={styles.issueCard}
-                        onClick={() => {
-                            if (isCurrentParticipantMaster) {
-                                onEditIssue(issue);
-                            }
-                        }}
-                    >
-                        <Stack direction="row" className={styles.issueHeader}>
-                            <span
-                                className={[
-                                    styles.issueDot,
-                                    styles[`issueTone${index % 4}`],
-                                ].join(' ').trim()}
+            <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={(event) => {
+                    void handleDragEnd(event);
+                }}
+            >
+                <SortableContext
+                    items={localIssues.map((issue) => issue.id)}
+                    strategy={verticalListSortingStrategy}
+                >
+                    <Stack className={styles.issueList}>
+                        {localIssues.map((issue, index) => (
+                            <SortableIssueCard
+                                key={issue.id}
+                                issue={issue}
+                                index={index}
+                                isCurrentParticipantMaster={isCurrentParticipantMaster}
+                                isFirst={index === 0}
+                                isLast={index === localIssues.length - 1}
+                                onEditIssue={onEditIssue}
+                                onDeleteIssue={onDeleteIssue}
+                                onSetIssueActive={onSetIssueActive}
+                                onMoveIssue={onMoveIssue}
                             />
-
-                            <Stack className={styles.issueText}>
-                                <Typography className={styles.issueTitle}>{issue.title}</Typography>
-
-                                <Typography className={styles.issueDescription}>
-                                    {issue.description || 'Опис ще не додано'}
-                                </Typography>
-                            </Stack>
-
-                            {isCurrentParticipantMaster ? (
-                                <IconButton
-                                    className={styles.issueCardMenuButton}
-                                    onClick={(event) => handleOpenMenu(event, issue.id)}
-                                    aria-label={`Дії для ${issue.title}`}
-                                >
-                                    <MoreVertRoundedIcon fontSize="small" />
-                                </IconButton>
-                            ) : null}
-                        </Stack>
-
-                        <Box className={styles.issueFooter}>
-                            <Box className={styles.issueFooterActions}>
-                                {isCurrentParticipantMaster ? (
-                                    <button
-                                        type="button"
-                                        className={styles.issueVoteButton}
-                                        disabled={issue.isCurrent}
-                                        onClick={(event) => {
-                                            event.stopPropagation();
-
-                                            if (!issue.isCurrent && onSetIssueActive) {
-                                                void onSetIssueActive(issue.id);
-                                            }
-                                        }}
-                                    >
-                                        {issue.isCurrent ? 'Оцінюється' : 'Почати оцінювати'}
-                                    </button>
-                                ) : null}
-
-                                {issue.code ? (
-                                    <Box className={styles.issueCodeBadge}>{issue.code}</Box>
-                                ) : null}
-                            </Box>
-                        </Box>
-
-                        {(issue.isCurrent || issue.finalEstimate) && (
-                            <Box className={styles.issueEstimatePanel}>
-                                <Typography className={styles.issueEstimateLabel}>
-                                    {issue.isCurrent ? 'Поточна оцінка' : 'Фінальна оцінка'}
-                                </Typography>
-
-                                <Typography className={styles.issueEstimateValue}>
-                                    {issue.finalEstimate ?? '—'}
-                                </Typography>
-                            </Box>
-                        )}
-                    </Box>
-                ))}
-            </Stack>
+                        ))}
+                    </Stack>
+                </SortableContext>
+            </DndContext>
 
             {isCurrentParticipantMaster ? (
                 <button
@@ -146,63 +122,6 @@ export const IssuesList = ({
                     <span>Add another issue</span>
                 </button>
             ) : null}
-
-            <Menu
-                anchorEl={issueMenuAnchor}
-                open={Boolean(issueMenuAnchor && selectedIssue)}
-                onClose={handleCloseMenu}
-                PaperProps={{ className: styles.issuesMenuPaper }}
-            >
-                <MenuItem
-                    className={styles.issuesMenuItem}
-                    onClick={() => {
-                        if (selectedIssue) {
-                            onEditIssue(selectedIssue);
-                        }
-                        handleCloseMenu();
-                    }}
-                >
-                    <span>Відкрити</span>
-                </MenuItem>
-
-                <MenuItem
-                    className={styles.issuesMenuItem}
-                    disabled={!canMoveUp}
-                    onClick={() => {
-                        if (selectedIssueId && onMoveIssue) {
-                            void onMoveIssue(selectedIssueId, 'up');
-                        }
-                        handleCloseMenu();
-                    }}
-                >
-                    <span>Перемістити вгору</span>
-                </MenuItem>
-
-                <MenuItem
-                    className={styles.issuesMenuItem}
-                    disabled={!canMoveDown}
-                    onClick={() => {
-                        if (selectedIssueId && onMoveIssue) {
-                            void onMoveIssue(selectedIssueId, 'down');
-                        }
-                        handleCloseMenu();
-                    }}
-                >
-                    <span>Перемістити вниз</span>
-                </MenuItem>
-
-                <MenuItem
-                    className={[styles.issuesMenuItem, styles.issuesMenuItemDanger].join(' ')}
-                    onClick={() => {
-                        if (selectedIssueId && onDeleteIssue) {
-                            void onDeleteIssue(selectedIssueId);
-                        }
-                        handleCloseMenu();
-                    }}
-                >
-                    <span>Видалити</span>
-                </MenuItem>
-            </Menu>
         </>
     );
 };

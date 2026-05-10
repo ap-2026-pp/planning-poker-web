@@ -624,28 +624,28 @@ export const useGameRoomPage = () => {
     [gameId],
   );
 
- const deleteIssue = useCallback(
-  async (issueId: string) => {
-    try {
-      await deleteIssueRequest(gameId, issueId);
+  const deleteIssue = useCallback(
+    async (issueId: string) => {
+      try {
+        await deleteIssueRequest(gameId, issueId);
 
-      setIssues((current) => current.filter((issue) => issue.id !== issueId));
+        setIssues((current) => current.filter((issue) => issue.id !== issueId));
 
-      setNotification({
-        message: 'Issue видалено',
-        tone: 'success',
-      });
-    } catch (requestError) {
-      setError(
-        requestError instanceof Error
-          ? requestError.message
-          : 'Не вдалося видалити issue',
-      );
-      throw requestError;
-    }
-  },
-  [gameId],
-);
+        setNotification({
+          message: 'Issue видалено',
+          tone: 'success',
+        });
+      } catch (requestError) {
+        setError(
+          requestError instanceof Error
+            ? requestError.message
+            : 'Не вдалося видалити issue',
+        );
+        throw requestError;
+      }
+    },
+    [gameId],
+  );
 
   const setIssueActive = useCallback(
     async (issueId: string) => {
@@ -670,34 +670,63 @@ export const useGameRoomPage = () => {
 
   const reorderIssue = useCallback(
     async (issueId: string, direction: 'up' | 'down') => {
-      const ordered = [...sortedIssues].sort((a, b) => a.order - b.order);
+      const ordered = [...issues].sort((a, b) => a.order - b.order);
       const currentIndex = ordered.findIndex((issue) => issue.id === issueId);
 
       if (currentIndex < 0) {
         return;
       }
 
-      const targetIndex =
-        direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+      const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
 
       if (targetIndex < 0 || targetIndex >= ordered.length) {
         return;
       }
 
+      const previousIssues = ordered;
+
       const next = [...ordered];
       const [movedIssue] = next.splice(currentIndex, 1);
       next.splice(targetIndex, 0, movedIssue);
 
-      const issuesIds = next.map((issue) => issue.id);
+      const reorderedIssues = next.map((issue, index) => ({
+        ...issue,
+        order: index + 1,
+      }));
+
+      setIssues(reorderedIssues);
 
       try {
-        await reorderIssuesRequest(gameId, { issuesIds });
+        await reorderIssuesRequest(gameId, {
+          issuesIds: reorderedIssues.map((issue) => issue.id),
+        });
+      } catch (requestError) {
+        setIssues(previousIssues);
 
-        setIssues(
-          next.map((issue, index) => ({
-            ...issue,
-            order: index + 1,
-          })),
+        setError(
+          requestError instanceof Error
+            ? requestError.message
+            : 'Не вдалося змінити порядок issue',
+        );
+
+        throw requestError;
+      }
+    },
+    [gameId, issues],
+  );
+
+  const reorderIssues = useCallback(
+    async (issueIds: string[]) => {
+      try {
+        await reorderIssuesRequest(gameId, { issuesIds: issueIds });
+
+        setIssues((current) =>
+          issueIds
+            .map((id, index) => {
+              const issue = current.find((entry) => entry.id === id);
+              return issue ? { ...issue, order: index + 1 } : null;
+            })
+            .filter((issue): issue is Issue => issue !== null),
         );
       } catch (requestError) {
         setError(
@@ -708,7 +737,7 @@ export const useGameRoomPage = () => {
         throw requestError;
       }
     },
-    [gameId, sortedIssues],
+    [gameId],
   );
 
   return {
@@ -743,6 +772,7 @@ export const useGameRoomPage = () => {
     deleteIssue,
     setIssueActive,
     reorderIssue,
+    reorderIssues,
     sortedParticipants,
     sortedIssues,
     positionedParticipants,

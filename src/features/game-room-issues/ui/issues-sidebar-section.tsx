@@ -20,6 +20,7 @@ type IssuesSidebarSectionProps = {
     onDeleteIssue?: (issueId: string) => Promise<void>;
     onSetIssueActive?: (issueId: string) => Promise<void>;
     onMoveIssue?: (issueId: string, direction: 'up' | 'down') => Promise<void>;
+    onReorderIssues?: (issueIds: string[]) => Promise<void>;
 };
 
 const initialDraft: IssueDraft = {
@@ -36,6 +37,7 @@ export const IssuesSidebarSection = ({
     onDeleteIssue,
     onSetIssueActive,
     onMoveIssue,
+    onReorderIssues,
 }: IssuesSidebarSectionProps) => {
     const [issueMode, setIssueMode] = useState<'list' | 'create' | 'edit'>('list');
     const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
@@ -156,6 +158,7 @@ export const IssuesSidebarSection = ({
                             onDeleteIssue={onDeleteIssue}
                             onSetIssueActive={onSetIssueActive}
                             onMoveIssue={onMoveIssue}
+                            onReorderIssues={onReorderIssues}
                         />
                     )
                 ) : null}
