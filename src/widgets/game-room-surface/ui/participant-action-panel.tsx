@@ -1,18 +1,10 @@
 import PersonRemoveRoundedIcon from '@mui/icons-material/PersonRemoveRounded';
 import ShieldRoundedIcon from '@mui/icons-material/ShieldRounded';
-import {
-    Box,
-    Button,
-    CircularProgress,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Typography,
-} from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { useState } from 'react';
 
 import { ParticipantRole, roleLabels, type GameParticipant } from '@entities/participant';
+import { ConfirmActionDialog } from '@shared/ui/confirm-action-dialog/confirm-action-dialog';
 import styles from './game-room-surface.module.css';
 
 type ParticipantActionPanelProps = {
@@ -38,7 +30,8 @@ export const ParticipantActionPanel = ({
 
     const isSelf = participant.id === currentParticipantId;
     const canManageParticipant = isCurrentParticipantMaster && !isSelf;
-    const canTransferMaster = canManageParticipant && participant.role !== ParticipantRole.Spectator;
+    const canTransferMaster =
+        canManageParticipant && participant.role !== ParticipantRole.Spectator;
 
     const handleCloseDialog = () => {
         if (isPending) {
@@ -61,91 +54,82 @@ export const ParticipantActionPanel = ({
         }
     };
 
-    if (canManageParticipant) {
+    if (!canManageParticipant) {
         return (
-            <>
-                <Box className={styles.participantActionPanel}>
-                    {canTransferMaster ? (
-                        <button
-                            type="button"
-                            className={styles.participantActionButton}
-                            disabled={isPending}
-                            onClick={(event) => {
-                                event.stopPropagation();
-                                setConfirmAction('transfer');
-                            }}
-                        >
-                            {isPending ? <CircularProgress size={14} color="inherit" /> : <ShieldRoundedIcon />}
-                            <span>Передати master</span>
-                        </button>
-                    ) : null}
-
-                    <button
-                        type="button"
-                        className={[styles.participantActionButton, styles.participantActionDanger].join(' ')}
-                        disabled={isPending}
-                        onClick={(event) => {
-                            event.stopPropagation();
-                            setConfirmAction('remove');
-                        }}
-                    >
-                        {isPending ? <CircularProgress size={14} color="inherit" /> : <PersonRemoveRoundedIcon />}
-                        <span>Видалити</span>
-                    </button>
-                </Box>
-
-                <Dialog open={Boolean(confirmAction)} onClose={handleCloseDialog}>
-                    <DialogTitle>
-                        {confirmAction === 'remove'
-                            ? 'Видалити учасника?'
-                            : 'Передати права master?'}
-                    </DialogTitle>
-
-                    <DialogContent>
-                        <Typography>
-                            {confirmAction === 'remove'
-                                ? (
-                                    <>
-                                        Ви впевнені, що хочете видалити <strong>{participant.displayName}</strong> з кімнати?
-                                    </>
-                                )
-                                : (
-                                    <>
-                                        Ви впевнені, що хочете передати права master учаснику{' '}
-                                        <strong>{participant.displayName}</strong>?
-                                    </>
-                                )}
-                        </Typography>
-                    </DialogContent>
-
-                    <DialogActions>
-                        <Button onClick={handleCloseDialog} disabled={isPending}>
-                            Скасувати
-                        </Button>
-
-                        <Button
-                            onClick={() => void handleConfirm()}
-                            disabled={isPending}
-                            color={confirmAction === 'remove' ? 'error' : 'primary'}
-                            variant="contained"
-                        >
-                            {isPending
-                                ? confirmAction === 'remove'
-                                    ? 'Видаляємо...'
-                                    : 'Передаємо...'
-                                : confirmAction === 'remove'
-                                    ? 'Видалити'
-                                    : 'Передати'}
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </>
+            <Box className={styles.participantHintPanel}>
+                {isSelf ? 'Ви' : roleLabels[participant.role]}
+            </Box>
         );
     }
 
+    const dialogTitle =
+        confirmAction === 'remove'
+            ? 'Видалити учасника?'
+            : 'Передати права master?';
+
+    const dialogDescription =
+        confirmAction === 'remove'
+            ? `Ви впевнені, що хочете видалити ${participant.displayName} з кімнати?`
+            : `Ви впевнені, що хочете передати права master учаснику ${participant.displayName}?`;
+
+    const confirmLabel =
+        isPending
+            ? confirmAction === 'remove'
+                ? 'Видаляємо...'
+                : 'Передаємо...'
+            : confirmAction === 'remove'
+                ? 'Видалити'
+                : 'Передати';
+
     return (
-        <Box className={styles.participantHintPanel}>
-            {isSelf ? 'Ви' : roleLabels[participant.role]}
-        </Box>
+        <>
+            <Box className={styles.participantActionPanel}>
+                {canTransferMaster ? (
+                    <button
+                        type="button"
+                        className={styles.participantActionButton}
+                        disabled={isPending}
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            setConfirmAction('transfer');
+                        }}
+                    >
+                        {isPending ? (
+                            <CircularProgress size={14} color="inherit" />
+                        ) : (
+                            <ShieldRoundedIcon />
+                        )}
+                        <span>Передати master</span>
+                    </button>
+                ) : null}
+
+                <button
+                    type="button"
+                    className={[styles.participantActionButton, styles.participantActionDanger].join(' ')}
+                    disabled={isPending}
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        setConfirmAction('remove');
+                    }}
+                >
+                    {isPending ? (
+                        <CircularProgress size={14} color="inherit" />
+                    ) : (
+                        <PersonRemoveRoundedIcon />
+                    )}
+                    <span>Видалити</span>
+                </button>
+            </Box>
+
+            <ConfirmActionDialog
+                open={Boolean(confirmAction)}
+                title={dialogTitle}
+                description={dialogDescription}
+                confirmLabel={confirmLabel}
+                cancelLabel="Скасувати"
+                onClose={handleCloseDialog}
+                onConfirm={() => void handleConfirm()}
+            />
+        </>
     );
 };
