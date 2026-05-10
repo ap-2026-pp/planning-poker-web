@@ -224,16 +224,59 @@
   border: 1px solid rgba(255, 255, 255, 0.07);
   background: rgba(255, 255, 255, 0.03);
   padding: 14px 16px;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    opacity 160ms ease;
+}
+
+.playerListItemOffline {
+  opacity: 0.72;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.playerListRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .playerIdentity {
   display: flex;
+  min-width: 0;
   align-items: center;
   gap: 14px;
 }
 
 .playerPresenceWrap {
   position: relative;
+  flex-shrink: 0;
+}
+
+.playerListText {
+  min-width: 0;
+  flex: 1;
+}
+
+.playerRemoveButton {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px !important;
+  border: 1px solid rgba(255, 96, 129, 0.18) !important;
+  background: rgba(255, 96, 129, 0.08) !important;
+  color: #ffd7df !important;
+}
+
+.playerRemoveButton:hover {
+  background: rgba(255, 96, 129, 0.16) !important;
+  border-color: rgba(255, 96, 129, 0.34) !important;
+}
+
+.playerRemoveButton:disabled {
+  opacity: 0.5;
+  cursor: wait;
 }
 
 .playerPresence {
@@ -250,10 +293,6 @@
   background: #30d4b0;
 }
 
-.playerPresenceOffline {
-  background: rgba(168, 156, 192, 0.45);
-}
-
 .playerListAvatar {
   width: 48px;
   height: 48px;
@@ -263,10 +302,6 @@
   background: linear-gradient(180deg, #9167ff 0%, #7249e1 100%);
   color: #ffffff;
   font-weight: 800;
-}
-
-.playerListText {
-  min-width: 0;
 }
 
 .playerListName {

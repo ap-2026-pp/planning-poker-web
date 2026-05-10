@@ -35,7 +35,7 @@ import {
   type SidebarView,
 } from './game-room';
 import {
-  applyGameRoomMasterChange,
+  applyGameRoomParticipantUpdate,
   removeGameRoomParticipant,
   upsertGameRoomParticipant,
 } from './game-room-realtime';
@@ -353,11 +353,15 @@ export const useGameRoomPage = () => {
       (entry) => entry.id === participant.id,
     );
 
-    setParticipants((current) => applyGameRoomMasterChange(current, participant));
+    setParticipants((current) => applyGameRoomParticipantUpdate(current, participant));
+
+    if (!previousParticipant) {
+      return;
+    }
 
     if (
       participant.role === ParticipantRole.Master &&
-      previousParticipant?.role !== ParticipantRole.Master
+      previousParticipant.role !== ParticipantRole.Master
     ) {
       setNotification({
         message: `${participant.displayName} тепер керує кімнатою`,
@@ -368,9 +372,32 @@ export const useGameRoomPage = () => {
     }
 
     if (
-      previousParticipant &&
-      previousParticipant.displayName !== participant.displayName
+      previousParticipant.isConnected &&
+      !participant.isConnected &&
+      !participant.removedAt
     ) {
+      setNotification({
+        message: `${participant.displayName} покинув(-ла) кімнату`,
+        tone: 'info',
+      });
+
+      return;
+    }
+
+    if (
+      !previousParticipant.isConnected &&
+      participant.isConnected &&
+      !participant.removedAt
+    ) {
+      setNotification({
+        message: `${participant.displayName} знову в кімнаті`,
+        tone: 'success',
+      });
+
+      return;
+    }
+
+    if (previousParticipant.displayName !== participant.displayName) {
       setNotification({
         message: `${participant.displayName} змінив(ла) своє імʼя`,
         tone: 'info',

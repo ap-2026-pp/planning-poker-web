@@ -45,7 +45,7 @@ export const removeGameRoomParticipant = (
   return participants.filter((participant) => participant.id !== participantId);
 };
 
-export const applyGameRoomMasterChange = (
+export const applyGameRoomParticipantUpdate = (
   participants: GameParticipant[],
   participantUpdate: GameParticipant,
 ) => {

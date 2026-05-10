@@ -1,5 +1,5 @@
 import { Alert, Button, Snackbar } from '@mui/material';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type ConnectionStatus = 'connected' | 'connecting' | 'reconnecting' | 'disconnected';
 
@@ -8,101 +8,131 @@ type ConnectionStatusProps = {
     onRetry?: () => void;
 };
 
+type SnackbarState =
+    | {
+        open: false;
+        severity: 'info';
+        message: '';
+        action: null;
+        autoHideDuration?: number;
+    }
+    | {
+        open: true;
+        severity: 'success' | 'warning' | 'error';
+        message: string;
+        action: React.ReactNode;
+        autoHideDuration?: number;
+    };
+
 export const ConnectionStatus = ({ status, onRetry }: ConnectionStatusProps) => {
-    const [showRetry, setShowRetry] = useState(false);
-    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-    const [wasDisconnected, setWasDisconnected] = useState(false);
-    const [hasBeenConnected, setHasBeenConnected] = useState(false);
+    const [snackbarState, setSnackbarState] = useState<SnackbarState>({
+        open: false,
+        severity: 'info',
+        message: '',
+        action: null,
+    });
+
+    const previousStatusRef = useRef<ConnectionStatus>('connecting');
+    const hadSuccessfulConnectionRef = useRef(false);
+    const retryTimerRef = useRef<number | null>(null);
 
     useEffect(() => {
-        setWasDisconnected(false);
-        setHasBeenConnected(false);
-        setShowRetry(false);
-        setShowSuccessMessage(false);
+        return () => {
+            if (retryTimerRef.current !== null) {
+                window.clearTimeout(retryTimerRef.current);
+            }
+        };
     }, []);
 
     useEffect(() => {
-        if (status === 'reconnecting') {
-            if (hasBeenConnected) {
-                setWasDisconnected(true);
-            }
-            setShowRetry(false);
-            setShowSuccessMessage(false);
-            return;
-        }
+        const previousStatus = previousStatusRef.current;
 
-        if (status === 'disconnected') {
-            if (hasBeenConnected) {
-                setWasDisconnected(true);
-            }
-
-            const timer = setTimeout(() => setShowRetry(true), 3000);
-            return () => clearTimeout(timer);
+        if (retryTimerRef.current !== null) {
+            window.clearTimeout(retryTimerRef.current);
+            retryTimerRef.current = null;
         }
 
         if (status === 'connected') {
-            setHasBeenConnected(true);
-            setShowRetry(false);
+            const shouldShowRestored =
+                hadSuccessfulConnectionRef.current &&
+                (previousStatus === 'reconnecting' || previousStatus === 'disconnected');
 
-            if (wasDisconnected) {
-                setShowSuccessMessage(true);
-                setWasDisconnected(false);
+            hadSuccessfulConnectionRef.current = true;
 
-                const timer = setTimeout(() => setShowSuccessMessage(false), 3000);
-                return () => clearTimeout(timer);
+            if (shouldShowRestored) {
+                setSnackbarState({
+                    open: true,
+                    severity: 'success',
+                    message: "З'єднання відновлено",
+                    action: null,
+                    autoHideDuration: 3000,
+                });
+            } else {
+                setSnackbarState({
+                    open: false,
+                    severity: 'info',
+                    message: '',
+                    action: null,
+                });
             }
         }
-    }, [status, wasDisconnected, hasBeenConnected]);
 
-    const snackbarConfig = useMemo(() => {
-        if (showSuccessMessage && status === 'connected') {
-            return {
-                open: true,
-                severity: 'success' as const,
-                message: "З'єднання відновлено",
-                action: null,
-                autoHideDuration: 3000,
-            };
+        if (status === 'reconnecting') {
+            if (hadSuccessfulConnectionRef.current) {
+                setSnackbarState({
+                    open: true,
+                    severity: 'warning',
+                    message: "Відновлюємо з'єднання…",
+                    action: null,
+                });
+            }
         }
 
-        if (status === 'disconnected' && hasBeenConnected) {
-            return {
-                open: true,
-                severity: 'error' as const,
-                message: "Не вдалося відновити з'єднання",
-                action:
-                    showRetry && onRetry ? (
-                        <Button color="inherit" size="small" onClick={onRetry}>
-                            Спробувати ще
-                        </Button>
-                    ) : null,
-                autoHideDuration: null,
-            };
+        if (status === 'disconnected') {
+            if (hadSuccessfulConnectionRef.current) {
+                setSnackbarState({
+                    open: true,
+                    severity: 'error',
+                    message: "Не вдалося відновити з'єднання",
+                    action: null,
+                });
+
+                retryTimerRef.current = window.setTimeout(() => {
+                    setSnackbarState({
+                        open: true,
+                        severity: 'error',
+                        message: "Не вдалося відновити з'єднання",
+                        action: onRetry ? (
+                            <Button color="inherit" size="small" onClick={onRetry}>
+                                Спробувати ще
+                            </Button>
+                        ) : null,
+                    });
+                }, 3000);
+            }
         }
 
-        if (status === 'reconnecting' && hasBeenConnected) {
-            return {
-                open: true,
-                severity: 'warning' as const,
-                message: "Відновлюємо з'єднання…",
-                action: null,
-                autoHideDuration: null,
-            };
+        previousStatusRef.current = status;
+    }, [status, onRetry]);
+
+    const handleClose = (_?: unknown, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
         }
 
-        return {
+        setSnackbarState({
             open: false,
-            severity: 'info' as const,
+            severity: 'info',
             message: '',
             action: null,
-            autoHideDuration: null,
-        };
-    }, [showSuccessMessage, status, hasBeenConnected, showRetry, onRetry]);
+        });
+    };
 
     return (
         <Snackbar
-            open={snackbarConfig.open}
-            autoHideDuration={snackbarConfig.autoHideDuration ?? undefined}
+            open={snackbarState.open}
+            autoHideDuration={snackbarState.autoHideDuration}
+            onClose={handleClose}
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             slotProps={{
                 transition: {
@@ -110,8 +140,12 @@ export const ConnectionStatus = ({ status, onRetry }: ConnectionStatusProps) => 
                 },
             }}
         >
-            <Alert severity={snackbarConfig.severity} action={snackbarConfig.action}>
-                {snackbarConfig.message}
+            <Alert
+                severity={snackbarState.severity === 'info' ? 'info' : snackbarState.severity}
+                action={snackbarState.action}
+                onClose={handleClose}
+            >
+                {snackbarState.message}
             </Alert>
         </Snackbar>
     );

@@ -66,8 +66,12 @@ export const GameRoomPage = () => {
             sidebarView={room.sidebarView}
             issues={room.sortedIssues}
             participants={room.sortedParticipants}
+            currentParticipantId={room.currentParticipantId}
+            isCurrentParticipantMaster={room.isCurrentParticipantMaster}
+            pendingParticipantActionId={room.pendingParticipantActionId}
             onSidebarViewChange={room.setSidebarView}
             onClose={room.closeSidebar}
+            onRemoveParticipant={room.removeParticipant}
           />
         </Box>
       </Drawer>
@@ -114,13 +118,22 @@ export const GameRoomPage = () => {
         open={Boolean(room.notification)}
         autoHideDuration={3200}
         onClose={room.closeNotification}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        sx={{
+          mt: '88px',
+          mr: '10px',
+        }}
       >
         <Alert
           onClose={room.closeNotification}
           severity={room.notification?.tone ?? 'info'}
           variant="filled"
-          sx={{ width: '100%' }}
+          sx={{
+            minWidth: 320,
+            maxWidth: 420,
+            width: 'auto',
+            borderRadius: '14px',
+          }}
         >
           {room.notification?.message}
         </Alert>
