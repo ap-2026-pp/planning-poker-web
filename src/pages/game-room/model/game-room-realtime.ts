@@ -13,6 +13,7 @@ export const gameRoomRealtimeEventNames = {
 
 export const buildGameRoomHubUrl = (gameId: string) => {
   const separator = env.signalRHubPath.includes('?') ? '&' : '?';
+
   return `${env.signalRHubPath}${separator}gameId=${encodeURIComponent(gameId)}`;
 };
 
@@ -24,7 +25,9 @@ export const upsertGameRoomParticipant = (
   participants: GameParticipant[],
   nextParticipant: GameParticipant,
 ) => {
-  const existingIndex = participants.findIndex((participant) => participant.id === nextParticipant.id);
+  const existingIndex = participants.findIndex(
+    (participant) => participant.id === nextParticipant.id,
+  );
 
   if (existingIndex < 0) {
     return [...participants, nextParticipant];
@@ -52,7 +55,11 @@ export const applyGameRoomMasterChange = (
 
   const normalizedParticipants = participants.map((participant) => {
     if (participant.id === participantUpdate.id) {
-      return { ...participant, ...participantUpdate, role: ParticipantRole.Master };
+      return {
+        ...participant,
+        ...participantUpdate,
+        role: ParticipantRole.Master,
+      };
     }
 
     if (participant.role === ParticipantRole.Master) {

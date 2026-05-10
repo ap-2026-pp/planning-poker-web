@@ -35,6 +35,7 @@ import {
   type SidebarView,
 } from './game-room';
 import {
+  applyGameRoomMasterChange,
   removeGameRoomParticipant,
   upsertGameRoomParticipant,
 } from './game-room-realtime';
@@ -348,15 +349,21 @@ export const useGameRoomPage = () => {
   }, []);
 
   const handleUserUpdated = useCallback((participant: GameParticipant) => {
-    const previousParticipant = participantsRef.current.find((entry) => entry.id === participant.id);
+    const previousParticipant = participantsRef.current.find(
+      (entry) => entry.id === participant.id,
+    );
 
-    setParticipants((current) => upsertGameRoomParticipant(current, participant));
+    setParticipants((current) => applyGameRoomMasterChange(current, participant));
 
-    if (participant.role === ParticipantRole.Master && previousParticipant?.role !== ParticipantRole.Master) {
+    if (
+      participant.role === ParticipantRole.Master &&
+      previousParticipant?.role !== ParticipantRole.Master
+    ) {
       setNotification({
         message: `${participant.displayName} тепер керує кімнатою`,
         tone: 'info',
       });
+
       return;
     }
 
@@ -373,19 +380,44 @@ export const useGameRoomPage = () => {
 
   const handleParticipantRemoved = useCallback(
     (participantId: string, reason: 'left' | 'kicked') => {
-      const participant = participantsRef.current.find((entry) => entry.id === participantId);
-      const remainingParticipants = removeGameRoomParticipant(participantsRef.current, participantId);
-      const expectedCurrentParticipantId =
-        currentParticipantIdRef.current ??
-        (storedParticipantSession?.gameId === gameId ? storedParticipantSession.participantId : null);
-      const hasCurrentParticipant =
-        (expectedCurrentParticipantId
-          ? remainingParticipants.some((entry) => entry.id === expectedCurrentParticipantId)
-          : false) ||
-        (user?.id ? remainingParticipants.some((entry) => entry.userId === user.id) : false);
+      const participant = participantsRef.current.find(
+        (entry) => entry.id === participantId,
+      );
 
-      setParticipants(remainingParticipants);
-      setSelectedParticipantId((current) => (current === participantId ? null : current));
+      setParticipants((current) => {
+        const remainingParticipants = removeGameRoomParticipant(current, participantId);
+
+        const expectedCurrentParticipantId =
+          currentParticipantIdRef.current ??
+          (storedParticipantSession?.gameId === gameId
+            ? storedParticipantSession.participantId
+            : null);
+
+        const hasCurrentParticipant =
+          (expectedCurrentParticipantId
+            ? remainingParticipants.some(
+              (entry) => entry.id === expectedCurrentParticipantId,
+            )
+            : false) ||
+          (user?.id
+            ? remainingParticipants.some((entry) => entry.userId === user.id)
+            : false);
+
+        if (!hasCurrentParticipant) {
+          clearCurrentRoomParticipantSession();
+          clearGuestAccessToken();
+          setQrDialogOpen(false);
+          closeSidebar();
+          closeInviteDialog();
+          void navigate(appRoutes.home, { replace: true });
+        }
+
+        return remainingParticipants;
+      });
+
+      setSelectedParticipantId((current) =>
+        current === participantId ? null : current,
+      );
 
       if (participant) {
         setNotification({
@@ -396,17 +428,16 @@ export const useGameRoomPage = () => {
           tone: reason === 'kicked' ? 'warning' : 'info',
         });
       }
-
-      if (!hasCurrentParticipant) {
-        clearCurrentRoomParticipantSession();
-        clearGuestAccessToken();
-        setQrDialogOpen(false);
-        closeSidebar();
-        closeInviteDialog();
-        void navigate(appRoutes.home, { replace: true });
-      }
     },
-    [closeInviteDialog, closeSidebar, gameId, navigate, storedParticipantSession?.gameId, storedParticipantSession?.participantId, user?.id],
+    [
+      closeInviteDialog,
+      closeSidebar,
+      gameId,
+      navigate,
+      storedParticipantSession?.gameId,
+      storedParticipantSession?.participantId,
+      user?.id,
+    ],
   );
 
   const handleRealtimeParticipantLeft = useCallback(
@@ -488,6 +519,7 @@ export const useGameRoomPage = () => {
 
   return {
     gameId,
+    reloadRoom,
     loading,
     error,
     sidebarView,

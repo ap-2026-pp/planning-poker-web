@@ -24,6 +24,19 @@
   height: 100%;
 }
 
+.editGameDialogPaper {
+  width: min(620px, calc(100vw - 28px)) !important;
+  max-width: 620px !important;
+  border-radius: 42px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.editGameDialogBody {
+  width: 100%;
+}
+
 @media (max-width: 640px) {
   .sidebarDrawerPaper {
     width: 100vw;

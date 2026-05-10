@@ -1,16 +1,18 @@
-import { Alert, Box, Drawer, Snackbar, Stack } from '@mui/material';
+import { Alert, Box, Dialog, Drawer, Snackbar, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import { ConnectionStatus } from '@features/connection-status';
 import { GameRoomInviteDialog, GameRoomQrDialog } from '@widgets/game-room-invite';
 import { GameRoomSidebar } from '@widgets/game-room-sidebar';
 import { GameRoomSurface } from '@widgets/game-room-surface';
+import { GameForm } from '@pages/create-game/ui/game-form';
 import { useGameRoomPage } from '../model/use-game-room-page';
 import styles from './game-room-page.module.css';
 
 export const GameRoomPage = () => {
   const room = useGameRoomPage();
   const [showLoading, setShowLoading] = useState(false);
+  const [isEditGameOpen, setEditGameOpen] = useState(false);
 
   useEffect(() => {
     if (room.loading) {
@@ -49,6 +51,7 @@ export const GameRoomPage = () => {
           onParticipantSelect={room.selectParticipant}
           onRemoveParticipant={room.removeParticipant}
           onTransferMaster={room.transferMaster}
+          onOpenGameSettings={() => setEditGameOpen(true)}
         />
       </Box>
 
@@ -88,6 +91,24 @@ export const GameRoomPage = () => {
         onClose={room.closeQrDialog}
         onCopyInviteLink={() => room.copyText(room.inviteUrl, 'invite-link')}
       />
+
+      <Dialog
+        open={isEditGameOpen}
+        onClose={() => setEditGameOpen(false)}
+        PaperProps={{ className: styles.editGameDialogPaper }}
+      >
+        <Box className={styles.editGameDialogBody}>
+          <GameForm
+            mode="edit"
+            gameId={room.gameId}
+            onClose={() => setEditGameOpen(false)}
+            onSaved={() => {
+              setEditGameOpen(false);
+              void room.reloadRoom?.();
+            }}
+          />
+        </Box>
+      </Dialog>
 
       <Snackbar
         open={Boolean(room.notification)}

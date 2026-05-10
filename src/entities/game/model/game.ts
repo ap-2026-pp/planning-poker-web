@@ -18,6 +18,7 @@ export type Game = {
   autoRevealCards: boolean;
   showAverage: boolean;
   showCountdownAnimation: boolean;
+  enableFunFeatures: boolean;
   isActive: boolean;
   createdAt: string;
   createdBy?: string | null;
@@ -32,6 +33,7 @@ export type CreateGamePayload = {
   autoRevealCards: boolean;
   showAverage: boolean;
   showCountdownAnimation: boolean;
+  enableFunFeatures: boolean;
 };
 
 export type UpdateGamePayload = {
@@ -41,6 +43,7 @@ export type UpdateGamePayload = {
   showAverage: boolean;
   showCountdownAnimation: boolean;
   isActive: boolean;
+  enableFunFeatures: boolean;
 };
 
 export type JoinGamePayload = {

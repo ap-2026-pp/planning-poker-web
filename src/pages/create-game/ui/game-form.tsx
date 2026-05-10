@@ -37,6 +37,8 @@ type GameFormValues = UpdateGamePayload & {
 type GameFormProps = {
   mode: GameFormMode;
   gameId?: string;
+  onClose?: () => void;
+  onSaved?: () => void;
 };
 
 type LocationState = {
@@ -51,6 +53,7 @@ const initialValues: GameFormValues = {
   showAverage: true,
   showCountdownAnimation: true,
   isActive: true,
+  enableFunFeatures: true,
 };
 
 const modeCopy = {
@@ -79,7 +82,7 @@ const modeCopy = {
   }
 >;
 
-export const GameForm = ({ mode, gameId }: GameFormProps) => {
+export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -123,6 +126,7 @@ export const GameForm = ({ mode, gameId }: GameFormProps) => {
           showAverage: game.showAverage,
           showCountdownAnimation: game.showCountdownAnimation,
           isActive: game.isActive,
+          enableFunFeatures: game.enableFunFeatures,
         });
       } catch (error) {
         if (isMounted) {
@@ -150,7 +154,7 @@ export const GameForm = ({ mode, gameId }: GameFormProps) => {
     };
 
   const handleSwitchChange =
-    (field: 'autoRevealCards' | 'showAverage' | 'showCountdownAnimation') =>
+    (field: 'autoRevealCards' | 'showAverage' | 'showCountdownAnimation' | 'enableFunFeatures') =>
       (_event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
         setValues((current) => ({ ...current, [field]: checked }));
       };
@@ -175,6 +179,7 @@ export const GameForm = ({ mode, gameId }: GameFormProps) => {
           autoRevealCards: values.autoRevealCards,
           showAverage: values.showAverage,
           showCountdownAnimation: values.showCountdownAnimation,
+          enableFunFeatures: values.enableFunFeatures,
         });
 
         await navigate(appRoutes.gameRoom(createdGame.id), {
@@ -194,7 +199,15 @@ export const GameForm = ({ mode, gameId }: GameFormProps) => {
         showAverage: values.showAverage,
         showCountdownAnimation: values.showCountdownAnimation,
         isActive: values.isActive,
+        enableFunFeatures: values.enableFunFeatures,
       });
+
+      if (onSaved) {
+        onSaved();
+        return;
+      }
+
+      await navigate(from || appRoutes.myGames);
 
       await navigate(from || appRoutes.myGames);
     } catch (error) {
@@ -222,7 +235,7 @@ export const GameForm = ({ mode, gameId }: GameFormProps) => {
       accent="purple"
       submitError={submitError}
       onSubmit={handleSubmit}
-      onClose={handleClose}
+      onClose={onClose ?? handleClose}
       actions={
         <Button
           type="submit"
@@ -355,6 +368,25 @@ export const GameForm = ({ mode, gameId }: GameFormProps) => {
               <Switch
                 checked={values.showCountdownAnimation}
                 onChange={handleSwitchChange('showCountdownAnimation')}
+                className={styles.optionSwitch}
+              />
+            </Box>
+
+
+
+            <Box className={styles.optionRow}>
+              <Stack className={styles.optionCopy}>
+                <Typography className={styles.optionTitle}>
+                  Фан-фічі
+                </Typography>
+                <Typography className={styles.optionHint}>
+                  Увімкнути додаткові фан-фічі для гри.
+                </Typography>
+              </Stack>
+
+              <Switch
+                checked={values.enableFunFeatures}
+                onChange={handleSwitchChange('enableFunFeatures')}
                 className={styles.optionSwitch}
               />
             </Box>

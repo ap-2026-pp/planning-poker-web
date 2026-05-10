@@ -49,9 +49,10 @@
 .surfaceTopBar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  justify-content: flex-start;
+  gap: 12px;
   flex-wrap: wrap;
+  padding-inline: 24px;
 }
 
 .surfaceMeta {
@@ -451,6 +452,37 @@
   overflow-wrap: anywhere;
 }
 
+.settingsPillButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(214, 190, 255, 0.16);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(245, 238, 255, 0.9);
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.settingsPillButton:hover {
+  transform: translateY(-1px);
+  border-color: rgba(205, 174, 255, 0.34);
+  background: rgba(193, 142, 255, 0.12);
+  color: #ffffff;
+}
+
+.settingsPillIcon {
+  font-size: 1.15rem !important;
+}
+
 .voteDeck {
   align-self: center;
   margin-top: auto;
@@ -600,18 +632,32 @@ box-shadow:
 }
 
 @media (max-width: 640px) {
+  .surfaceTopBar {
+    padding-inline: 10px;
+  }
+
   .surfaceMeta {
     gap: 8px;
   }
 
-  .copyMetaButton {
-    width: 100%;
-    justify-content: center;
+  .settingsPillButton {
+    min-height: 36px;
+    padding-inline: 12px;
+    font-size: 0.88rem;
+  }
+
+  .settingsPillIcon {
+    font-size: 1.05rem !important;
   }
 
   .metaPill {
     min-height: 36px;
     font-size: 0.88rem;
+  }
+
+  .copyMetaButton {
+    width: 100%;
+    justify-content: center;
   }
 
   .boardArena {

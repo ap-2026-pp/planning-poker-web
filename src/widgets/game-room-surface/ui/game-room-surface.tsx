@@ -29,34 +29,30 @@ type GameRoomSurfaceProps = {
   onParticipantSelect: (participantId: string) => void;
   onRemoveParticipant: (participantId: string) => Promise<void>;
   onTransferMaster: (participantId: string) => Promise<void>;
+  onOpenGameSettings: () => void;
 };
 
 export const GameRoomSurface = ({
-  inviteCode,
-  copiedItem,
   onlineParticipantsCount,
   currentParticipantId,
   isCurrentParticipantMaster,
   selectedParticipantId,
   pendingParticipantActionId,
-  votingSystemLabel,
   roundLabel,
   activeIssue,
   positionedParticipants,
   overflowParticipants,
   deckValues,
-  onCopyCode,
   onParticipantSelect,
   onRemoveParticipant,
   onTransferMaster,
+  onOpenGameSettings,
 }: GameRoomSurfaceProps) => (
   <Box className={styles.tableSurface}>
     <SurfaceMetaBar
-      inviteCode={inviteCode}
-      copiedItem={copiedItem}
       onlineParticipantsCount={onlineParticipantsCount}
-      votingSystemLabel={votingSystemLabel}
-      onCopyCode={onCopyCode}
+      showSettings={isCurrentParticipantMaster}
+      onOpenGameSettings={onOpenGameSettings}
     />
 
     <RoundStatusLine roundLabel={roundLabel} />
