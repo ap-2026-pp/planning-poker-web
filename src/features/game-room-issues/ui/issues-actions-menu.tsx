@@ -8,58 +8,79 @@ import { useState } from 'react';
 import styles from '@widgets/game-room-sidebar/ui/game-room-sidebar.module.css';
 
 type IssuesActionsMenuProps = {
-  isCurrentParticipantMaster: boolean;
+    isCurrentParticipantMaster: boolean;
+    hasIssues: boolean;
+    onDeleteAllIssues?: () => Promise<void>;
 };
 
 export const IssuesActionsMenu = ({
-  isCurrentParticipantMaster,
+    isCurrentParticipantMaster,
+    hasIssues,
+    onDeleteAllIssues,
 }: IssuesActionsMenuProps) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
-  if (!isCurrentParticipantMaster) {
-    return null;
-  }
+    if (!isCurrentParticipantMaster) {
+        return null;
+    }
 
-  return (
-    <>
-      <IconButton
-        className={styles.issuesMenuButton}
-        onClick={(event) => setAnchorEl(event.currentTarget)}
-        aria-label="Меню issues"
-      >
-        <MoreVertRoundedIcon />
-      </IconButton>
+    const handleDeleteAllIssues = async () => {
+        if (!onDeleteAllIssues || !hasIssues || isDeleting) {
+            return;
+        }
 
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={() => setAnchorEl(null)}
-        PaperProps={{ className: styles.issuesMenuPaper }}
-      >
-        <MenuItem
-          className={styles.issuesMenuItem}
-          onClick={() => setAnchorEl(null)}
-        >
-          <DownloadRoundedIcon fontSize="small" />
-          <span>Download issues as CSV</span>
-        </MenuItem>
+        setIsDeleting(true);
 
-        <MenuItem
-          className={styles.issuesMenuItem}
-          onClick={() => setAnchorEl(null)}
-        >
-          <UploadRoundedIcon fontSize="small" />
-          <span>Import from Plane</span>
-        </MenuItem>
+        try {
+            await onDeleteAllIssues();
+            setAnchorEl(null);
+        } finally {
+            setIsDeleting(false);
+        }
+    };
 
-        <MenuItem
-          className={[styles.issuesMenuItem, styles.issuesMenuItemDanger].join(' ')}
-          onClick={() => setAnchorEl(null)}
-        >
-          <DeleteOutlineRoundedIcon fontSize="small" />
-          <span>Delete all issues</span>
-        </MenuItem>
-      </Menu>
-    </>
-  );
+    return (
+        <>
+            <IconButton
+                className={styles.issuesMenuButton}
+                onClick={(event) => setAnchorEl(event.currentTarget)}
+                aria-label="Меню issues"
+            >
+                <MoreVertRoundedIcon />
+            </IconButton>
+
+            <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={() => setAnchorEl(null)}
+                PaperProps={{ className: styles.issuesMenuPaper }}
+            >
+                <MenuItem
+                    className={styles.issuesMenuItem}
+                    onClick={() => setAnchorEl(null)}
+                >
+                    <DownloadRoundedIcon fontSize="small" />
+                    <span>Download issues as CSV</span>
+                </MenuItem>
+
+                <MenuItem
+                    className={styles.issuesMenuItem}
+                    onClick={() => setAnchorEl(null)}
+                >
+                    <UploadRoundedIcon fontSize="small" />
+                    <span>Import from Plane</span>
+                </MenuItem>
+
+                <MenuItem
+                    className={[styles.issuesMenuItem, styles.issuesMenuItemDanger].join(' ')}
+                    disabled={!hasIssues || isDeleting}
+                    onClick={() => void handleDeleteAllIssues()}
+                >
+                    <DeleteOutlineRoundedIcon fontSize="small" />
+                    <span>{isDeleting ? 'Deleting...' : 'Delete all issues'}</span>
+                </MenuItem>
+            </Menu>
+        </>
+    );
 };

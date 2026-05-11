@@ -510,43 +510,43 @@ export const useGameRoomPage = () => {
     [handleParticipantRemoved],
   );
 
- const handleGameUpdated = useCallback(
-  (updatedGame: Game | string) => {
-    if (typeof updatedGame === 'string') {
+  const handleGameUpdated = useCallback(
+    (updatedGame: Game | string) => {
+      if (typeof updatedGame === 'string') {
+        setNotification({
+          message: 'Налаштування гри оновлено',
+          tone: 'success',
+        });
+
+        return;
+      }
+
+      setGame(updatedGame);
+
+      if (!updatedGame.isActive) {
+        clearCurrentRoomParticipantSession();
+        clearGuestAccessToken();
+
+        setQrDialogOpen(false);
+        closeSidebar();
+        closeInviteDialog();
+
+        setNotification({
+          message: 'Гру завершено. Кімната більше неактивна.',
+          tone: 'warning',
+        });
+
+        void navigate(appRoutes.home, { replace: true });
+        return;
+      }
+
       setNotification({
         message: 'Налаштування гри оновлено',
         tone: 'success',
       });
-
-      return;
-    }
-
-    setGame(updatedGame);
-
-    if (!updatedGame.isActive) {
-      clearCurrentRoomParticipantSession();
-      clearGuestAccessToken();
-
-      setQrDialogOpen(false);
-      closeSidebar();
-      closeInviteDialog();
-
-      setNotification({
-        message: 'Гру завершено. Кімната більше неактивна.',
-        tone: 'warning',
-      });
-
-      void navigate(appRoutes.home, { replace: true });
-      return;
-    }
-
-    setNotification({
-      message: 'Налаштування гри оновлено',
-      tone: 'success',
-    });
-  },
-  [closeInviteDialog, closeSidebar, navigate],
-);
+    },
+    [closeInviteDialog, closeSidebar, navigate],
+  );
 
   const handleIssueCreated = useCallback((issue: Issue) => {
     setIssues((current) => {
@@ -833,6 +833,38 @@ export const useGameRoomPage = () => {
     [gameId],
   );
 
+  const deleteAllIssues = useCallback(async () => {
+    const previousIssues = issuesRef.current;
+    const visibleIssues = previousIssues.filter((issue) => !issue.isRemoved);
+
+    if (!visibleIssues.length) {
+      return;
+    }
+
+    setIssues((current) => current.filter((issue) => issue.isRemoved));
+
+    try {
+      await Promise.all(
+        visibleIssues.map((issue) => deleteIssueRequest(gameId, issue.id)),
+      );
+
+      setNotification({
+        message: 'Усі issues видалено',
+        tone: 'success',
+      });
+    } catch (requestError) {
+      setIssues(previousIssues);
+
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : 'Не вдалося видалити всі issues',
+      );
+
+      throw requestError;
+    }
+  }, [gameId]);
+
   return {
     gameId,
     reloadRoom,
@@ -865,6 +897,7 @@ export const useGameRoomPage = () => {
     addIssue,
     updateIssue,
     deleteIssue,
+    deleteAllIssues,
     setIssueActive,
     reorderIssue,
     reorderIssues,

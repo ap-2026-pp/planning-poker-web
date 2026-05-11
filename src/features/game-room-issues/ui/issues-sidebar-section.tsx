@@ -19,6 +19,7 @@ type IssuesSidebarSectionProps = {
         payload: { title: string; code?: string; description?: string },
     ) => Promise<void>;
     onDeleteIssue?: (issueId: string) => Promise<void>;
+    onDeleteAllIssues?: () => Promise<void>;
     onSetIssueActive?: (issueId: string) => Promise<void>;
     onMoveIssue?: (issueId: string, direction: 'up' | 'down') => Promise<void>;
     onReorderIssues?: (issueIds: string[]) => Promise<void>;
@@ -40,6 +41,7 @@ export const IssuesSidebarSection = ({
     onSetIssueActive,
     onMoveIssue,
     onReorderIssues,
+    onDeleteAllIssues,
 }: IssuesSidebarSectionProps) => {
     const [issueMode, setIssueMode] = useState<'list' | 'create'>('list');
     const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
@@ -140,7 +142,11 @@ export const IssuesSidebarSection = ({
                         </Typography>
                     </Box>
 
-                    <IssuesActionsMenu isCurrentParticipantMaster={canManageIssues} />
+                    <IssuesActionsMenu
+                        isCurrentParticipantMaster={canManageIssues}
+                        hasIssues={visibleIssues.length > 0}
+                        onDeleteAllIssues={onDeleteAllIssues}
+                    />
                 </Box>
 
                 <Box className={styles.issuesScrollArea}>
