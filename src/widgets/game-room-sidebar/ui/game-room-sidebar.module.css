@@ -846,6 +846,74 @@
   line-height: 1.55 !important;
 }
 
+.issueFormIconShellBlue {
+  width: 74px;
+  height: 74px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-size: 38px;
+  background: linear-gradient(180deg, #347be5 0%, #2564c3 100%);
+  box-shadow: 0 24px 34px rgba(56, 118, 230, 0.28);
+}
+
+.issueFieldBlue {
+  --issue-accent-label: #86b9ff;
+  --issue-accent-border: rgba(134, 185, 255, 0.88);
+  --issue-accent-shadow: rgba(56, 118, 230, 0.16);
+}
+
+.issueFieldBlue :global(.MuiInputLabel-root) {
+  color: rgba(226, 220, 245, 0.74) !important;
+}
+
+.issueFieldBlue :global(.MuiInputLabel-root.Mui-focused) {
+  color: var(--issue-accent-label) !important;
+}
+
+.issueFieldBlue :global(.MuiOutlinedInput-root) {
+  color: #f8f5ff !important;
+  border-radius: 18px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  transition:
+    background-color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+.issueFieldBlue :global(.MuiOutlinedInput-root:hover) {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.issueFieldBlue :global(.MuiOutlinedInput-root.Mui-focused) {
+  background: rgba(22, 16, 31, 0.92) !important;
+  box-shadow: 0 0 0 6px var(--issue-accent-shadow) !important;
+}
+
+.issueFieldBlue :global(.MuiOutlinedInput-notchedOutline) {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.issueFieldBlue :global(.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline) {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.issueFieldBlue :global(.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline) {
+  border-color: var(--issue-accent-border) !important;
+}
+
+.issueFieldBlue :global(.MuiInputBase-input),
+.issueFieldBlue :global(.MuiOutlinedInput-input),
+.issueFieldBlue :global(textarea) {
+  color: #f8f5ff !important;
+}
+
+.issueFieldBlue :global(.MuiInputBase-input::placeholder),
+.issueFieldBlue :global(textarea::placeholder) {
+  color: rgba(226, 220, 245, 0.42) !important;
+  opacity: 1;
+}
+
 @media (max-width: 640px) {
   .issueDialogRoot {
     padding: 76px 12px 24px;
@@ -861,6 +929,13 @@
   }
 
   .issueFormIconShell {
+    width: 62px;
+    height: 62px;
+    border-radius: 18px;
+    font-size: 32px;
+  }
+
+  .issueFormIconShellBlue {
     width: 62px;
     height: 62px;
     border-radius: 18px;

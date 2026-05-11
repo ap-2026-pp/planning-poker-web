@@ -22,3 +22,9 @@ export type IssueDetails = {
   finalEstimate?: string | null;
   isCurrent: boolean;
 };
+
+export type ImportPlaneIssuesPayload = {
+  apiKey: string;
+  projectUrl: string;
+};
+

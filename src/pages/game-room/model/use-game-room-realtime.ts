@@ -26,6 +26,7 @@ type UseGameRoomRealtimeParams = {
     onGameUpdated?: (updatedGame: Game | string) => void | Promise<void>;
     onIssueCreated?: (issue: Issue) => void | Promise<void>;
     onIssueUpdated?: (issue: Issue) => void | Promise<void>;
+    onIssuesImported?: (importedIssues: Issue[]) => void | Promise<void>;
     onReconnected?: () => void | Promise<void>;
     onDeleteAllIssues?: () => void | Promise<void>;
 };
@@ -39,6 +40,7 @@ export const useGameRoomRealtime = ({
     onGameUpdated,
     onIssueCreated,
     onIssueUpdated,
+    onIssuesImported,
     onReconnected,
 }: UseGameRoomRealtimeParams) => {
     const connectionRef = useRef<HubConnection | null>(null);
@@ -51,6 +53,7 @@ export const useGameRoomRealtime = ({
         onGameUpdated,
         onIssueCreated,
         onIssueUpdated,
+        onIssuesImported,
         onReconnected,
     });
 
@@ -63,6 +66,7 @@ export const useGameRoomRealtime = ({
             onGameUpdated,
             onIssueCreated,
             onIssueUpdated,
+            onIssuesImported,
             onReconnected,
         };
     }, [
@@ -73,6 +77,7 @@ export const useGameRoomRealtime = ({
         onGameUpdated,
         onIssueCreated,
         onIssueUpdated,
+        onIssuesImported,
         onReconnected,
     ]);
 
@@ -109,6 +114,10 @@ export const useGameRoomRealtime = ({
             void handlersRef.current.onIssueUpdated?.(issue);
         });
 
+        connection.on(gameRoomRealtimeEventNames.issuesImported, (importedIssues: Issue[]) => {
+            void handlersRef.current.onIssuesImported?.(importedIssues);
+        });
+
         connection.onreconnecting(() => {
             setConnectionStatus('reconnecting');
         });
@@ -132,6 +141,7 @@ export const useGameRoomRealtime = ({
         connection.off(gameRoomRealtimeEventNames.gameUpdated);
         connection.off(gameRoomRealtimeEventNames.issueCreated);
         connection.off(gameRoomRealtimeEventNames.issueUpdated);
+        connection.off(gameRoomRealtimeEventNames.issuesImported);
     }, []);
 
     const createAndConnect = useCallback(async () => {

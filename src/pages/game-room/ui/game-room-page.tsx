@@ -132,6 +132,7 @@ export const GameRoomPage = () => {
             onUpdateIssue={room.updateIssue}
             onDeleteIssue={room.deleteIssue}
             onDeleteAllIssues={room.deleteAllIssues}
+            onImportIssuesFromPlane={room.importIssuesFromPlane}
             onSetIssueActive={room.setIssueActive}
             onMoveIssue={room.reorderIssue}
             onReorderIssues={room.reorderIssues}

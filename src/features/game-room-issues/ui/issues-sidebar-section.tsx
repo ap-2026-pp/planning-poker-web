@@ -1,8 +1,9 @@
 import { Box, Dialog, Typography } from '@mui/material';
 import { useMemo, useState } from 'react';
 
-import type { Issue } from '@entities/issue';
+import type { ImportPlaneIssuesPayload, Issue } from '@entities/issue';
 import { type IssueDraft } from '../model/types';
+import { ImportPlaneIssuesDialog } from './import-plane-issues-dialog';
 import { IssueFormCard } from './issue-form-card';
 import { IssuesActionsMenu } from './issues-actions-menu';
 import { IssuesEmptyState } from './issues-empty-state';
@@ -20,6 +21,7 @@ type IssuesSidebarSectionProps = {
     ) => Promise<void>;
     onDeleteIssue?: (issueId: string) => Promise<void>;
     onDeleteAllIssues?: () => Promise<void>;
+    onImportIssuesFromPlane?: (payload: ImportPlaneIssuesPayload) => Promise<void>;
     onSetIssueActive?: (issueId: string) => Promise<void>;
     onMoveIssue?: (issueId: string, direction: 'up' | 'down') => Promise<void>;
     onReorderIssues?: (issueIds: string[]) => Promise<void>;
@@ -38,16 +40,21 @@ export const IssuesSidebarSection = ({
     onAddIssue,
     onUpdateIssue,
     onDeleteIssue,
+    onDeleteAllIssues,
+    onImportIssuesFromPlane,
     onSetIssueActive,
     onMoveIssue,
     onReorderIssues,
-    onDeleteAllIssues,
 }: IssuesSidebarSectionProps) => {
     const [issueMode, setIssueMode] = useState<'list' | 'create'>('list');
     const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
     const [isEditIssueDialogOpen, setEditIssueDialogOpen] = useState(false);
     const [isSubmittingIssue, setIsSubmittingIssue] = useState(false);
     const [issueDraft, setIssueDraft] = useState<IssueDraft>(initialDraft);
+
+    const [isImportPlaneOpen, setImportPlaneOpen] = useState(false);
+    const [isImportingPlane, setImportingPlane] = useState(false);
+    const [importPlaneError, setImportPlaneError] = useState<string | null>(null);
 
     const visibleIssues = useMemo(
         () =>
@@ -131,6 +138,26 @@ export const IssuesSidebarSection = ({
         }
     };
 
+    const handleImportFromPlane = async (payload: ImportPlaneIssuesPayload) => {
+        if (!canManageIssues || !onImportIssuesFromPlane || isImportingPlane) {
+            return;
+        }
+
+        setImportingPlane(true);
+        setImportPlaneError(null);
+
+        try {
+            await onImportIssuesFromPlane(payload);
+            setImportPlaneOpen(false);
+        } catch (error) {
+            setImportPlaneError(
+                error instanceof Error ? error.message : 'Не вдалося імпортувати issues з Plane',
+            );
+        } finally {
+            setImportingPlane(false);
+        }
+    };
+
     return (
         <>
             <Box className={styles.sidebarContent}>
@@ -146,6 +173,10 @@ export const IssuesSidebarSection = ({
                         isCurrentParticipantMaster={canManageIssues}
                         hasIssues={visibleIssues.length > 0}
                         onDeleteAllIssues={onDeleteAllIssues}
+                        onOpenImportPlaneDialog={() => {
+                            setImportPlaneError(null);
+                            setImportPlaneOpen(true);
+                        }}
                     />
                 </Box>
 
@@ -208,6 +239,19 @@ export const IssuesSidebarSection = ({
                     </Box>
                 </Box>
             </Dialog>
+
+            <ImportPlaneIssuesDialog
+                open={isImportPlaneOpen}
+                isSubmitting={isImportingPlane}
+                errorMessage={importPlaneError}
+                onClose={() => {
+                    if (!isImportingPlane) {
+                        setImportPlaneOpen(false);
+                        setImportPlaneError(null);
+                    }
+                }}
+                onSubmit={handleImportFromPlane}
+            />
         </>
     );
 };

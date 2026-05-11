@@ -11,6 +11,7 @@ export const gameRoomRealtimeEventNames = {
   gameUpdated: 'GameUpdated',
   issueCreated: 'IssueCreated',
   issueUpdated: 'IssueUpdated',
+  issuesImported: 'IssuesImported',
 } as const;
 
 export const buildGameRoomHubUrl = (gameId: string) => {

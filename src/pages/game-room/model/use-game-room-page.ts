@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useGameRoomRealtime } from './use-game-room-realtime';
 
 import { IssuesPolicy, RevealPolicy, type Game, type GameInvite } from '@entities/game';
-import type { Issue } from '@entities/issue';
+import type { ImportPlaneIssuesPayload, Issue } from '@entities/issue';
 import { ParticipantRole, type GameParticipant } from '@entities/participant';
 import {
   createIssueRequest,
@@ -13,6 +13,7 @@ import {
   getGameRequest,
   getIssuesRequest,
   getParticipantsRequest,
+  importPlaneIssuesRequest,
   leaveGameRequest,
   reorderIssuesRequest,
   setIssueActiveRequest,
@@ -576,6 +577,19 @@ export const useGameRoomPage = () => {
     });
   }, []);
 
+  const handleIssuesImported = useCallback((importedIssues: Issue[]) => {
+    setIssues(
+      [...importedIssues]
+        .filter((issue) => !issue.isRemoved)
+        .sort((left, right) => left.order - right.order),
+    );
+
+    setNotification({
+      message: 'Issues з Plane імпортовано',
+      tone: 'success',
+    });
+  }, []);
+
   const realtime = useGameRoomRealtime({
     gameId,
     onParticipantJoined: handleParticipantJoined,
@@ -585,6 +599,7 @@ export const useGameRoomPage = () => {
     onGameUpdated: handleGameUpdated,
     onIssueCreated: handleIssueCreated,
     onIssueUpdated: handleIssueUpdated,
+    onIssuesImported: handleIssuesImported,
     onReconnected: reloadRoom,
   });
 
@@ -833,6 +848,34 @@ export const useGameRoomPage = () => {
     [gameId],
   );
 
+  const importIssuesFromPlane = useCallback(
+    async (payload: ImportPlaneIssuesPayload) => {
+      try {
+        const importedIssues = await importPlaneIssuesRequest(gameId, payload);
+
+        setIssues(
+          [...importedIssues]
+            .filter((issue) => !issue.isRemoved)
+            .sort((left, right) => left.order - right.order),
+        );
+
+        setNotification({
+          message: 'Issues з Plane імпортовано',
+          tone: 'success',
+        });
+      } catch (requestError) {
+        setError(
+          requestError instanceof Error
+            ? requestError.message
+            : 'Не вдалося імпортувати issues з Plane',
+        );
+
+        throw requestError;
+      }
+    },
+    [gameId],
+  );
+
   const deleteAllIssues = useCallback(async () => {
     const previousIssues = issuesRef.current;
     const visibleIssues = previousIssues.filter((issue) => !issue.isRemoved);
@@ -901,6 +944,7 @@ export const useGameRoomPage = () => {
     setIssueActive,
     reorderIssue,
     reorderIssues,
+    importIssuesFromPlane,
     sortedParticipants,
     sortedIssues,
     positionedParticipants,

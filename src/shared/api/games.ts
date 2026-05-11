@@ -9,7 +9,7 @@ import type {
   UserGamesScope,
 } from '@entities/game';
 import type { VotingHistoryList } from '@entities/history';
-import type { Issue } from '@entities/issue';
+import type { ImportPlaneIssuesPayload, Issue } from '@entities/issue';
 import type { GameParticipant } from '@entities/participant';
 
 import { clearCurrentRoomParticipantSession, clearGuestAccessToken } from '@shared/auth';
@@ -113,4 +113,13 @@ export const setIssueActiveRequest = (gameId: string, issueId: string) =>
   apiClientService.patch<void, undefined>(
     `/games/${gameId}/issues/${issueId}/set-active`,
     undefined,
+  );
+
+export const importPlaneIssuesRequest = (
+  gameId: string,
+  payload: ImportPlaneIssuesPayload,
+) =>
+  apiClientService.post<Issue[], ImportPlaneIssuesPayload>(
+    `/games/${gameId}/issues/import-plane`,
+    payload,
   );

@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 
-import type { Issue } from '@entities/issue';
+import type { ImportPlaneIssuesPayload, Issue } from '@entities/issue';
 import type { GameParticipant } from '@entities/participant';
 import { IssuesSidebarSection } from '@features/game-room-issues';
 import { ParticipantsSidebarSection } from '@features/game-room-participants';
@@ -32,6 +32,7 @@ type GameRoomSidebarProps = {
   onSetIssueActive?: (issueId: string) => Promise<void>;
   onMoveIssue?: (issueId: string, direction: 'up' | 'down') => Promise<void>;
   onReorderIssues?: (issueIds: string[]) => Promise<void>;
+  onImportIssuesFromPlane?: (payload: ImportPlaneIssuesPayload) => Promise<void>;
 };
 
 export const GameRoomSidebar = ({
@@ -53,6 +54,7 @@ export const GameRoomSidebar = ({
   onSetIssueActive,
   onMoveIssue,
   onReorderIssues,
+  onImportIssuesFromPlane,
 }: GameRoomSidebarProps) => {
   return (
     <Box className={styles.sidebarPanel}>
@@ -75,6 +77,7 @@ export const GameRoomSidebar = ({
           onSetIssueActive={onSetIssueActive}
           onMoveIssue={onMoveIssue}
           onReorderIssues={onReorderIssues}
+          onImportIssuesFromPlane={onImportIssuesFromPlane}
         />
       ) : (
         <ParticipantsSidebarSection

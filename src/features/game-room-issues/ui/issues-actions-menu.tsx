@@ -11,12 +11,14 @@ type IssuesActionsMenuProps = {
     isCurrentParticipantMaster: boolean;
     hasIssues: boolean;
     onDeleteAllIssues?: () => Promise<void>;
+    onOpenImportPlaneDialog?: () => void;
 };
 
 export const IssuesActionsMenu = ({
     isCurrentParticipantMaster,
     hasIssues,
     onDeleteAllIssues,
+    onOpenImportPlaneDialog,
 }: IssuesActionsMenuProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -24,6 +26,10 @@ export const IssuesActionsMenu = ({
     if (!isCurrentParticipantMaster) {
         return null;
     }
+
+    const closeMenu = () => {
+        setAnchorEl(null);
+    };
 
     const handleDeleteAllIssues = async () => {
         if (!onDeleteAllIssues || !hasIssues || isDeleting) {
@@ -34,10 +40,15 @@ export const IssuesActionsMenu = ({
 
         try {
             await onDeleteAllIssues();
-            setAnchorEl(null);
+            closeMenu();
         } finally {
             setIsDeleting(false);
         }
+    };
+
+    const handleOpenImport = () => {
+        closeMenu();
+        onOpenImportPlaneDialog?.();
     };
 
     return (
@@ -53,21 +64,15 @@ export const IssuesActionsMenu = ({
             <Menu
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
-                onClose={() => setAnchorEl(null)}
+                onClose={closeMenu}
                 PaperProps={{ className: styles.issuesMenuPaper }}
             >
-                <MenuItem
-                    className={styles.issuesMenuItem}
-                    onClick={() => setAnchorEl(null)}
-                >
+                <MenuItem className={styles.issuesMenuItem} onClick={closeMenu}>
                     <DownloadRoundedIcon fontSize="small" />
                     <span>Download issues as CSV</span>
                 </MenuItem>
 
-                <MenuItem
-                    className={styles.issuesMenuItem}
-                    onClick={() => setAnchorEl(null)}
-                >
+                <MenuItem className={styles.issuesMenuItem} onClick={handleOpenImport}>
                     <UploadRoundedIcon fontSize="small" />
                     <span>Import from Plane</span>
                 </MenuItem>

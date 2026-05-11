@@ -1,1 +1,1 @@
-export type { Issue, IssueDetails } from './model/issue';
+export type { Issue, IssueDetails, ImportPlaneIssuesPayload } from './model/issue';
