@@ -510,16 +510,43 @@ export const useGameRoomPage = () => {
     [handleParticipantRemoved],
   );
 
-  const handleGameUpdated = useCallback((updatedGame: Game | string) => {
-    if (typeof updatedGame !== 'string') {
-      setGame(updatedGame);
+ const handleGameUpdated = useCallback(
+  (updatedGame: Game | string) => {
+    if (typeof updatedGame === 'string') {
+      setNotification({
+        message: 'Налаштування гри оновлено',
+        tone: 'success',
+      });
+
+      return;
+    }
+
+    setGame(updatedGame);
+
+    if (!updatedGame.isActive) {
+      clearCurrentRoomParticipantSession();
+      clearGuestAccessToken();
+
+      setQrDialogOpen(false);
+      closeSidebar();
+      closeInviteDialog();
+
+      setNotification({
+        message: 'Гру завершено. Кімната більше неактивна.',
+        tone: 'warning',
+      });
+
+      void navigate(appRoutes.home, { replace: true });
+      return;
     }
 
     setNotification({
       message: 'Налаштування гри оновлено',
       tone: 'success',
     });
-  }, []);
+  },
+  [closeInviteDialog, closeSidebar, navigate],
+);
 
   const handleIssueCreated = useCallback((issue: Issue) => {
     setIssues((current) => {

@@ -601,8 +601,8 @@
   flex: 1;
   min-height: 0;
   flex-direction: column;
-  overflow-y: visible;
-  overflow-x: visible;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding-top: 18px;
 }
 
