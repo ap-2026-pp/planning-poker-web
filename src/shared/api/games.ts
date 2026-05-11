@@ -90,11 +90,11 @@ export const createIssueRequest = (gameId: string, payload: { title: string },) 
 export const updateIssueRequest = (
   gameId: string,
   issueId: string,
-  payload: { title: string; code?: string; description?: string },
+  payload: { title: string; code?: string; url?: string; description?: string },
 ) =>
   apiClientService.put<
     Issue,
-    { title: string; code?: string; description?: string }
+    { title: string; code?: string; url?: string; description?: string }
   >(`/games/${gameId}/issues/${issueId}`, payload);
 
 export const deleteIssueRequest = (gameId: string, issueId: string) =>

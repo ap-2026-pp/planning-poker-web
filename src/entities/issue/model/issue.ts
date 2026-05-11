@@ -17,7 +17,7 @@ export type IssueDetails = {
   id: string;
   code: string;
   title: string;
-  link?: string | null;
+  url?: string | null;
   description?: string | null;
   finalEstimate?: string | null;
   isCurrent: boolean;

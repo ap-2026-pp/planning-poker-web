@@ -58,20 +58,22 @@ export const ImportPlaneIssuesDialog = ({
       return;
     }
 
-    try {
-      await onSubmit({
-        apiKey,
-        projectUrl,
-      });
-    } catch {
-      // помилка вже може прийти зверху через errorMessage
+    await onSubmit({
+      apiKey,
+      projectUrl,
+    });
+  };
+
+  const handleClose = () => {
+    if (!isSubmitting) {
+      onClose();
     }
   };
 
   return (
     <Dialog
       open={open}
-      onClose={isSubmitting ? undefined : onClose}
+      onClose={handleClose}
       maxWidth={false}
       PaperProps={{
         className: styles.issueDialogPaper,
@@ -98,7 +100,8 @@ export const ImportPlaneIssuesDialog = ({
                 </Typography>
 
                 <Typography className={styles.issueFormSubtitle}>
-                  Введіть API key вашого акаунта Plane та посилання на проєкт, з якого потрібно імпортувати задачі.
+                  Введіть API key вашого акаунта Plane та посилання на проєкт,
+                  з якого потрібно імпортувати задачі.
                 </Typography>
               </Stack>
 
@@ -134,7 +137,7 @@ export const ImportPlaneIssuesDialog = ({
                 <button
                   type="button"
                   className={styles.issueSecondaryButton}
-                  onClick={onClose}
+                  onClick={handleClose}
                   disabled={isSubmitting}
                 >
                   Cancel

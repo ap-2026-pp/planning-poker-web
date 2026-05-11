@@ -17,7 +17,7 @@ type IssuesSidebarSectionProps = {
     onAddIssue?: (payload: { title: string }) => Promise<void>;
     onUpdateIssue?: (
         issueId: string,
-        payload: { title: string; code?: string; description?: string },
+        payload: { title: string; code?: string; url?: string; description?: string },
     ) => Promise<void>;
     onDeleteIssue?: (issueId: string) => Promise<void>;
     onDeleteAllIssues?: () => Promise<void>;
@@ -30,6 +30,7 @@ type IssuesSidebarSectionProps = {
 const initialDraft: IssueDraft = {
     title: '',
     code: '',
+    url: '',
     description: '',
 };
 
@@ -64,6 +65,13 @@ export const IssuesSidebarSection = ({
         [issues],
     );
 
+    const selectedIssue = useMemo(
+        () => visibleIssues.find((issue) => issue.id === selectedIssueId) ?? null,
+        [selectedIssueId, visibleIssues],
+    );
+
+    const isSelectedIssueImported = Boolean(selectedIssue?.url);
+
     const resetIssueDraft = () => {
         setIssueDraft(initialDraft);
     };
@@ -88,6 +96,7 @@ export const IssuesSidebarSection = ({
         setIssueDraft({
             title: issue.title ?? '',
             code: issue.code ?? '',
+            url: issue.url ?? '',
             description: issue.description ?? '',
         });
         setIssueMode('list');
@@ -127,11 +136,14 @@ export const IssuesSidebarSection = ({
 
         try {
             setIsSubmittingIssue(true);
+
             await onUpdateIssue(selectedIssueId, {
                 title: issueDraft.title.trim(),
                 code: issueDraft.code.trim() || undefined,
+                url: issueDraft.url.trim() || undefined,
                 description: issueDraft.description.trim() || undefined,
             });
+
             closeEditIssueDialog();
         } finally {
             setIsSubmittingIssue(false);
@@ -230,6 +242,7 @@ export const IssuesSidebarSection = ({
                                 mode="edit"
                                 variant="dialog"
                                 draft={issueDraft}
+                                isImported={isSelectedIssueImported}
                                 isSubmitting={isSubmittingIssue}
                                 onChange={setIssueDraft}
                                 onCancel={closeEditIssueDialog}

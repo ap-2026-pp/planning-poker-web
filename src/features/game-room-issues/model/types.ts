@@ -1,6 +1,6 @@
 export type IssueDraft = {
   title: string;
   code: string;
-  link?: string;
+  url: string;
   description: string;
 };

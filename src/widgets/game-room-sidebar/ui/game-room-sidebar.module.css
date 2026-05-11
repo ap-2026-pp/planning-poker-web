@@ -914,6 +914,80 @@
   opacity: 1;
 }
 
+.readonlyBadge {
+  position: relative;
+  z-index: 1;
+
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+
+  color: #cde0ff;
+  background: rgba(52, 123, 229, 0.16);
+  border: 1px solid rgba(52, 123, 229, 0.24);
+
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.issueReadonlyField :global(.MuiOutlinedInput-root.Mui-disabled) {
+  color: rgba(248, 245, 255, 0.72) !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+}
+
+.issueReadonlyField :global(.MuiInputBase-input.Mui-disabled) {
+  -webkit-text-fill-color: rgba(248, 245, 255, 0.72) !important;
+}
+
+.issueReadonlyField :global(.MuiInputLabel-root.Mui-disabled) {
+  color: rgba(226, 220, 245, 0.48) !important;
+}
+
+.issueFieldBlue {
+  --issue-accent-label: #86b9ff;
+  --issue-accent-border: rgba(134, 185, 255, 0.88);
+  --issue-accent-shadow: rgba(56, 118, 230, 0.16);
+}
+
+.issueFormIconShellBlue {
+  width: 74px;
+  height: 74px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-size: 38px;
+  background: linear-gradient(180deg, #347be5 0%, #2564c3 100%);
+  box-shadow: 0 24px 34px rgba(56, 118, 230, 0.28);
+}
+
+.issueCopyButton {
+  width: 36px !important;
+  height: 36px !important;
+  margin-right: -6px !important;
+
+  color: #cde0ff !important;
+  border-radius: 12px !important;
+  background: rgba(52, 123, 229, 0.12) !important;
+  border: 1px solid rgba(52, 123, 229, 0.18) !important;
+}
+
+.issueCopyButton:hover {
+  color: #ffffff !important;
+  background: rgba(52, 123, 229, 0.2) !important;
+  border-color: rgba(134, 185, 255, 0.34) !important;
+}
+
+.issueReadonlyField :global(.MuiOutlinedInput-input[readonly]) {
+  -webkit-text-fill-color: rgba(248, 245, 255, 0.72) !important;
+  color: rgba(248, 245, 255, 0.72) !important;
+}
+
 @media (max-width: 640px) {
   .issueDialogRoot {
     padding: 76px 12px 24px;

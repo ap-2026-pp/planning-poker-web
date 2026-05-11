@@ -1,5 +1,5 @@
 import { Alert, Box, Dialog, Drawer, Snackbar, Stack } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type MouseEvent } from 'react';
 
 import { ConnectionStatus } from '@features/connection-status';
 import { GameRoomInviteDialog, GameRoomQrDialog } from '@widgets/game-room-invite';
@@ -31,15 +31,14 @@ export const GameRoomPage = () => {
   }, [room.loading]);
 
   const handleStartSidebarResize = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
+    (event: MouseEvent<HTMLDivElement>) => {
       event.preventDefault();
 
       const startX = event.clientX;
       const startWidth = sidebarWidth;
-
       const maxWidth = Math.min(SIDEBAR_MAX_WIDTH, window.innerWidth - 48);
 
-      const handleMouseMove = (moveEvent: MouseEvent) => {
+      const handleMouseMove = (moveEvent: globalThis.MouseEvent) => {
         const deltaX = startX - moveEvent.clientX;
 
         const nextWidth = Math.min(

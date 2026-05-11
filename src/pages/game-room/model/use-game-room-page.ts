@@ -249,32 +249,23 @@ export const useGameRoomPage = () => {
   );
 
   const isCurrentParticipantMaster = currentParticipant?.role === ParticipantRole.Master;
-  const isCurrentParticipantSpectator = currentParticipant?.role === ParticipantRole.Spectator;
 
   const canRevealCards = Boolean(
     currentParticipant &&
     currentParticipant.role !== ParticipantRole.Spectator &&
-    (
-      currentParticipant.role === ParticipantRole.Master ||
+    (currentParticipant.role === ParticipantRole.Master ||
       game?.revealPolicy === RevealPolicy.Everyone ||
-      (
-        game?.revealPolicy === RevealPolicy.SpecificParticipants &&
-        currentParticipant.canRevealCards
-      )
-    ),
+      (game?.revealPolicy === RevealPolicy.SpecificParticipants &&
+        currentParticipant.canRevealCards)),
   );
 
   const canManageIssues = Boolean(
     currentParticipant &&
     currentParticipant.role !== ParticipantRole.Spectator &&
-    (
-      currentParticipant.role === ParticipantRole.Master ||
+    (currentParticipant.role === ParticipantRole.Master ||
       game?.issuesPolicy === IssuesPolicy.Everyone ||
-      (
-        game?.issuesPolicy === IssuesPolicy.SpecificParticipants &&
-        currentParticipant.canManageIssues
-      )
-    ),
+      (game?.issuesPolicy === IssuesPolicy.SpecificParticipants &&
+        currentParticipant.canManageIssues)),
   );
 
   const inviteCode = invite?.inviteCode || game?.inviteCode || '—';
@@ -711,6 +702,64 @@ export const useGameRoomPage = () => {
     [gameId],
   );
 
+  const deleteAllIssues = useCallback(async () => {
+    const previousIssues = issuesRef.current;
+    const visibleIssues = previousIssues.filter((issue) => !issue.isRemoved);
+
+    if (!visibleIssues.length) {
+      return;
+    }
+
+    setIssues((current) => current.filter((issue) => issue.isRemoved));
+
+    try {
+      await Promise.all(visibleIssues.map((issue) => deleteIssueRequest(gameId, issue.id)));
+
+      setNotification({
+        message: 'Усі issues видалено',
+        tone: 'success',
+      });
+    } catch (requestError) {
+      setIssues(previousIssues);
+
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : 'Не вдалося видалити всі issues',
+      );
+
+      throw requestError;
+    }
+  }, [gameId]);
+
+  const importIssuesFromPlane = useCallback(
+    async (payload: ImportPlaneIssuesPayload) => {
+      try {
+        const importedIssues = await importPlaneIssuesRequest(gameId, payload);
+
+        setIssues(
+          [...importedIssues]
+            .filter((issue) => !issue.isRemoved)
+            .sort((left, right) => left.order - right.order),
+        );
+
+        setNotification({
+          message: 'Issues з Plane імпортовано',
+          tone: 'success',
+        });
+      } catch (requestError) {
+        setError(
+          requestError instanceof Error
+            ? requestError.message
+            : 'Не вдалося імпортувати issues з Plane',
+        );
+
+        throw requestError;
+      }
+    },
+    [gameId],
+  );
+
   const setIssueActive = useCallback(
     async (issueId: string) => {
       const previousIssues = issuesRef.current;
@@ -767,14 +816,9 @@ export const useGameRoomPage = () => {
         .sort((a, b) => a.order - b.order);
 
       const currentIndex = ordered.findIndex((issue) => issue.id === issueId);
-
-      if (currentIndex < 0) {
-        return;
-      }
-
       const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
 
-      if (targetIndex < 0 || targetIndex >= ordered.length) {
+      if (currentIndex < 0 || targetIndex < 0 || targetIndex >= ordered.length) {
         return;
       }
 
@@ -847,66 +891,6 @@ export const useGameRoomPage = () => {
     },
     [gameId],
   );
-
-  const importIssuesFromPlane = useCallback(
-    async (payload: ImportPlaneIssuesPayload) => {
-      try {
-        const importedIssues = await importPlaneIssuesRequest(gameId, payload);
-
-        setIssues(
-          [...importedIssues]
-            .filter((issue) => !issue.isRemoved)
-            .sort((left, right) => left.order - right.order),
-        );
-
-        setNotification({
-          message: 'Issues з Plane імпортовано',
-          tone: 'success',
-        });
-      } catch (requestError) {
-        setError(
-          requestError instanceof Error
-            ? requestError.message
-            : 'Не вдалося імпортувати issues з Plane',
-        );
-
-        throw requestError;
-      }
-    },
-    [gameId],
-  );
-
-  const deleteAllIssues = useCallback(async () => {
-    const previousIssues = issuesRef.current;
-    const visibleIssues = previousIssues.filter((issue) => !issue.isRemoved);
-
-    if (!visibleIssues.length) {
-      return;
-    }
-
-    setIssues((current) => current.filter((issue) => issue.isRemoved));
-
-    try {
-      await Promise.all(
-        visibleIssues.map((issue) => deleteIssueRequest(gameId, issue.id)),
-      );
-
-      setNotification({
-        message: 'Усі issues видалено',
-        tone: 'success',
-      });
-    } catch (requestError) {
-      setIssues(previousIssues);
-
-      setError(
-        requestError instanceof Error
-          ? requestError.message
-          : 'Не вдалося видалити всі issues',
-      );
-
-      throw requestError;
-    }
-  }, [gameId]);
 
   return {
     gameId,
