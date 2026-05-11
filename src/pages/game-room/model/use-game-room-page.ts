@@ -648,25 +648,54 @@ export const useGameRoomPage = () => {
   );
 
   const setIssueActive = useCallback(
-    async (issueId: string) => {
-      try {
-        await setIssueActiveRequest(gameId, issueId);
+  async (issueId: string) => {
+    const previousIssues = issues;
 
-        setNotification({
-          message: 'Оцінювання розпочато',
-          tone: 'success',
-        });
-      } catch (requestError) {
-        setError(
-          requestError instanceof Error
-            ? requestError.message
-            : 'Не вдалося почати оцінювання',
-        );
-        throw requestError;
+    const clickedIssue = issues.find((issue) => issue.id === issueId);
+    if (!clickedIssue) {
+      return;
+    }
+
+    const isTurningOff = clickedIssue.isCurrent;
+
+    const nextIssues = issues.map((issue) => {
+      if (issue.id === issueId) {
+        return {
+          ...issue,
+          isCurrent: !issue.isCurrent,
+        };
       }
-    },
-    [gameId],
-  );
+
+      return {
+        ...issue,
+        isCurrent: false,
+      };
+    });
+
+    setIssues(nextIssues);
+
+    try {
+      await setIssueActiveRequest(gameId, issueId);
+
+      setNotification({
+        message: isTurningOff
+          ? 'Оцінювання зупинено'
+          : 'Оцінювання розпочато',
+        tone: 'success',
+      });
+    } catch (requestError) {
+      setIssues(previousIssues);
+
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : 'Не вдалося оновити статус оцінювання',
+      );
+      throw requestError;
+    }
+  },
+  [gameId, issues],
+);
 
   const reorderIssue = useCallback(
     async (issueId: string, direction: 'up' | 'down') => {

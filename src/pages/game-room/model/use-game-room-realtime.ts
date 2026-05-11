@@ -4,7 +4,11 @@ import type { HubConnection } from '@microsoft/signalr';
 import type { Game } from '@entities/game';
 import type { Issue } from '@entities/issue';
 import type { GameParticipant } from '@entities/participant';
-import { createSignalRConnection, startSignalRConnection, stopSignalRConnection } from '@shared/realtime';
+import {
+    createSignalRConnection,
+    startSignalRConnection,
+    stopSignalRConnection,
+} from '@shared/realtime';
 import {
     buildGameRoomHubUrl,
     gameRoomRealtimeEventNames,
@@ -60,19 +64,18 @@ export const useGameRoomRealtime = ({
             onIssueUpdated,
             onReconnected,
         };
-    }, [onGameUpdated, onUserUpdated, onParticipantJoined, onParticipantKicked, onParticipantLeft, onReconnected, onIssueCreated, onIssueUpdated]);
+    }, [
+        onParticipantJoined,
+        onParticipantLeft,
+        onParticipantKicked,
+        onUserUpdated,
+        onGameUpdated,
+        onIssueCreated,
+        onIssueUpdated,
+        onReconnected,
+    ]);
 
-    useEffect(() => {
-        if (!gameId) {
-            return;
-        }
-
-        const connection = createSignalRConnection(buildGameRoomHubUrl(gameId), {
-            getAccessToken: getGameRoomRealtimeAccessToken,
-        });
-
-        connectionRef.current = connection;
-
+    const attachHandlers = useCallback((connection: HubConnection) => {
         connection.on(gameRoomRealtimeEventNames.participantJoined, (participant: GameParticipant) => {
             void handlersRef.current.onParticipantJoined?.(participant);
         });
@@ -81,12 +84,9 @@ export const useGameRoomRealtime = ({
             void handlersRef.current.onParticipantLeft?.(participantId);
         });
 
-        connection.on(
-            gameRoomRealtimeEventNames.participantKicked,
-            (participantId: GameParticipant['id']) => {
-                void handlersRef.current.onParticipantKicked?.(participantId);
-            },
-        );
+        connection.on(gameRoomRealtimeEventNames.participantKicked, (participantId: GameParticipant['id']) => {
+            void handlersRef.current.onParticipantKicked?.(participantId);
+        });
 
         connection.on(gameRoomRealtimeEventNames.userUpdated, (participant: GameParticipant) => {
             void handlersRef.current.onUserUpdated?.(participant);
@@ -120,48 +120,87 @@ export const useGameRoomRealtime = ({
         connection.onclose(() => {
             setConnectionStatus('disconnected');
         });
+    }, []);
 
-        const connect = async () => {
+    const detachHandlers = useCallback((connection: HubConnection) => {
+        connection.off(gameRoomRealtimeEventNames.participantJoined);
+        connection.off(gameRoomRealtimeEventNames.participantLeft);
+        connection.off(gameRoomRealtimeEventNames.participantKicked);
+        connection.off(gameRoomRealtimeEventNames.userUpdated);
+        connection.off(gameRoomRealtimeEventNames.participantUpdated);
+        connection.off(gameRoomRealtimeEventNames.gameUpdated);
+        connection.off(gameRoomRealtimeEventNames.issueCreated);
+        connection.off(gameRoomRealtimeEventNames.issueUpdated);
+    }, []);
+
+    const createAndConnect = useCallback(async () => {
+        if (!gameId) {
+            return;
+        }
+
+        const nextConnection = createSignalRConnection(buildGameRoomHubUrl(gameId), {
+            getAccessToken: getGameRoomRealtimeAccessToken,
+        });
+
+        attachHandlers(nextConnection);
+        connectionRef.current = nextConnection;
+
+        setConnectionStatus('connecting');
+        await startSignalRConnection(nextConnection);
+        setConnectionStatus('connected');
+    }, [attachHandlers, gameId]);
+
+    useEffect(() => {
+        if (!gameId) {
+            return;
+        }
+
+        let isMounted = true;
+
+        const init = async () => {
             try {
-                setConnectionStatus('connecting');
-                await startSignalRConnection(connection);
-                setConnectionStatus('connected');
+                await createAndConnect();
             } catch (error) {
                 console.error('Failed to start SignalR connection', error);
-                setConnectionStatus('disconnected');
+                if (isMounted) {
+                    setConnectionStatus('disconnected');
+                }
             }
         };
 
-        void connect();
+        void init();
 
         return () => {
-            connection.off(gameRoomRealtimeEventNames.participantJoined);
-            connection.off(gameRoomRealtimeEventNames.participantLeft);
-            connection.off(gameRoomRealtimeEventNames.participantKicked);
-            connection.off(gameRoomRealtimeEventNames.userUpdated);
-            connection.off(gameRoomRealtimeEventNames.participantUpdated);
-            connection.off(gameRoomRealtimeEventNames.gameUpdated);
-            connection.off(gameRoomRealtimeEventNames.issueCreated);
-            connection.off(gameRoomRealtimeEventNames.issueUpdated);
+            isMounted = false;
 
-            void stopSignalRConnection(connection);
+            const current = connectionRef.current;
             connectionRef.current = null;
+
+            if (current) {
+                detachHandlers(current);
+                void stopSignalRConnection(current);
+            }
         };
-    }, [gameId]);
+    }, [createAndConnect, detachHandlers, gameId]);
 
     const retryConnection = useCallback(async () => {
-        if (connectionRef.current) {
-            try {
-                setConnectionStatus('connecting');
-                await stopSignalRConnection(connectionRef.current);
-                await startSignalRConnection(connectionRef.current);
-                setConnectionStatus('connected');
-            } catch (error) {
-                console.error('Failed to retry SignalR connection', error);
-                setConnectionStatus('disconnected');
+        const current = connectionRef.current;
+
+        try {
+            setConnectionStatus('connecting');
+
+            if (current) {
+                detachHandlers(current);
+                await stopSignalRConnection(current);
             }
+
+            connectionRef.current = null;
+            await createAndConnect();
+        } catch (error) {
+            console.error('Failed to retry SignalR connection', error);
+            setConnectionStatus('disconnected');
         }
-    }, []);
+    }, [createAndConnect, detachHandlers]);
 
     return { connectionStatus, retryConnection };
 };

@@ -699,3 +699,8 @@
 .issueText:active {
   cursor: grabbing;
 }
+
+.issueVoteButtonActive {
+  background: linear-gradient(90deg, #5b6578 0%, #454f60 100%);
+  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.2);
+}
