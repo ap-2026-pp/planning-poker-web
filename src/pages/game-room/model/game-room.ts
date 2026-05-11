@@ -49,6 +49,72 @@ export const sortParticipants = (left: GameParticipant, right: GameParticipant) 
   return new Date(left.joinedAt).getTime() - new Date(right.joinedAt).getTime();
 };
 
+const sortByJoinedAt = (left: GameParticipant, right: GameParticipant) =>
+  new Date(left.joinedAt).getTime() - new Date(right.joinedAt).getTime();
+
+export const sortSidebarParticipants = (
+  participants: GameParticipant[],
+  currentParticipantId: string | null,
+) => {
+  const master = participants.find((participant) => participant.role === ParticipantRole.Master);
+  const currentParticipant = currentParticipantId
+    ? participants.find((participant) => participant.id === currentParticipantId) ?? null
+    : null;
+
+  const isMaster = (participant: GameParticipant) => participant.role === ParticipantRole.Master;
+  const isCurrent = (participant: GameParticipant) =>
+    currentParticipant !== null && participant.id === currentParticipant.id;
+
+  const onlinePlayers = participants
+    .filter(
+      (participant) =>
+        !isMaster(participant) &&
+        !isCurrent(participant) &&
+        isParticipantOnline(participant) &&
+        participant.role === ParticipantRole.Player,
+    )
+    .sort(sortByJoinedAt);
+
+  const onlineSpectators = participants
+    .filter(
+      (participant) =>
+        !isMaster(participant) &&
+        !isCurrent(participant) &&
+        isParticipantOnline(participant) &&
+        participant.role === ParticipantRole.Spectator,
+    )
+    .sort(sortByJoinedAt);
+
+  const offlinePlayers = participants
+    .filter(
+      (participant) =>
+        !isMaster(participant) &&
+        !isCurrent(participant) &&
+        !isParticipantOnline(participant) &&
+        participant.role === ParticipantRole.Player,
+    )
+    .sort(sortByJoinedAt);
+
+  const offlineSpectators = participants
+    .filter(
+      (participant) =>
+        !isMaster(participant) &&
+        !isCurrent(participant) &&
+        !isParticipantOnline(participant) &&
+        participant.role === ParticipantRole.Spectator,
+    )
+    .sort(sortByJoinedAt);
+
+  return [
+    ...((master && [master]) || []),
+    ...((currentParticipant && !isMaster(currentParticipant) && [currentParticipant]) || []),
+    ...onlinePlayers,
+    ...onlineSpectators,
+    ...offlinePlayers,
+    ...offlineSpectators,
+  ];
+};
+
 export const getRoundLabel = (issues: Issue[], activeIssueIndex: number) => {
   if (activeIssueIndex >= 0) {
     return `Раунд ${activeIssueIndex + 1} з ${issues.length} задач`;

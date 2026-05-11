@@ -37,6 +37,7 @@ import {
   getRoundLabel,
   isParticipantOnline,
   sortParticipants,
+  sortSidebarParticipants,
   type CopiedItem,
   type SidebarView,
 } from './game-room';
@@ -232,6 +233,11 @@ export const useGameRoomPage = () => {
     storedParticipantSession?.participantId,
     user?.id,
   ]);
+
+  const sidebarParticipants = useMemo(
+    () => sortSidebarParticipants(sortedParticipants, currentParticipant?.id ?? null),
+    [sortedParticipants, currentParticipant?.id],
+  );
 
   const onlineParticipants = useMemo(
     () => sortedParticipants.filter(isParticipantOnline),
@@ -929,6 +935,7 @@ export const useGameRoomPage = () => {
     reorderIssue,
     reorderIssues,
     importIssuesFromPlane,
+    sidebarParticipants,
     sortedParticipants,
     sortedIssues,
     positionedParticipants,

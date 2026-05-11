@@ -118,7 +118,7 @@ export const GameRoomPage = () => {
           <GameRoomSidebar
             sidebarView={room.sidebarView}
             issues={room.sortedIssues}
-            participants={room.sortedParticipants}
+            participants={room.sidebarParticipants}
             currentParticipantId={room.currentParticipantId}
             isCurrentParticipantMaster={room.isCurrentParticipantMaster}
             canManageIssues={room.canManageIssues}
