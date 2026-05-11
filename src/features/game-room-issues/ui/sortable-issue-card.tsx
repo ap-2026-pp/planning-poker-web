@@ -67,7 +67,13 @@ export const SortableIssueCard = ({
     const style = {
         transform: transform ? CSS.Translate.toString(transform) : undefined,
         transition: isDragging ? 'none' : transition,
-        zIndex: isDragging ? 20 : undefined,
+        zIndex: isDragging ? 9999 : undefined,
+    };
+
+    const handleOpenIssue = () => {
+        if (canManageIssues) {
+            onEditIssue(issue);
+        }
     };
 
     return (
@@ -81,11 +87,7 @@ export const SortableIssueCard = ({
                 ]
                     .join(' ')
                     .trim()}
-                onClick={() => {
-                    if (canManageIssues) {
-                        onEditIssue(issue);
-                    }
-                }}
+                onClick={handleOpenIssue}
             >
                 <Stack direction="row" className={styles.issueHeader}>
                     <span
@@ -103,10 +105,6 @@ export const SortableIssueCard = ({
                         {...(canManageIssues ? listeners : {})}
                     >
                         <Typography className={styles.issueTitle}>{issue.title}</Typography>
-
-                        <Typography className={styles.issueDescription}>
-                            {issue.description || 'Опис ще не додано'}
-                        </Typography>
                     </Stack>
 
                     {canManageIssues ? (

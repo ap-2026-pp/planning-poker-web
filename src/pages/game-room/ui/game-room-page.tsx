@@ -1,5 +1,5 @@
 import { Alert, Box, Dialog, Drawer, Snackbar, Stack } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { ConnectionStatus } from '@features/connection-status';
 import { GameRoomInviteDialog, GameRoomQrDialog } from '@widgets/game-room-invite';
@@ -9,10 +9,16 @@ import { GameForm } from '@pages/create-game/ui/game-form';
 import { useGameRoomPage } from '../model/use-game-room-page';
 import styles from './game-room-page.module.css';
 
+const SIDEBAR_MIN_WIDTH = 360;
+const SIDEBAR_DEFAULT_WIDTH = 420;
+const SIDEBAR_MAX_WIDTH = 720;
+
 export const GameRoomPage = () => {
   const room = useGameRoomPage();
+
   const [showLoading, setShowLoading] = useState(false);
   const [isEditGameOpen, setEditGameOpen] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(SIDEBAR_DEFAULT_WIDTH);
 
   useEffect(() => {
     if (room.loading) {
@@ -23,6 +29,43 @@ export const GameRoomPage = () => {
 
     setShowLoading(false);
   }, [room.loading]);
+
+  const handleStartSidebarResize = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      event.preventDefault();
+
+      const startX = event.clientX;
+      const startWidth = sidebarWidth;
+
+      const maxWidth = Math.min(SIDEBAR_MAX_WIDTH, window.innerWidth - 48);
+
+      const handleMouseMove = (moveEvent: MouseEvent) => {
+        const deltaX = startX - moveEvent.clientX;
+
+        const nextWidth = Math.min(
+          maxWidth,
+          Math.max(SIDEBAR_MIN_WIDTH, startWidth + deltaX),
+        );
+
+        setSidebarWidth(nextWidth);
+      };
+
+      const handleMouseUp = () => {
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+
+      document.body.style.cursor = 'ew-resize';
+      document.body.style.userSelect = 'none';
+
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    },
+    [sidebarWidth],
+  );
 
   return (
     <Stack className={styles.root}>
@@ -59,9 +102,20 @@ export const GameRoomPage = () => {
         anchor="right"
         open={room.isSidebarOpen}
         onClose={room.closeSidebar}
-        PaperProps={{ className: styles.sidebarDrawerPaper }}
+        PaperProps={{
+          className: styles.sidebarDrawerPaper,
+          style: {
+            width: `min(${sidebarWidth}px, 100vw)`,
+          },
+        }}
       >
         <Box className={styles.sidebarDrawerBody}>
+          <Box
+            className={styles.sidebarResizeHandle}
+            onMouseDown={handleStartSidebarResize}
+            aria-hidden="true"
+          />
+
           <GameRoomSidebar
             sidebarView={room.sidebarView}
             issues={room.sortedIssues}

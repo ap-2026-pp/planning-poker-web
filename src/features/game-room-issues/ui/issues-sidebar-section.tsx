@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Dialog, Typography } from '@mui/material';
 import { useMemo, useState } from 'react';
 
 import type { Issue } from '@entities/issue';
@@ -41,8 +41,9 @@ export const IssuesSidebarSection = ({
     onMoveIssue,
     onReorderIssues,
 }: IssuesSidebarSectionProps) => {
-    const [issueMode, setIssueMode] = useState<'list' | 'create' | 'edit'>('list');
+    const [issueMode, setIssueMode] = useState<'list' | 'create'>('list');
     const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
+    const [isEditIssueDialogOpen, setEditIssueDialogOpen] = useState(false);
     const [isSubmittingIssue, setIsSubmittingIssue] = useState(false);
     const [issueDraft, setIssueDraft] = useState<IssueDraft>(initialDraft);
 
@@ -65,6 +66,7 @@ export const IssuesSidebarSection = ({
 
         resetIssueDraft();
         setSelectedIssueId(null);
+        setEditIssueDialogOpen(false);
         setIssueMode('create');
     };
 
@@ -79,13 +81,20 @@ export const IssuesSidebarSection = ({
             code: issue.code ?? '',
             description: issue.description ?? '',
         });
-        setIssueMode('edit');
+        setIssueMode('list');
+        setEditIssueDialogOpen(true);
     };
 
-    const closeIssueForm = () => {
+    const closeCreateIssueForm = () => {
         resetIssueDraft();
         setSelectedIssueId(null);
         setIssueMode('list');
+    };
+
+    const closeEditIssueDialog = () => {
+        resetIssueDraft();
+        setSelectedIssueId(null);
+        setEditIssueDialogOpen(false);
     };
 
     const handleCreateIssue = async () => {
@@ -96,7 +105,7 @@ export const IssuesSidebarSection = ({
         try {
             setIsSubmittingIssue(true);
             await onAddIssue({ title: issueDraft.title.trim() });
-            closeIssueForm();
+            closeCreateIssueForm();
         } finally {
             setIsSubmittingIssue(false);
         }
@@ -114,69 +123,85 @@ export const IssuesSidebarSection = ({
                 code: issueDraft.code.trim() || undefined,
                 description: issueDraft.description.trim() || undefined,
             });
-            closeIssueForm();
+            closeEditIssueDialog();
         } finally {
             setIsSubmittingIssue(false);
         }
     };
 
     return (
-        <Box className={styles.sidebarContent}>
-            <Box className={styles.issuesToolbar}>
-                <Box>
-                    <Typography className={styles.issuesTitle}>Issues</Typography>
-                    <Typography className={styles.issuesSubtitle}>
-                        {visibleIssues.length} {visibleIssues.length === 1 ? 'issue' : 'issues'}
-                    </Typography>
+        <>
+            <Box className={styles.sidebarContent}>
+                <Box className={styles.issuesToolbar}>
+                    <Box>
+                        <Typography className={styles.issuesTitle}>Issues</Typography>
+                        <Typography className={styles.issuesSubtitle}>
+                            {visibleIssues.length} {visibleIssues.length === 1 ? 'issue' : 'issues'}
+                        </Typography>
+                    </Box>
+
+                    <IssuesActionsMenu isCurrentParticipantMaster={canManageIssues} />
                 </Box>
 
-                <IssuesActionsMenu isCurrentParticipantMaster={canManageIssues} />
+                <Box className={styles.issuesScrollArea}>
+                    {issueMode === 'create' ? (
+                        <IssueFormCard
+                            mode="create"
+                            variant="sidebar"
+                            draft={issueDraft}
+                            isSubmitting={isSubmittingIssue}
+                            onChange={setIssueDraft}
+                            onCancel={closeCreateIssueForm}
+                            onSubmit={() => void handleCreateIssue()}
+                        />
+                    ) : null}
+
+                    {issueMode === 'list' ? (
+                        !visibleIssues.length ? (
+                            <IssuesEmptyState
+                                isCurrentParticipantMaster={canManageIssues}
+                                onAddIssue={openCreateIssue}
+                            />
+                        ) : (
+                            <IssuesList
+                                issues={visibleIssues}
+                                canManageIssues={canManageIssues}
+                                canRevealCards={canRevealCards}
+                                onEditIssue={openEditIssue}
+                                onAddAnotherIssue={openCreateIssue}
+                                onDeleteIssue={onDeleteIssue}
+                                onSetIssueActive={onSetIssueActive}
+                                onMoveIssue={onMoveIssue}
+                                onReorderIssues={onReorderIssues}
+                            />
+                        )
+                    ) : null}
+                </Box>
             </Box>
 
-            <Box className={styles.issuesScrollArea}>
-                {issueMode === 'create' ? (
-                    <IssueFormCard
-                        mode="create"
-                        draft={issueDraft}
-                        isSubmitting={isSubmittingIssue}
-                        onChange={setIssueDraft}
-                        onCancel={closeIssueForm}
-                        onSubmit={() => void handleCreateIssue()}
-                    />
-                ) : null}
-
-                {issueMode === 'edit' ? (
-                    <IssueFormCard
-                        mode="edit"
-                        draft={issueDraft}
-                        isSubmitting={isSubmittingIssue}
-                        onChange={setIssueDraft}
-                        onCancel={closeIssueForm}
-                        onSubmit={() => void handleUpdateIssue()}
-                    />
-                ) : null}
-
-                {issueMode === 'list' ? (
-                    !visibleIssues.length ? (
-                        <IssuesEmptyState
-                            isCurrentParticipantMaster={canManageIssues}
-                            onAddIssue={openCreateIssue}
-                        />
-                    ) : (
-                        <IssuesList
-                            issues={visibleIssues}
-                            canManageIssues={canManageIssues}
-                            canRevealCards={canRevealCards}
-                            onEditIssue={openEditIssue}
-                            onAddAnotherIssue={openCreateIssue}
-                            onDeleteIssue={onDeleteIssue}
-                            onSetIssueActive={onSetIssueActive}
-                            onMoveIssue={onMoveIssue}
-                            onReorderIssues={onReorderIssues}
-                        />
-                    )
-                ) : null}
-            </Box>
-        </Box>
+            <Dialog
+                open={isEditIssueDialogOpen}
+                onClose={closeEditIssueDialog}
+                fullScreen
+                PaperProps={{ className: styles.issueDialogPaper }}
+                BackdropProps={{ className: styles.issueDialogBackdrop }}
+            >
+                <Box className={styles.issueDialogRoot}>
+                    <Box className={styles.issueDialogGlow}>
+                        <Box className={styles.issueDialogBody}>
+                            <IssueFormCard
+                                mode="edit"
+                                variant="dialog"
+                                draft={issueDraft}
+                                isSubmitting={isSubmittingIssue}
+                                onChange={setIssueDraft}
+                                onCancel={closeEditIssueDialog}
+                                onSubmit={() => void handleUpdateIssue()}
+                            />
+                        </Box>
+                    </Box>
+                </Box>
+            </Dialog>
+        </>
     );
 };
