@@ -2,7 +2,16 @@ import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import ManageAccountsRoundedIcon from '@mui/icons-material/ManageAccountsRounded';
 import PaletteRoundedIcon from '@mui/icons-material/PaletteRounded';
-import { Alert, Avatar, Box, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material';
+import {
+  Alert,
+  Avatar,
+  Box,
+  IconButton,
+  Menu,
+  MenuItem,
+  Stack,
+  Typography,
+} from '@mui/material';
 import type { ReactNode } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 
@@ -19,6 +28,8 @@ type ProfileMenuProps = {
   initials: string;
   showLogout: boolean;
   extraContent?: ReactNode;
+  openAccountAsDialog?: boolean;
+
   onClose: () => void;
   onEditName: () => void;
   onLogout: () => void;
@@ -37,6 +48,7 @@ export const ProfileMenu = ({
   initials,
   showLogout,
   extraContent,
+  openAccountAsDialog = false,
   onClose,
   onEditName,
   onLogout,
@@ -45,6 +57,11 @@ export const ProfileMenu = ({
 }: ProfileMenuProps) => {
   const { pathname, search } = useLocation();
   const currentPath = `${pathname}${search}`;
+
+  const handleAccountClick = () => {
+    onClose();
+    onNavigateToAccount();
+  };
 
   return (
     <Menu
@@ -82,16 +99,23 @@ export const ProfileMenu = ({
 
         {extraContent}
 
-        <MenuItem
-          component={RouterLink}
-          to={accountTo}
-          state={{ from: currentPath }}
-          onClick={onNavigateToAccount}
-          className={styles.menuItem}
-        >
-          <ManageAccountsRoundedIcon fontSize="small" />
-          <span>{accountLabel}</span>
-        </MenuItem>
+        {openAccountAsDialog ? (
+          <MenuItem onClick={handleAccountClick} className={styles.menuItem}>
+            <ManageAccountsRoundedIcon fontSize="small" />
+            <span>{accountLabel}</span>
+          </MenuItem>
+        ) : (
+          <MenuItem
+            component={RouterLink}
+            to={accountTo}
+            state={{ from: currentPath }}
+            onClick={handleAccountClick}
+            className={styles.menuItem}
+          >
+            <ManageAccountsRoundedIcon fontSize="small" />
+            <span>{accountLabel}</span>
+          </MenuItem>
+        )}
 
         <MenuItem onClick={onOpenThemeMenu} className={styles.menuItem}>
           <PaletteRoundedIcon fontSize="small" />

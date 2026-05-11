@@ -1,5 +1,7 @@
 export {
   VotingSystem,
+  RevealPolicy,
+  IssuesPolicy,
   type CreateGamePayload,
   type Game,
   type GameInvite,

@@ -13,7 +13,7 @@ import {
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { Stack } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import type { Issue } from '@entities/issue';
 import styles from '@widgets/game-room-sidebar/ui/game-room-sidebar.module.css';
@@ -21,7 +21,8 @@ import { SortableIssueCard } from './sortable-issue-card';
 
 type IssuesListProps = {
     issues: Issue[];
-    isCurrentParticipantMaster: boolean;
+    canManageIssues: boolean;
+    canRevealCards: boolean;
     onEditIssue: (issue: Issue) => void;
     onAddAnotherIssue: () => void;
     onDeleteIssue?: (issueId: string) => Promise<void>;
@@ -32,7 +33,8 @@ type IssuesListProps = {
 
 export const IssuesList = ({
     issues,
-    isCurrentParticipantMaster,
+    canManageIssues,
+    canRevealCards,
     onEditIssue,
     onAddAnotherIssue,
     onDeleteIssue,
@@ -40,11 +42,19 @@ export const IssuesList = ({
     onMoveIssue,
     onReorderIssues,
 }: IssuesListProps) => {
-    const [localIssues, setLocalIssues] = useState<Issue[]>(issues);
+    const orderedIssues = useMemo(
+        () =>
+            [...issues]
+                .filter((issue) => !issue.isRemoved)
+                .sort((left, right) => left.order - right.order),
+        [issues],
+    );
+
+    const [localIssues, setLocalIssues] = useState<Issue[]>(orderedIssues);
 
     useEffect(() => {
-        setLocalIssues(issues);
-    }, [issues]);
+        setLocalIssues(orderedIssues);
+    }, [orderedIssues]);
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -55,6 +65,10 @@ export const IssuesList = ({
     );
 
     const handleDragEnd = async (event: DragEndEvent) => {
+        if (!canManageIssues || !onReorderIssues) {
+            return;
+        }
+
         const { active, over } = event;
 
         if (!over || active.id === over.id) {
@@ -69,12 +83,16 @@ export const IssuesList = ({
         }
 
         const previousIssues = localIssues;
-        const reordered = arrayMove(localIssues, oldIndex, newIndex);
+
+        const reordered = arrayMove(localIssues, oldIndex, newIndex).map((issue, index) => ({
+            ...issue,
+            order: index + 1,
+        }));
 
         setLocalIssues(reordered);
 
         try {
-            await onReorderIssues?.(reordered.map((issue) => issue.id));
+            await onReorderIssues(reordered.map((issue) => issue.id));
         } catch {
             setLocalIssues(previousIssues);
         }
@@ -99,7 +117,8 @@ export const IssuesList = ({
                                 key={issue.id}
                                 issue={issue}
                                 index={index}
-                                isCurrentParticipantMaster={isCurrentParticipantMaster}
+                                canManageIssues={canManageIssues}
+                                canRevealCards={canRevealCards}
                                 isFirst={index === 0}
                                 isLast={index === localIssues.length - 1}
                                 onEditIssue={onEditIssue}
@@ -112,7 +131,7 @@ export const IssuesList = ({
                 </SortableContext>
             </DndContext>
 
-            {isCurrentParticipantMaster ? (
+            {canManageIssues ? (
                 <button
                     type="button"
                     className={styles.addAnotherIssueButton}

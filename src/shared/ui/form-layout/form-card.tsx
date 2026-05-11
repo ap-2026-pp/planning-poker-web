@@ -64,23 +64,25 @@ export const FormCard = ({
         </Box>
       ) : null}
 
-      <Stack className={styles.intro}>
-        <Box className={[styles.iconShell, iconAccentClassNames[accent]].join(' ')}>
-          {icon}
-        </Box>
+      <Box className={styles.scrollBody}>
+        <Stack className={styles.intro}>
+          <Box className={[styles.iconShell, iconAccentClassNames[accent]].join(' ')}>
+            {icon}
+          </Box>
 
-        <Typography className={styles.title}>{title}</Typography>
+          <Typography className={styles.title}>{title}</Typography>
 
-        {subtitle ? <Typography className={styles.subtitle}>{subtitle}</Typography> : null}
-      </Stack>
+          {subtitle ? <Typography className={styles.subtitle}>{subtitle}</Typography> : null}
+        </Stack>
 
-      {submitError ? (
-        <Alert severity="error" className={styles.alert}>
-          {submitError}
-        </Alert>
-      ) : null}
+        {submitError ? (
+          <Alert severity="error" className={styles.alert}>
+            {submitError}
+          </Alert>
+        ) : null}
 
-      {children}
+        {children}
+      </Box>
 
       {actions ? <Stack className={styles.actions}>{actions}</Stack> : null}
     </Stack>

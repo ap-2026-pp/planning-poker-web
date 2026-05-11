@@ -68,6 +68,8 @@ export const GameRoomPage = () => {
             participants={room.sortedParticipants}
             currentParticipantId={room.currentParticipantId}
             isCurrentParticipantMaster={room.isCurrentParticipantMaster}
+            canManageIssues={room.canManageIssues}
+            canRevealCards={room.canRevealCards}
             pendingParticipantActionId={room.pendingParticipantActionId}
             onSidebarViewChange={room.setSidebarView}
             onClose={room.closeSidebar}
@@ -105,18 +107,26 @@ export const GameRoomPage = () => {
       <Dialog
         open={isEditGameOpen}
         onClose={() => setEditGameOpen(false)}
-        PaperProps={{ className: styles.editGameDialogPaper }}
+        maxWidth={false}
+        PaperProps={{
+          className: styles.editGameDialogPaper,
+        }}
+        BackdropProps={{
+          className: styles.editGameDialogBackdrop,
+        }}
       >
-        <Box className={styles.editGameDialogBody}>
-          <GameForm
-            mode="edit"
-            gameId={room.gameId}
-            onClose={() => setEditGameOpen(false)}
-            onSaved={() => {
-              setEditGameOpen(false);
-              void room.reloadRoom?.();
-            }}
-          />
+        <Box className={styles.editGameDialogGlow}>
+          <Box className={styles.editGameDialogBody}>
+            <GameForm
+              mode="edit"
+              gameId={room.gameId}
+              onClose={() => setEditGameOpen(false)}
+              onSaved={() => {
+                setEditGameOpen(false);
+                void room.reloadRoom?.();
+              }}
+            />
+          </Box>
         </Box>
       </Dialog>
 

@@ -501,6 +501,65 @@
   color: rgba(246, 240, 255, 0.88) !important;
 }
 
+.accountDialogBackdrop {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(169, 111, 255, 0.2) 0%, transparent 34%),
+    radial-gradient(circle at 72% 80%, rgba(52, 123, 229, 0.18) 0%, transparent 36%),
+    rgba(3, 5, 14, 0.72) !important;
+  backdrop-filter: blur(10px);
+}
+
+.accountDialogPaper {
+  width: min(620px, calc(100vw - 28px)) !important;
+  max-width: 620px !important;
+  max-height: calc(100dvh - 48px) !important;
+
+  margin: 24px 14px !important;
+  border-radius: 44px !important;
+
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.accountDialogGlow {
+  position: relative;
+  width: 100%;
+  max-height: calc(100dvh - 48px);
+  min-height: 0;
+  border-radius: 44px;
+}
+
+.accountDialogGlow::before {
+  content: '';
+  position: absolute;
+  inset: -18px;
+  border-radius: 52px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background:
+    radial-gradient(circle at 18% 12%, rgba(185, 123, 255, 0.18) 0%, transparent 36%),
+    radial-gradient(circle at 88% 82%, rgba(52, 123, 229, 0.14) 0%, transparent 38%),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.035) 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  pointer-events: none;
+}
+
+.accountDialogBody {
+  position: relative;
+  z-index: 1;
+
+  width: 100%;
+  max-height: calc(100dvh - 48px);
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 @media (min-width: 900px) {
   .toolbar {
     min-height: 88px !important;

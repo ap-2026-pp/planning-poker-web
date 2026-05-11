@@ -15,7 +15,8 @@ import styles from '@widgets/game-room-sidebar/ui/game-room-sidebar.module.css';
 type SortableIssueCardProps = {
     issue: Issue;
     index: number;
-    isCurrentParticipantMaster: boolean;
+    canManageIssues: boolean;
+    canRevealCards: boolean;
     isFirst: boolean;
     isLast: boolean;
     onEditIssue: (issue: Issue) => void;
@@ -34,7 +35,8 @@ const animateLayoutChanges: AnimateLayoutChanges = (args) => {
 
 export const SortableIssueCard = ({
     issue,
-    isCurrentParticipantMaster,
+    canManageIssues,
+    canRevealCards,
     isFirst,
     isLast,
     onEditIssue,
@@ -58,7 +60,7 @@ export const SortableIssueCard = ({
         isDragging,
     } = useSortable({
         id: issue.id,
-        disabled: !isCurrentParticipantMaster,
+        disabled: !canManageIssues,
         animateLayoutChanges,
     });
 
@@ -76,9 +78,11 @@ export const SortableIssueCard = ({
                 className={[
                     styles.issueCard,
                     isDragging ? styles.issueCardDragging : '',
-                ].join(' ').trim()}
+                ]
+                    .join(' ')
+                    .trim()}
                 onClick={() => {
-                    if (isCurrentParticipantMaster) {
+                    if (canManageIssues) {
                         onEditIssue(issue);
                     }
                 }}
@@ -88,13 +92,15 @@ export const SortableIssueCard = ({
                         className={[
                             styles.issueDot,
                             styles[`issueTone${toneIndex}`],
-                        ].join(' ').trim()}
+                        ]
+                            .join(' ')
+                            .trim()}
                     />
 
                     <Stack
                         className={styles.issueText}
-                        {...attributes}
-                        {...listeners}
+                        {...(canManageIssues ? attributes : {})}
+                        {...(canManageIssues ? listeners : {})}
                     >
                         <Typography className={styles.issueTitle}>{issue.title}</Typography>
 
@@ -103,7 +109,7 @@ export const SortableIssueCard = ({
                         </Typography>
                     </Stack>
 
-                    {isCurrentParticipantMaster ? (
+                    {canManageIssues ? (
                         <IconButton
                             className={styles.issueCardMenuButton}
                             onClick={(event) => {
@@ -119,13 +125,15 @@ export const SortableIssueCard = ({
 
                 <Box className={styles.issueFooter}>
                     <Box className={styles.issueFooterActions}>
-                        {isCurrentParticipantMaster ? (
+                        {canRevealCards ? (
                             <button
                                 type="button"
                                 className={[
                                     styles.issueVoteButton,
                                     issue.isCurrent ? styles.issueVoteButtonActive : '',
-                                ].join(' ').trim()}
+                                ]
+                                    .join(' ')
+                                    .trim()}
                                 onClick={(event) => {
                                     event.stopPropagation();
                                     void onSetIssueActive?.(issue.id);
@@ -177,6 +185,7 @@ export const SortableIssueCard = ({
                         if (onMoveIssue) {
                             void onMoveIssue(issue.id, 'up');
                         }
+
                         setMenuAnchor(null);
                     }}
                 >
@@ -190,6 +199,7 @@ export const SortableIssueCard = ({
                         if (onMoveIssue) {
                             void onMoveIssue(issue.id, 'down');
                         }
+
                         setMenuAnchor(null);
                     }}
                 >
@@ -202,6 +212,7 @@ export const SortableIssueCard = ({
                         if (onDeleteIssue) {
                             void onDeleteIssue(issue.id);
                         }
+
                         setMenuAnchor(null);
                     }}
                 >

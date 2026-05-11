@@ -2,24 +2,24 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useGameRoomRealtime } from './use-game-room-realtime';
 
-import type { Game, GameInvite } from '@entities/game';
+import { IssuesPolicy, RevealPolicy, type Game, type GameInvite } from '@entities/game';
 import type { Issue } from '@entities/issue';
 import { ParticipantRole, type GameParticipant } from '@entities/participant';
 import {
+  createIssueRequest,
   deleteGameParticipantRequest,
+  deleteIssueRequest,
   getGameInviteRequest,
   getGameRequest,
   getIssuesRequest,
   getParticipantsRequest,
   leaveGameRequest,
+  reorderIssuesRequest,
+  setIssueActiveRequest,
   setSpectatorModeRequest,
   transferMasterRequest,
   updateDisplayNameRequest,
-  createIssueRequest,
   updateIssueRequest,
-  deleteIssueRequest,
-  setIssueActiveRequest,
-  reorderIssuesRequest,
 } from '@shared/api';
 import {
   clearCurrentRoomParticipantSession,
@@ -59,7 +59,9 @@ export const useGameRoomPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useSession();
+
   const from = (location.state as { from?: string } | null)?.from;
+
   const {
     setRoomTitle,
     setRoomParticipant,
@@ -71,6 +73,7 @@ export const useGameRoomPage = () => {
     setRenameRoomParticipant,
     setToggleRoomParticipantSpectatorMode,
   } = useGameRoomShell();
+
   const [game, setGame] = useState<Game | null>(null);
   const [participants, setParticipants] = useState<GameParticipant[]>([]);
   const [issues, setIssues] = useState<Issue[]>([]);
@@ -84,9 +87,12 @@ export const useGameRoomPage = () => {
   const [selectedParticipantId, setSelectedParticipantId] = useState<string | null>(null);
   const [pendingParticipantActionId, setPendingParticipantActionId] = useState<string | null>(null);
   const [notification, setNotification] = useState<RoomNotification | null>(null);
+
   const resetCopiedTimeoutRef = useRef<number | null>(null);
   const currentParticipantIdRef = useRef<string | null>(null);
   const participantsRef = useRef<GameParticipant[]>([]);
+  const issuesRef = useRef<Issue[]>([]);
+
   const storedParticipantSession = getCurrentRoomParticipantSession();
 
   const reloadRoom = useCallback(async () => {
@@ -187,13 +193,18 @@ export const useGameRoomPage = () => {
   );
 
   const sortedIssues = useMemo(
-    () => [...issues].sort((left, right) => left.order - right.order),
+    () =>
+      [...issues]
+        .filter((issue) => !issue.isRemoved)
+        .sort((left, right) => left.order - right.order),
     [issues],
   );
+
   const sortedParticipants = useMemo(
     () => [...participants].sort(sortParticipants),
     [participants],
   );
+
   const currentParticipant = useMemo(() => {
     const storedParticipantId =
       storedParticipantSession?.gameId === gameId ? storedParticipantSession.participantId : null;
@@ -209,24 +220,60 @@ export const useGameRoomPage = () => {
     }
 
     if (user?.id) {
-      return (
-        sortedParticipants.find((participant) => participant.userId === user.id) ?? null
-      );
+      return sortedParticipants.find((participant) => participant.userId === user.id) ?? null;
     }
 
     return null;
-  }, [gameId, sortedParticipants, storedParticipantSession?.gameId, storedParticipantSession?.participantId, user?.id]);
+  }, [
+    gameId,
+    sortedParticipants,
+    storedParticipantSession?.gameId,
+    storedParticipantSession?.participantId,
+    user?.id,
+  ]);
+
   const onlineParticipants = useMemo(
     () => sortedParticipants.filter(isParticipantOnline),
     [sortedParticipants],
   );
+
   const positionedParticipants = useMemo(
     () => getParticipantPositions(onlineParticipants, isMobileLayout),
     [isMobileLayout, onlineParticipants],
   );
+
   const overflowParticipants = useMemo(
     () => onlineParticipants.slice(getParticipantVisibilityLimit(isMobileLayout)),
     [isMobileLayout, onlineParticipants],
+  );
+
+  const isCurrentParticipantMaster = currentParticipant?.role === ParticipantRole.Master;
+  const isCurrentParticipantSpectator = currentParticipant?.role === ParticipantRole.Spectator;
+
+  const canRevealCards = Boolean(
+    currentParticipant &&
+    currentParticipant.role !== ParticipantRole.Spectator &&
+    (
+      currentParticipant.role === ParticipantRole.Master ||
+      game?.revealPolicy === RevealPolicy.Everyone ||
+      (
+        game?.revealPolicy === RevealPolicy.SpecificParticipants &&
+        currentParticipant.canRevealCards
+      )
+    ),
+  );
+
+  const canManageIssues = Boolean(
+    currentParticipant &&
+    currentParticipant.role !== ParticipantRole.Spectator &&
+    (
+      currentParticipant.role === ParticipantRole.Master ||
+      game?.issuesPolicy === IssuesPolicy.Everyone ||
+      (
+        game?.issuesPolicy === IssuesPolicy.SpecificParticipants &&
+        currentParticipant.canManageIssues
+      )
+    ),
   );
 
   const inviteCode = invite?.inviteCode || game?.inviteCode || '—';
@@ -234,19 +281,25 @@ export const useGameRoomPage = () => {
   const qrCodeImage = invite?.qrCodeBase64
     ? `data:image/png;base64,${invite.qrCodeBase64}`
     : '';
+
   const activeIssueIndex = sortedIssues.findIndex((issue) => issue.isCurrent);
   const activeIssue = activeIssueIndex >= 0 ? sortedIssues[activeIssueIndex] : null;
   const roundLabel = getRoundLabel(sortedIssues, activeIssueIndex);
+
   const votingSystemLabel = getGameRoomVotingLabel(game?.votingSystem);
+
   const deckValues = getGameRoomDeck(
     game?.votingSystem,
     (game as typeof game & { customCards?: string[] | null })?.customCards ?? null,
   );
-  const isCurrentParticipantMaster = currentParticipant?.role === ParticipantRole.Master;
 
   useEffect(() => {
     participantsRef.current = participants;
   }, [participants]);
+
+  useEffect(() => {
+    issuesRef.current = issues;
+  }, [issues]);
 
   useEffect(() => {
     if (
@@ -276,6 +329,7 @@ export const useGameRoomPage = () => {
     }
 
     setCurrentRoomParticipantSession(gameId, currentParticipant.id);
+
     setRoomParticipant({
       displayName: currentParticipant.displayName,
       isMaster: currentParticipant.role === ParticipantRole.Master,
@@ -299,6 +353,7 @@ export const useGameRoomPage = () => {
           participant.id === updatedParticipant.id ? updatedParticipant : participant,
         ),
       );
+
       setCurrentRoomParticipantSession(gameId, updatedParticipant.id);
     });
 
@@ -347,6 +402,7 @@ export const useGameRoomPage = () => {
 
   const handleParticipantJoined = useCallback((participant: GameParticipant) => {
     setParticipants((current) => upsertGameRoomParticipant(current, participant));
+
     setNotification({
       message: `${participant.displayName} приєднався(-лася) до кімнати`,
       tone: 'success',
@@ -376,32 +432,6 @@ export const useGameRoomPage = () => {
       return;
     }
 
-    if (
-      previousParticipant.isConnected &&
-      !participant.isConnected &&
-      !participant.removedAt
-    ) {
-      setNotification({
-        message: `${participant.displayName} покинув(-ла) кімнату`,
-        tone: 'info',
-      });
-
-      return;
-    }
-
-    if (
-      !previousParticipant.isConnected &&
-      participant.isConnected &&
-      !participant.removedAt
-    ) {
-      setNotification({
-        message: `${participant.displayName} знову в кімнаті`,
-        tone: 'success',
-      });
-
-      return;
-    }
-
     if (previousParticipant.displayName !== participant.displayName) {
       setNotification({
         message: `${participant.displayName} змінив(ла) своє імʼя`,
@@ -412,9 +442,7 @@ export const useGameRoomPage = () => {
 
   const handleParticipantRemoved = useCallback(
     (participantId: string, reason: 'left' | 'kicked') => {
-      const participant = participantsRef.current.find(
-        (entry) => entry.id === participantId,
-      );
+      const participant = participantsRef.current.find((entry) => entry.id === participantId);
 
       setParticipants((current) => {
         const remainingParticipants = removeGameRoomParticipant(current, participantId);
@@ -427,9 +455,7 @@ export const useGameRoomPage = () => {
 
         const hasCurrentParticipant =
           (expectedCurrentParticipantId
-            ? remainingParticipants.some(
-              (entry) => entry.id === expectedCurrentParticipantId,
-            )
+            ? remainingParticipants.some((entry) => entry.id === expectedCurrentParticipantId)
             : false) ||
           (user?.id
             ? remainingParticipants.some((entry) => entry.userId === user.id)
@@ -447,9 +473,7 @@ export const useGameRoomPage = () => {
         return remainingParticipants;
       });
 
-      setSelectedParticipantId((current) =>
-        current === participantId ? null : current,
-      );
+      setSelectedParticipantId((current) => (current === participantId ? null : current));
 
       if (participant) {
         setNotification({
@@ -521,7 +545,7 @@ export const useGameRoomPage = () => {
         return [...current, issue];
       }
 
-      return current.map((entry) => (entry.id === issue.id ? issue : entry));
+      return current.map((entry) => (entry.id === issue.id ? { ...entry, ...issue } : entry));
     });
   }, []);
 
@@ -590,9 +614,7 @@ export const useGameRoomPage = () => {
         });
       } catch (requestError) {
         setError(
-          requestError instanceof Error
-            ? requestError.message
-            : 'Не вдалося додати issue',
+          requestError instanceof Error ? requestError.message : 'Не вдалося додати issue',
         );
         throw requestError;
       }
@@ -614,9 +636,7 @@ export const useGameRoomPage = () => {
         });
       } catch (requestError) {
         setError(
-          requestError instanceof Error
-            ? requestError.message
-            : 'Не вдалося оновити issue',
+          requestError instanceof Error ? requestError.message : 'Не вдалося оновити issue',
         );
         throw requestError;
       }
@@ -626,20 +646,22 @@ export const useGameRoomPage = () => {
 
   const deleteIssue = useCallback(
     async (issueId: string) => {
+      const previousIssues = issuesRef.current;
+
+      setIssues((current) => current.filter((issue) => issue.id !== issueId));
+
       try {
         await deleteIssueRequest(gameId, issueId);
-
-        setIssues((current) => current.filter((issue) => issue.id !== issueId));
 
         setNotification({
           message: 'Issue видалено',
           tone: 'success',
         });
       } catch (requestError) {
+        setIssues(previousIssues);
+
         setError(
-          requestError instanceof Error
-            ? requestError.message
-            : 'Не вдалося видалити issue',
+          requestError instanceof Error ? requestError.message : 'Не вдалося видалити issue',
         );
         throw requestError;
       }
@@ -648,58 +670,60 @@ export const useGameRoomPage = () => {
   );
 
   const setIssueActive = useCallback(
-  async (issueId: string) => {
-    const previousIssues = issues;
+    async (issueId: string) => {
+      const previousIssues = issuesRef.current;
+      const clickedIssue = previousIssues.find((issue) => issue.id === issueId);
 
-    const clickedIssue = issues.find((issue) => issue.id === issueId);
-    if (!clickedIssue) {
-      return;
-    }
-
-    const isTurningOff = clickedIssue.isCurrent;
-
-    const nextIssues = issues.map((issue) => {
-      if (issue.id === issueId) {
-        return {
-          ...issue,
-          isCurrent: !issue.isCurrent,
-        };
+      if (!clickedIssue) {
+        return;
       }
 
-      return {
-        ...issue,
-        isCurrent: false,
-      };
-    });
+      const isTurningOff = clickedIssue.isCurrent;
 
-    setIssues(nextIssues);
+      setIssues((current) =>
+        current.map((issue) => {
+          if (issue.id === issueId) {
+            return {
+              ...issue,
+              isCurrent: !issue.isCurrent,
+            };
+          }
 
-    try {
-      await setIssueActiveRequest(gameId, issueId);
-
-      setNotification({
-        message: isTurningOff
-          ? 'Оцінювання зупинено'
-          : 'Оцінювання розпочато',
-        tone: 'success',
-      });
-    } catch (requestError) {
-      setIssues(previousIssues);
-
-      setError(
-        requestError instanceof Error
-          ? requestError.message
-          : 'Не вдалося оновити статус оцінювання',
+          return {
+            ...issue,
+            isCurrent: false,
+          };
+        }),
       );
-      throw requestError;
-    }
-  },
-  [gameId, issues],
-);
+
+      try {
+        await setIssueActiveRequest(gameId, issueId);
+
+        setNotification({
+          message: isTurningOff ? 'Оцінювання зупинено' : 'Оцінювання розпочато',
+          tone: 'success',
+        });
+      } catch (requestError) {
+        setIssues(previousIssues);
+
+        setError(
+          requestError instanceof Error
+            ? requestError.message
+            : 'Не вдалося оновити статус оцінювання',
+        );
+        throw requestError;
+      }
+    },
+    [gameId],
+  );
 
   const reorderIssue = useCallback(
     async (issueId: string, direction: 'up' | 'down') => {
-      const ordered = [...issues].sort((a, b) => a.order - b.order);
+      const previousIssues = issuesRef.current;
+      const ordered = [...previousIssues]
+        .filter((issue) => !issue.isRemoved)
+        .sort((a, b) => a.order - b.order);
+
       const currentIndex = ordered.findIndex((issue) => issue.id === issueId);
 
       if (currentIndex < 0) {
@@ -712,8 +736,6 @@ export const useGameRoomPage = () => {
         return;
       }
 
-      const previousIssues = ordered;
-
       const next = [...ordered];
       const [movedIssue] = next.splice(currentIndex, 1);
       next.splice(targetIndex, 0, movedIssue);
@@ -723,12 +745,17 @@ export const useGameRoomPage = () => {
         order: index + 1,
       }));
 
-      setIssues(reorderedIssues);
+      const reorderedIds = reorderedIssues.map((issue) => issue.id);
+
+      setIssues((current) =>
+        current.map((issue) => {
+          const nextIssue = reorderedIssues.find((entry) => entry.id === issue.id);
+          return nextIssue ?? issue;
+        }),
+      );
 
       try {
-        await reorderIssuesRequest(gameId, {
-          issuesIds: reorderedIssues.map((issue) => issue.id),
-        });
+        await reorderIssuesRequest(gameId, { issuesIds: reorderedIds });
       } catch (requestError) {
         setIssues(previousIssues);
 
@@ -741,23 +768,33 @@ export const useGameRoomPage = () => {
         throw requestError;
       }
     },
-    [gameId, issues],
+    [gameId],
   );
 
   const reorderIssues = useCallback(
     async (issueIds: string[]) => {
+      const previousIssues = issuesRef.current;
+
+      setIssues((current) =>
+        current.map((issue) => {
+          const nextIndex = issueIds.indexOf(issue.id);
+
+          if (nextIndex < 0) {
+            return issue;
+          }
+
+          return {
+            ...issue,
+            order: nextIndex + 1,
+          };
+        }),
+      );
+
       try {
         await reorderIssuesRequest(gameId, { issuesIds: issueIds });
-
-        setIssues((current) =>
-          issueIds
-            .map((id, index) => {
-              const issue = current.find((entry) => entry.id === id);
-              return issue ? { ...issue, order: index + 1 } : null;
-            })
-            .filter((issue): issue is Issue => issue !== null),
-        );
       } catch (requestError) {
+        setIssues(previousIssues);
+
         setError(
           requestError instanceof Error
             ? requestError.message
@@ -791,6 +828,8 @@ export const useGameRoomPage = () => {
     onlineParticipantsCount: onlineParticipants.length,
     currentParticipantId: currentParticipant?.id ?? null,
     isCurrentParticipantMaster,
+    canRevealCards,
+    canManageIssues,
     selectedParticipantId,
     pendingParticipantActionId,
     selectParticipant,

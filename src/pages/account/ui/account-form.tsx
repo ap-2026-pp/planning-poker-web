@@ -42,13 +42,18 @@ type LocationState = {
   from?: string;
 };
 
+type AccountFormProps = {
+  onClose?: () => void;
+  onSaved?: () => void;
+};
+
 const initialPasswordValues: AccountPasswordValues = {
   oldPassword: '',
   newPassword: '',
   confirmPassword: '',
 };
 
-export const AccountForm = () => {
+export const AccountForm = ({ onClose, onSaved }: AccountFormProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -60,14 +65,17 @@ export const AccountForm = () => {
     displayName: user?.displayName ?? '',
   });
 
-  const [displayNameErrors, setDisplayNameErrors] = useState<FormErrors<AccountDisplayNameValues>>({});
+  const [displayNameErrors, setDisplayNameErrors] =
+    useState<FormErrors<AccountDisplayNameValues>>({});
   const [displayNameSubmitError, setDisplayNameSubmitError] = useState<string | null>(null);
   const [displayNameSuccessMessage, setDisplayNameSuccessMessage] = useState<string | null>(null);
   const [displayNameSubmitting, setDisplayNameSubmitting] = useState(false);
 
   const [passwordOpen, setPasswordOpen] = useState(false);
-  const [passwordValues, setPasswordValues] = useState<AccountPasswordValues>(initialPasswordValues);
-  const [passwordErrors, setPasswordErrors] = useState<FormErrors<AccountPasswordValues>>({});
+  const [passwordValues, setPasswordValues] =
+    useState<AccountPasswordValues>(initialPasswordValues);
+  const [passwordErrors, setPasswordErrors] =
+    useState<FormErrors<AccountPasswordValues>>({});
   const [passwordSubmitError, setPasswordSubmitError] = useState<string | null>(null);
   const [passwordSubmitting, setPasswordSubmitting] = useState(false);
 
@@ -78,6 +86,11 @@ export const AccountForm = () => {
   }, [user?.displayName]);
 
   const handleClose = () => {
+    if (onClose) {
+      onClose();
+      return;
+    }
+
     navigate(from || appRoutes.home, { replace: true });
   };
 
@@ -107,14 +120,19 @@ export const AccountForm = () => {
         displayName: displayNameValues.displayName.trim(),
       };
 
-      const nextErrors = await validateSchema(accountDisplayNameSchema, normalizedValues);
+      const nextErrors = await validateSchema(
+        accountDisplayNameSchema,
+        normalizedValues,
+      );
 
       if (Object.keys(nextErrors).length) {
         setDisplayNameErrors(nextErrors);
         return;
       }
 
-      const updatedUser = await updateCurrentUserDisplayNameRequest(normalizedValues.displayName);
+      const updatedUser = await updateCurrentUserDisplayNameRequest(
+        normalizedValues.displayName,
+      );
 
       updateCurrentUser(updatedUser);
 
@@ -123,6 +141,10 @@ export const AccountForm = () => {
       });
 
       setDisplayNameSuccessMessage('Імʼя збережено.');
+
+      if (onSaved) {
+        onSaved();
+      }
     } catch (error) {
       setDisplayNameSubmitError(
         error instanceof Error ? error.message : 'Не вдалося зберегти імʼя',

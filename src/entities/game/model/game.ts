@@ -10,11 +10,25 @@ export enum VotingSystem {
   Custom = 3,
 }
 
+export enum RevealPolicy {
+  MasterOnly = 0,
+  Everyone = 1,
+  SpecificParticipants = 2,
+}
+
+export enum IssuesPolicy {
+  MasterOnly = 0,
+  Everyone = 1,
+  SpecificParticipants = 2,
+}
+
 export type Game = {
   id: string;
   name?: string | null;
   votingSystem: VotingSystem;
   inviteCode?: string | null;
+  revealPolicy: RevealPolicy;
+  issuesPolicy: IssuesPolicy;
   autoRevealCards: boolean;
   showAverage: boolean;
   showCountdownAnimation: boolean;
@@ -30,6 +44,8 @@ export type CreateGamePayload = {
   name: string;
   hostDisplayName?: string;
   votingSystem: VotingSystem;
+  revealPolicy: RevealPolicy;
+  issuesPolicy: IssuesPolicy;
   autoRevealCards: boolean;
   showAverage: boolean;
   showCountdownAnimation: boolean;
@@ -39,11 +55,16 @@ export type CreateGamePayload = {
 export type UpdateGamePayload = {
   name: string;
   votingSystem: VotingSystem;
+  revealPolicy: RevealPolicy;
+  issuesPolicy: IssuesPolicy;
   autoRevealCards: boolean;
   showAverage: boolean;
   showCountdownAnimation: boolean;
-  isActive: boolean;
   enableFunFeatures: boolean;
+  isActive?: boolean;
+
+  revealParticipantIds?: string[];
+  manageIssuesParticipantIds?: string[];
 };
 
 export type JoinGamePayload = {

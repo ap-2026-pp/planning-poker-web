@@ -14,4 +14,6 @@ export type GameParticipant = {
   isActive?: boolean;
   voteValue?: string;
   removedAt?: string;
+  canRevealCards: boolean;
+  canManageIssues: boolean;
 };

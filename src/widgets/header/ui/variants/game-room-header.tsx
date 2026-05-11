@@ -2,10 +2,21 @@ import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownR
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import PersonAddAlt1RoundedIcon from '@mui/icons-material/PersonAddAlt1Rounded';
-import { AppBar, Avatar, Box, ButtonBase, IconButton, Stack, Toolbar, Typography } from '@mui/material';
+import {
+  AppBar,
+  Avatar,
+  Box,
+  ButtonBase,
+  Dialog,
+  IconButton,
+  Stack,
+  Toolbar,
+  Typography,
+} from '@mui/material';
 import { useMemo, useState, type CSSProperties } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
+import { AccountForm } from '@pages/account/ui/account-form';
 import { appRoutes } from '@shared/config/routes';
 import type {
   GameRoomParticipantSummary,
@@ -52,6 +63,7 @@ export const GameRoomHeader = ({
   onLogout,
 }: GameRoomHeaderProps) => {
   const [isUpdatingSpectatorMode, setUpdatingSpectatorMode] = useState(false);
+  const [isAccountDialogOpen, setAccountDialogOpen] = useState(false);
 
   const {
     profileAnchorEl,
@@ -107,7 +119,11 @@ export const GameRoomHeader = ({
     try {
       await onToggleRoomParticipantSpectatorMode(isSpectator);
     } catch (error) {
-      setMenuError(error instanceof Error ? error.message : 'Не вдалося змінити режим спостерігача');
+      setMenuError(
+        error instanceof Error
+          ? error.message
+          : 'Не вдалося змінити режим спостерігача',
+      );
     } finally {
       setUpdatingSpectatorMode(false);
     }
@@ -116,6 +132,15 @@ export const GameRoomHeader = ({
   const handleLogout = () => {
     handleCloseProfileMenu();
     onLogout();
+  };
+
+  const handleOpenAccountDialog = () => {
+    handleCloseProfileMenu();
+    setAccountDialogOpen(true);
+  };
+
+  const handleCloseAccountDialog = () => {
+    setAccountDialogOpen(false);
   };
 
   return (
@@ -146,8 +171,12 @@ export const GameRoomHeader = ({
                 <Avatar className={styles.roomProfileAvatar}>{participantInitials}</Avatar>
 
                 <Stack className={styles.roomProfileText}>
-                  <Typography className={styles.roomProfileName}>{participantLabel}</Typography>
-                  <Typography className={styles.roomProfileCaption}>{participantCaption}</Typography>
+                  <Typography className={styles.roomProfileName}>
+                    {participantLabel}
+                  </Typography>
+                  <Typography className={styles.roomProfileCaption}>
+                    {participantCaption}
+                  </Typography>
                 </Stack>
 
                 <KeyboardArrowDownRoundedIcon className={styles.roomProfileArrow} />
@@ -191,10 +220,11 @@ export const GameRoomHeader = ({
         caption={participantCaption}
         initials={participantInitials}
         showLogout={false}
+        openAccountAsDialog
         onClose={handleCloseProfileMenu}
         onEditName={displayNameDialog.open}
         onLogout={handleLogout}
-        onNavigateToAccount={handleCloseProfileMenu}
+        onNavigateToAccount={handleOpenAccountDialog}
         onOpenThemeMenu={handleOpenThemeMenu}
         extraContent={
           <SpectatorModeMenuBlock
@@ -205,6 +235,26 @@ export const GameRoomHeader = ({
           />
         }
       />
+
+      <Dialog
+        open={isAccountDialogOpen}
+        onClose={handleCloseAccountDialog}
+        maxWidth={false}
+        slotProps={{
+          backdrop: {
+            className: styles.accountDialogBackdrop,
+          },
+          paper: {
+            className: styles.accountDialogPaper,
+          },
+        }}
+      >
+        <Box className={styles.accountDialogGlow}>
+          <Box className={styles.accountDialogBody}>
+            <AccountForm onClose={handleCloseAccountDialog} />
+          </Box>
+        </Box>
+      </Dialog>
 
       <ThemeMenu
         anchorEl={themeAnchorEl}

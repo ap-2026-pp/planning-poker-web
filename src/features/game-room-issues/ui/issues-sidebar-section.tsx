@@ -11,7 +11,8 @@ import styles from '@widgets/game-room-sidebar/ui/game-room-sidebar.module.css';
 
 type IssuesSidebarSectionProps = {
     issues: Issue[];
-    isCurrentParticipantMaster: boolean;
+    canManageIssues: boolean;
+    canRevealCards: boolean;
     onAddIssue?: (payload: { title: string }) => Promise<void>;
     onUpdateIssue?: (
         issueId: string,
@@ -31,7 +32,8 @@ const initialDraft: IssueDraft = {
 
 export const IssuesSidebarSection = ({
     issues,
-    isCurrentParticipantMaster,
+    canManageIssues,
+    canRevealCards,
     onAddIssue,
     onUpdateIssue,
     onDeleteIssue,
@@ -45,7 +47,10 @@ export const IssuesSidebarSection = ({
     const [issueDraft, setIssueDraft] = useState<IssueDraft>(initialDraft);
 
     const visibleIssues = useMemo(
-        () => issues.filter((issue) => !issue.isRemoved),
+        () =>
+            issues
+                .filter((issue) => !issue.isRemoved)
+                .sort((left, right) => left.order - right.order),
         [issues],
     );
 
@@ -54,12 +59,20 @@ export const IssuesSidebarSection = ({
     };
 
     const openCreateIssue = () => {
+        if (!canManageIssues) {
+            return;
+        }
+
         resetIssueDraft();
         setSelectedIssueId(null);
         setIssueMode('create');
     };
 
     const openEditIssue = (issue: Issue) => {
+        if (!canManageIssues) {
+            return;
+        }
+
         setSelectedIssueId(issue.id);
         setIssueDraft({
             title: issue.title ?? '',
@@ -76,7 +89,7 @@ export const IssuesSidebarSection = ({
     };
 
     const handleCreateIssue = async () => {
-        if (!issueDraft.title.trim() || !onAddIssue) {
+        if (!canManageIssues || !issueDraft.title.trim() || !onAddIssue) {
             return;
         }
 
@@ -90,7 +103,7 @@ export const IssuesSidebarSection = ({
     };
 
     const handleUpdateIssue = async () => {
-        if (!selectedIssueId || !issueDraft.title.trim() || !onUpdateIssue) {
+        if (!canManageIssues || !selectedIssueId || !issueDraft.title.trim() || !onUpdateIssue) {
             return;
         }
 
@@ -117,7 +130,7 @@ export const IssuesSidebarSection = ({
                     </Typography>
                 </Box>
 
-                <IssuesActionsMenu isCurrentParticipantMaster={isCurrentParticipantMaster} />
+                <IssuesActionsMenu isCurrentParticipantMaster={canManageIssues} />
             </Box>
 
             <Box className={styles.issuesScrollArea}>
@@ -146,13 +159,14 @@ export const IssuesSidebarSection = ({
                 {issueMode === 'list' ? (
                     !visibleIssues.length ? (
                         <IssuesEmptyState
-                            isCurrentParticipantMaster={isCurrentParticipantMaster}
+                            isCurrentParticipantMaster={canManageIssues}
                             onAddIssue={openCreateIssue}
                         />
                     ) : (
                         <IssuesList
                             issues={visibleIssues}
-                            isCurrentParticipantMaster={isCurrentParticipantMaster}
+                            canManageIssues={canManageIssues}
+                            canRevealCards={canRevealCards}
                             onEditIssue={openEditIssue}
                             onAddAnotherIssue={openCreateIssue}
                             onDeleteIssue={onDeleteIssue}

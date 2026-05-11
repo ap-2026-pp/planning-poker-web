@@ -16,6 +16,8 @@ type GameRoomSidebarProps = {
   participants: GameParticipant[];
   currentParticipantId: string | null;
   isCurrentParticipantMaster: boolean;
+  canManageIssues: boolean;
+  canRevealCards: boolean;
   pendingParticipantActionId: string | null;
   onSidebarViewChange: (value: SidebarView) => void;
   onClose: () => void;
@@ -37,6 +39,8 @@ export const GameRoomSidebar = ({
   participants,
   currentParticipantId,
   isCurrentParticipantMaster,
+  canManageIssues,
+  canRevealCards,
   pendingParticipantActionId,
   onSidebarViewChange,
   onClose,
@@ -60,7 +64,8 @@ export const GameRoomSidebar = ({
       {sidebarView === 'issues' ? (
         <IssuesSidebarSection
           issues={issues}
-          isCurrentParticipantMaster={isCurrentParticipantMaster}
+          canManageIssues={canManageIssues}
+          canRevealCards={canRevealCards}
           onAddIssue={onAddIssue}
           onUpdateIssue={onUpdateIssue}
           onDeleteIssue={onDeleteIssue}
