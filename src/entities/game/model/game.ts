@@ -63,8 +63,8 @@ export type UpdateGamePayload = {
   enableFunFeatures: boolean;
   isActive?: boolean;
 
-  revealParticipantIds?: string[];
-  manageIssuesParticipantIds?: string[];
+  revealAllowedParticipantIds?: string[];
+  issuesAllowedParticipantIds?: string[];
 };
 
 export type JoinGamePayload = {

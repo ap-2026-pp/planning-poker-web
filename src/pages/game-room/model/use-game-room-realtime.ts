@@ -4,7 +4,6 @@ import type { HubConnection } from '@microsoft/signalr';
 import type { Game } from '@entities/game';
 import type { Issue } from '@entities/issue';
 import type { GameParticipant } from '@entities/participant';
-import { IssuesPolicy, RevealPolicy } from '@entities/game';
 import {
     createSignalRConnection,
     startSignalRConnection,

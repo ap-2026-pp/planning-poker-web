@@ -2,12 +2,15 @@ import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import {
+  Avatar,
   Box,
   Button,
   ButtonBase,
   CircularProgress,
   Collapse,
   Grid,
+  ListItemIcon,
+  ListItemText,
   MenuItem,
   Stack,
   Switch,
@@ -44,8 +47,8 @@ type GameFormMode = 'create' | 'edit';
 
 type GameFormValues = UpdateGamePayload & {
   hostDisplayName: string;
-  revealParticipantIds: string[];
-  manageIssuesParticipantIds: string[];
+  revealAllowedParticipantIds: string[];
+  issuesAllowedParticipantIds: string[];
 };
 
 type GameFormProps = {
@@ -73,8 +76,8 @@ const initialValues: GameFormValues = {
   showCountdownAnimation: true,
   isActive: true,
   enableFunFeatures: true,
-  revealParticipantIds: [],
-  manageIssuesParticipantIds: [],
+  revealAllowedParticipantIds: [],
+  issuesAllowedParticipantIds: [],
 };
 
 const modeCopy = {
@@ -136,8 +139,20 @@ const getAccessSelectValue = (
 const getParticipantNameById = (
   participants: GameParticipant[],
   participantId: string,
-) => {
-  return participants.find((participant) => participant.id === participantId)?.displayName;
+) => participants.find((participant) => participant.id === participantId)?.displayName;
+
+const getParticipantInitials = (name: string) => {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+
+  if (!parts.length) {
+    return '?';
+  }
+
+  if (parts.length === 1) {
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+
+  return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
 };
 
 const renderAccessValue = (
@@ -147,53 +162,50 @@ const renderAccessValue = (
   const selectedValues = getMultiSelectValue(selected);
 
   if (selectedValues.includes(EVERYONE_VALUE)) {
-    return 'Усі учасники';
+    return 'All players';
   }
 
   if (
     selectedValues.includes(MASTER_ONLY_VALUE) ||
     selectedValues.length === 0
   ) {
-    return 'Тільки master';
+    return 'Master only';
   }
 
   const names = selectedValues
     .map((id) => getParticipantNameById(participants, id))
     .filter(Boolean);
 
-  return names.length ? names.join(', ') : 'Тільки master';
+  return names.length ? names.join(', ') : 'Master only';
 };
 
-const getNextAccessState = <
-  TPolicy extends RevealPolicy | IssuesPolicy,
->(
+const getNextAccessState = <TPolicy extends RevealPolicy | IssuesPolicy>(
   rawValue: unknown,
-  currentParticipantIds: string[],
+  previousValue: string[],
   specificPolicy: TPolicy,
   everyonePolicy: TPolicy,
   masterOnlyPolicy: TPolicy,
 ) => {
   const selectedValues = getMultiSelectValue(rawValue);
 
-  const selectedEveryone = selectedValues.includes(EVERYONE_VALUE);
-  const selectedMasterOnly = selectedValues.includes(MASTER_ONLY_VALUE);
+  const addedValue = selectedValues.find((value) => !previousValue.includes(value));
 
-  if (selectedEveryone) {
-    return {
-      policy: everyonePolicy,
-      participantIds: [],
-    };
-  }
-
-  if (selectedMasterOnly) {
+  if (addedValue === MASTER_ONLY_VALUE) {
     return {
       policy: masterOnlyPolicy,
       participantIds: [],
     };
   }
 
+  if (addedValue === EVERYONE_VALUE) {
+    return {
+      policy: everyonePolicy,
+      participantIds: [],
+    };
+  }
+
   const participantIds = selectedValues.filter(
-    (value) => value !== EVERYONE_VALUE && value !== MASTER_ONLY_VALUE,
+    (value) => value !== MASTER_ONLY_VALUE && value !== EVERYONE_VALUE,
   );
 
   if (!participantIds.length) {
@@ -207,6 +219,103 @@ const getNextAccessState = <
     policy: specificPolicy,
     participantIds,
   };
+};
+
+type AccessSelectFieldProps = {
+  label: string;
+  helperText: string;
+  value: string[];
+  participants: GameParticipant[];
+  mode: GameFormMode;
+  onChange: (value: unknown) => void;
+};
+
+const AccessSelectField = ({
+  label,
+  helperText,
+  value,
+  participants,
+  mode,
+  onChange,
+}: AccessSelectFieldProps) => {
+  return (
+    <Box className={styles.accessFieldWrap}>
+      <TextField
+        select
+        fullWidth
+        label={label}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        SelectProps={{
+          multiple: true,
+          renderValue: (selected) => renderAccessValue(selected, participants),
+          MenuProps: {
+            PaperProps: {
+              className: styles.accessMenuPaper,
+            },
+            MenuListProps: {
+              className: styles.accessMenuList,
+            },
+          },
+        }}
+        className={[formStyles.field, styles.accessSelect].join(' ')}
+      >
+        <MenuItem value={MASTER_ONLY_VALUE} className={styles.accessMenuItem}>
+          <ListItemText
+            primary="Master only"
+            secondary="Only the room master can perform this action."
+            primaryTypographyProps={{ className: styles.accessMenuPrimary }}
+            secondaryTypographyProps={{ className: styles.accessMenuSecondary }}
+          />
+        </MenuItem>
+
+        <MenuItem value={EVERYONE_VALUE} className={styles.accessMenuItem}>
+          <ListItemText
+            primary="All players"
+            secondary="Any active player can perform this action."
+            primaryTypographyProps={{ className: styles.accessMenuPrimary }}
+            secondaryTypographyProps={{ className: styles.accessMenuSecondary }}
+          />
+        </MenuItem>
+
+        {mode === 'edit' ? (
+          participants.map((participant) => (
+            <MenuItem
+              key={participant.id}
+              value={participant.id}
+              className={styles.accessMenuItem}
+            >
+              <ListItemIcon className={styles.accessParticipantIcon}>
+                <Avatar className={styles.accessParticipantAvatar}>
+                  {getParticipantInitials(participant.displayName)}
+                </Avatar>
+              </ListItemIcon>
+
+              <ListItemText
+                primary={participant.displayName}
+                secondary={participant.isConnected ? 'online' : 'offline'}
+                primaryTypographyProps={{ className: styles.accessMenuPrimary }}
+                secondaryTypographyProps={{ className: styles.accessMenuSecondary }}
+              />
+            </MenuItem>
+          ))
+        ) : (
+          <MenuItem disabled className={styles.accessMenuItem}>
+            <ListItemText
+              primary="Specific players will be available after game creation"
+              secondary="Create the room first, then choose players from settings."
+              primaryTypographyProps={{ className: styles.accessMenuPrimary }}
+              secondaryTypographyProps={{ className: styles.accessMenuSecondary }}
+            />
+          </MenuItem>
+        )}
+      </TextField>
+
+      <Typography className={styles.accessHelperText}>
+        {helperText}
+      </Typography>
+    </Box>
+  );
 };
 
 export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
@@ -262,10 +371,10 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
           showCountdownAnimation: game.showCountdownAnimation,
           isActive: game.isActive,
           enableFunFeatures: game.enableFunFeatures,
-          revealParticipantIds: gameParticipants
+          revealAllowedParticipantIds: gameParticipants
             .filter((participant) => participant.canRevealCards)
             .map((participant) => participant.id),
-          manageIssuesParticipantIds: gameParticipants
+          issuesAllowedParticipantIds: gameParticipants
             .filter((participant) => participant.canManageIssues)
             .map((participant) => participant.id),
         });
@@ -314,9 +423,14 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
 
   const handleRevealAccessChange = (rawValue: unknown) => {
     setValues((current) => {
+      const previousValue = getAccessSelectValue(
+        current.revealPolicy,
+        current.revealAllowedParticipantIds,
+      );
+
       const nextAccess = getNextAccessState(
         rawValue,
-        current.revealParticipantIds,
+        previousValue,
         RevealPolicy.SpecificParticipants,
         RevealPolicy.Everyone,
         RevealPolicy.MasterOnly,
@@ -325,7 +439,7 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
       return {
         ...current,
         revealPolicy: nextAccess.policy,
-        revealParticipantIds: nextAccess.participantIds,
+        revealAllowedParticipantIds: nextAccess.participantIds,
       };
     });
 
@@ -334,9 +448,14 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
 
   const handleIssuesAccessChange = (rawValue: unknown) => {
     setValues((current) => {
+      const previousValue = getAccessSelectValue(
+        current.issuesPolicy,
+        current.issuesAllowedParticipantIds,
+      );
+
       const nextAccess = getNextAccessState(
         rawValue,
-        current.manageIssuesParticipantIds,
+        previousValue,
         IssuesPolicy.SpecificParticipants,
         IssuesPolicy.Everyone,
         IssuesPolicy.MasterOnly,
@@ -345,7 +464,7 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
       return {
         ...current,
         issuesPolicy: nextAccess.policy,
-        manageIssuesParticipantIds: nextAccess.participantIds,
+        issuesAllowedParticipantIds: nextAccess.participantIds,
       };
     });
 
@@ -399,13 +518,15 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
         showCountdownAnimation: values.showCountdownAnimation,
         isActive: values.isActive,
         enableFunFeatures: values.enableFunFeatures,
-        revealParticipantIds:
+
+        revealAllowedParticipantIds:
           values.revealPolicy === RevealPolicy.SpecificParticipants
-            ? values.revealParticipantIds
+            ? values.revealAllowedParticipantIds
             : [],
-        manageIssuesParticipantIds:
+
+        issuesAllowedParticipantIds:
           values.issuesPolicy === IssuesPolicy.SpecificParticipants
-            ? values.manageIssuesParticipantIds
+            ? values.issuesAllowedParticipantIds
             : [],
       });
 
@@ -546,88 +667,30 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
               className={styles.advancedCollapse}
             >
               <Stack className={styles.optionsPanel}>
-                <Box className={styles.optionRow}>
-                  <Stack className={styles.optionCopy}>
-                    <Typography className={styles.optionTitle}>
-                      Хто може відкривати карти
-                    </Typography>
-                    <Typography className={styles.optionHint}>
-                      Оберіть master, усіх учасників або конкретних учасників.
-                    </Typography>
-                  </Stack>
-
-                  <TextField
-                    select
-                    size="small"
+                <Box className={styles.accessSettingsBlock}>
+                  <AccessSelectField
+                    label="Who can reveal cards"
+                    helperText="Players who are allowed to flip cards and show results."
                     value={getAccessSelectValue(
                       values.revealPolicy,
-                      values.revealParticipantIds,
+                      values.revealAllowedParticipantIds,
                     )}
-                    onChange={(event) => handleRevealAccessChange(event.target.value)}
-                    SelectProps={{
-                      multiple: true,
-                      renderValue: (selected) =>
-                        renderAccessValue(selected, participants),
-                    }}
-                    className={[formStyles.field, styles.optionControl].join(' ')}
-                  >
-                    <MenuItem value={MASTER_ONLY_VALUE}>Тільки master</MenuItem>
-                    <MenuItem value={EVERYONE_VALUE}>Усі учасники</MenuItem>
+                    participants={participants}
+                    mode={mode}
+                    onChange={handleRevealAccessChange}
+                  />
 
-                    {mode === 'edit' ? (
-                      participants.map((participant) => (
-                        <MenuItem key={participant.id} value={participant.id}>
-                          {participant.displayName}
-                        </MenuItem>
-                      ))
-                    ) : (
-                      <MenuItem disabled>
-                        Конкретних учасників можна вибрати після створення гри
-                      </MenuItem>
-                    )}
-                  </TextField>
-                </Box>
-
-                <Box className={styles.optionRow}>
-                  <Stack className={styles.optionCopy}>
-                    <Typography className={styles.optionTitle}>
-                      Хто може керувати issues
-                    </Typography>
-                    <Typography className={styles.optionHint}>
-                      Оберіть master, усіх учасників або конкретних учасників.
-                    </Typography>
-                  </Stack>
-
-                  <TextField
-                    select
-                    size="small"
+                  <AccessSelectField
+                    label="Who can manage issues"
+                    helperText="Players who are allowed to add, edit, delete and reorder issues."
                     value={getAccessSelectValue(
                       values.issuesPolicy,
-                      values.manageIssuesParticipantIds,
+                      values.issuesAllowedParticipantIds,
                     )}
-                    onChange={(event) => handleIssuesAccessChange(event.target.value)}
-                    SelectProps={{
-                      multiple: true,
-                      renderValue: (selected) =>
-                        renderAccessValue(selected, participants),
-                    }}
-                    className={[formStyles.field, styles.optionControl].join(' ')}
-                  >
-                    <MenuItem value={MASTER_ONLY_VALUE}>Тільки master</MenuItem>
-                    <MenuItem value={EVERYONE_VALUE}>Усі учасники</MenuItem>
-
-                    {mode === 'edit' ? (
-                      participants.map((participant) => (
-                        <MenuItem key={participant.id} value={participant.id}>
-                          {participant.displayName}
-                        </MenuItem>
-                      ))
-                    ) : (
-                      <MenuItem disabled>
-                        Конкретних учасників можна вибрати після створення гри
-                      </MenuItem>
-                    )}
-                  </TextField>
+                    participants={participants}
+                    mode={mode}
+                    onChange={handleIssuesAccessChange}
+                  />
                 </Box>
 
                 <Box className={styles.optionRow}>
