@@ -1,11 +1,12 @@
 import { useState, type MouseEvent } from 'react';
 
-export type ThemeMode = 'light' | 'dark' | 'system';
+import { useThemeSettings } from '@shared/config/theme';
 
-export const useProfileMenu = (initialTheme: ThemeMode = 'system') => {
+export const useProfileMenu = () => {
+  const { accentColor, setAccentColor, setThemeMode, themeMode } = useThemeSettings();
+
   const [profileAnchorEl, setProfileAnchorEl] = useState<HTMLElement | null>(null);
   const [themeAnchorEl, setThemeAnchorEl] = useState<HTMLElement | null>(null);
-  const [currentTheme, setCurrentTheme] = useState<ThemeMode>(initialTheme);
   const [menuError, setMenuError] = useState<string | null>(null);
 
   const handleOpenProfileMenu = (event: MouseEvent<HTMLElement>) => {
@@ -26,15 +27,11 @@ export const useProfileMenu = (initialTheme: ThemeMode = 'system') => {
     setThemeAnchorEl(null);
   };
 
-  const handleSelectTheme = (theme: ThemeMode) => {
-    setCurrentTheme(theme);
-    // TODO: implement theme switching
-  };
-
   return {
     profileAnchorEl,
     themeAnchorEl,
-    currentTheme,
+    currentTheme: themeMode,
+    currentAccent: accentColor,
     menuError,
     setMenuError,
 
@@ -45,6 +42,7 @@ export const useProfileMenu = (initialTheme: ThemeMode = 'system') => {
     handleCloseProfileMenu,
     handleOpenThemeMenu,
     handleCloseThemeMenu,
-    handleSelectTheme,
+    handleSelectTheme: setThemeMode,
+    handleSelectAccent: setAccentColor,
   };
 };

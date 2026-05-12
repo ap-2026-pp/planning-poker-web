@@ -11,7 +11,7 @@ body,
 }
 
 html {
-  background-color:  #0b0d1b;
+  background: var(--pp-app-background);
 }
 
 body {
@@ -19,6 +19,9 @@ body {
   font-family: var(--pp-font-family);
   color: var(--pp-color-text-primary);
   background: var(--pp-app-background);
+  transition:
+    background 180ms ease,
+    color 180ms ease;
 }
 
 a {

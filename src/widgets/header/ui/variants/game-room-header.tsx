@@ -14,10 +14,8 @@ import {
   Typography,
 } from '@mui/material';
 import { useMemo, useState, type CSSProperties } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 
 import { AccountForm } from '@features/account-settings';
-import { appRoutes } from '@shared/config/routes';
 import type {
   GameRoomParticipantSummary,
   RenameRoomParticipantHandler,
@@ -69,6 +67,7 @@ export const GameRoomHeader = ({
     profileAnchorEl,
     themeAnchorEl,
     currentTheme,
+    currentAccent,
     menuError,
     setMenuError,
     isProfileMenuOpen,
@@ -78,7 +77,8 @@ export const GameRoomHeader = ({
     handleOpenThemeMenu,
     handleCloseThemeMenu,
     handleSelectTheme,
-  } = useProfileMenu('system');
+    handleSelectAccent,
+  } = useProfileMenu();
 
   const participantLabel = roomParticipant?.displayName || fallbackParticipantLabel;
 
@@ -155,13 +155,14 @@ export const GameRoomHeader = ({
         <Toolbar className={styles.toolbar}>
           <Box className={styles.gameRoomContainer}>
             <Box className={styles.gameRoomLeft}>
-              <Box
-                component={RouterLink}
-                to={appRoutes.home}
+              <ButtonBase
+                type="button"
                 className={[styles.brandLink, styles.gameRoomBrandLink].join(' ')}
+                onClick={onLeaveRoom}
+                aria-label="Перейти на головну"
               >
                 <BrandMark inverse />
-              </Box>
+              </ButtonBase>
             </Box>
 
             <Typography className={styles.gameRoomTitle}>{roomTitle}</Typography>
@@ -266,8 +267,10 @@ export const GameRoomHeader = ({
         anchorEl={themeAnchorEl}
         isOpen={isThemeMenuOpen}
         currentTheme={currentTheme}
+        currentAccent={currentAccent}
         onClose={handleCloseThemeMenu}
         onSelectTheme={handleSelectTheme}
+        onSelectAccent={handleSelectAccent}
       />
 
       <DisplayNameDialog

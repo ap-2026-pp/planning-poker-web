@@ -1,10 +1,10 @@
 .menuPaper {
   width: min(360px, calc(100vw - 24px));
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--pp-surface-border);
   border-radius: 18px !important;
-  background: linear-gradient(180deg, rgba(28, 23, 49, 0.98) 0%, rgba(19, 18, 36, 0.98) 100%) !important;
-  box-shadow: 0 28px 54px rgba(4, 8, 18, 0.42) !important;
-  color: #f8f3ff;
+  background: var(--pp-surface-panel-strong) !important;
+  box-shadow: var(--pp-surface-shadow) !important;
+  color: var(--pp-color-text-primary);
   overflow: hidden;
 }
 
@@ -25,7 +25,7 @@
 .menuAvatar {
   width: 44px !important;
   height: 44px !important;
-  background: linear-gradient(180deg, #a66fff 0%, #8b56f6 100%) !important;
+  background: var(--pp-gradient-purple-vertical) !important;
   color: #fdfbff !important;
   font-weight: 800 !important;
 }
@@ -46,7 +46,7 @@
 }
 
 .menuName {
-  color: #f8f3ff !important;
+  color: var(--pp-color-text-primary) !important;
   font-size: 1rem !important;
   font-weight: 700 !important;
   overflow: hidden;
@@ -57,17 +57,17 @@
 }
 
 .editButton {
-  color: #f8f3ff !important;
+  color: var(--pp-accent-text) !important;
   cursor: pointer !important;
   flex-shrink: 0;
 }
 
 .editButton:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: var(--pp-accent-soft) !important;
 }
 
 .menuCaption {
-  color: rgba(231, 223, 248, 0.7) !important;
+  color: var(--pp-color-text-secondary) !important;
   font-size: 0.86rem !important;
 }
 
@@ -77,12 +77,12 @@
   gap: 10px;
   min-height: 48px !important;
   border-radius: 12px !important;
-  color: #f8f3ff !important;
+  color: var(--pp-color-text-primary) !important;
   cursor: pointer !important;
 }
 
 .menuItem:hover {
-  background: rgba(255, 255, 255, 0.06) !important;
+  background: var(--pp-accent-soft) !important;
 }
 
 .switchRow {
@@ -92,7 +92,7 @@
   gap: 12px;
   padding: 10px 14px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--pp-surface-soft);
 }
 
 .switchText {
@@ -103,31 +103,31 @@
 }
 
 .switchTitle {
-  color: #f8f3ff !important;
+  color: var(--pp-color-text-primary) !important;
   font-size: 0.98rem !important;
   font-weight: 700 !important;
 }
 
 .switchHint {
-  color: rgba(231, 223, 248, 0.7) !important;
+  color: var(--pp-color-text-secondary) !important;
   font-size: 0.8rem !important;
   line-height: 1.45 !important;
 }
 
 .spectatorSwitch :global(.MuiSwitch-switchBase.Mui-checked) {
-   color: #9167ff !important;
+   color: var(--pp-accent-main) !important;
 }
 
 .spectatorSwitch :global(.MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track) {
-  background-color: #443076;
+  background-color: var(--pp-accent-strong);
   opacity: 1;
 }
 
 .dialogPaper {
   width: min(480px, calc(100vw - 24px));
   border-radius: 22px !important;
-  background: linear-gradient(180deg, rgba(28, 23, 49, 0.98) 0%, rgba(19, 18, 36, 0.98) 100%) !important;
-  color: #f8f3ff !important;
+  background: var(--pp-surface-panel-strong) !important;
+  color: var(--pp-color-text-primary) !important;
 }
 
 .dialogContent {
@@ -147,13 +147,13 @@
 }
 
 .dialogTitle {
-  color: #f8f3ff !important;
+  color: var(--pp-color-text-primary) !important;
   font-size: 1.2rem !important;
   font-weight: 800 !important;
 }
 
 .dialogDescription {
-  color: rgba(231, 223, 248, 0.74) !important;
+  color: var(--pp-color-text-secondary) !important;
   font-size: 0.94rem !important;
   line-height: 1.5 !important;
 }
@@ -165,41 +165,41 @@
 }
 
 .primaryPurple {
-  background: linear-gradient(90deg, #a66fff 0%, #8b56f6 100%) !important;
-  box-shadow: 0 22px 38px rgba(147, 97, 255, 0.32) !important;
+  background: var(--pp-gradient-purple) !important;
+  box-shadow: 0 22px 38px rgba(var(--pp-accent-rgb), 0.32) !important;
 }
 
 .secondaryButton {
   min-height: 52px !important;
   border-radius: 14px !important;
-  color: #f8f3ff !important;
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: var(--pp-color-text-primary) !important;
+  background: var(--pp-surface-soft) !important;
+  border: 1px solid var(--pp-surface-border) !important;
 }
 
 .secondaryButton:hover {
-  background: rgba(255, 255, 255, 0.06) !important;
-  border-color: rgba(255, 255, 255, 0.18) !important;
+  background: var(--pp-accent-soft) !important;
+  border-color: var(--pp-accent-border) !important;
 }
 
 .cancelButton {
   min-height: 52px !important;
   border-radius: 14px !important;
-  color: #f8f3ff !important;
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: var(--pp-color-text-primary) !important;
+  background: var(--pp-surface-soft) !important;
+  border: 1px solid var(--pp-surface-border) !important;
 }
 
 .cancelButton:hover {
-  background: rgba(255, 255, 255, 0.06) !important;
-  border-color: rgba(255, 255, 255, 0.18) !important;
+  background: var(--pp-accent-soft) !important;
+  border-color: var(--pp-accent-border) !important;
 }
 
 .submitButton {
-  color: #f8f3ff !important;
+  color: var(--pp-accent-contrast) !important;
   border-radius: 14px !important;
-  background: linear-gradient(90deg, #a66fff 0%, #8b56f6 100%) !important;
-  box-shadow: 0 22px 38px rgba(147, 97, 255, 0.32) !important;
+  background: var(--pp-gradient-primary) !important;
+  box-shadow: 0 22px 38px rgba(var(--pp-accent-rgb), 0.32) !important;
 }
 
 .alert :global(.MuiAlert-icon) {
@@ -207,39 +207,39 @@
 }
 
 .field :global(.MuiInputLabel-root) {
-  color: rgba(226, 220, 245, 0.74) !important;
+  color: var(--pp-color-text-secondary) !important;
 }
 
 .field :global(.MuiInputLabel-root.Mui-focused) {
-  color: #dec7ff !important;
+  color: var(--pp-accent-light) !important;
 }
 
 .field :global(.MuiOutlinedInput-root) {
-  color: #f8f5ff !important;
+  color: var(--pp-color-text-primary) !important;
   border-radius: 18px !important;
-  background: rgba(255, 255, 255, 0.06) !important;
+  background: var(--pp-surface-soft) !important;
   transition: background-color 180ms ease, box-shadow 180ms ease !important;
 }
 
 .field :global(.MuiOutlinedInput-root:hover) {
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: var(--pp-surface-strong) !important;
 }
 
 .field :global(.MuiOutlinedInput-root.Mui-focused) {
-  background: rgba(16, 17, 31, 0.92) !important;
-  box-shadow: 0 0 0 6px rgba(147, 97, 255, 0.14) !important;
+  background: var(--pp-surface-panel-strong) !important;
+  box-shadow: 0 0 0 6px rgba(var(--pp-accent-rgb), 0.14) !important;
 }
 
 .field :global(.MuiOutlinedInput-notchedOutline) {
-  border-color: rgba(255, 255, 255, 0.12) !important;
+  border-color: var(--pp-surface-border) !important;
 }
 
 .field :global(.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline) {
-  border-color: rgba(255, 255, 255, 0.2) !important;
+  border-color: var(--pp-surface-border-strong) !important;
 }
 
 .field :global(.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline) {
-  border-color: rgba(193, 142, 255, 0.88) !important;
+  border-color: rgba(var(--pp-accent-rgb), 0.88) !important;
 }
 
 .field :global(.MuiOutlinedInput-input::placeholder) {

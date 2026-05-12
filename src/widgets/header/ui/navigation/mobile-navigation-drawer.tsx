@@ -18,8 +18,8 @@ import { useState, type CSSProperties, type MouseEvent } from 'react';
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 
 import { appRoutes } from '@shared/config/routes';
+import { useThemeSettings } from '@shared/config/theme';
 import { BrandMark } from '@shared/ui/BrandMark';
-import type { ThemeMode } from '../../model/use-profile-menu';
 import { ThemeMenu } from '../theme/theme-menu';
 import styles from '../header.module.css';
 
@@ -50,7 +50,7 @@ export const MobileNavigationDrawer = ({
 
   const [isProfileExpanded, setProfileExpanded] = useState(false);
   const [themeAnchorEl, setThemeAnchorEl] = useState<HTMLElement | null>(null);
-  const [currentTheme, setCurrentTheme] = useState<ThemeMode>('system');
+  const { accentColor, setAccentColor, setThemeMode, themeMode } = useThemeSettings();
 
   const handleOpenThemeMenu = (event: MouseEvent<HTMLElement>) => {
     setThemeAnchorEl(event.currentTarget);
@@ -267,9 +267,11 @@ export const MobileNavigationDrawer = ({
       <ThemeMenu
         anchorEl={themeAnchorEl}
         isOpen={Boolean(themeAnchorEl)}
-        currentTheme={currentTheme}
+        currentTheme={themeMode}
+        currentAccent={accentColor}
         onClose={handleCloseThemeMenu}
-        onSelectTheme={(theme) => setCurrentTheme(theme)}
+        onSelectTheme={setThemeMode}
+        onSelectAccent={setAccentColor}
       />
     </>
   );

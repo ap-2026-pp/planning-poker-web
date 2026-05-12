@@ -30,8 +30,8 @@
 }
 
 .cardAccent {
-  background: linear-gradient(180deg, #c399ff 0%, #a872ff 100%);
-  box-shadow: 0 10px 20px rgba(137, 86, 246, 0.28);
+  background: linear-gradient(180deg, var(--pp-accent-light) 0%, var(--pp-accent-main) 100%);
+  box-shadow: 0 10px 20px rgba(var(--pp-accent-rgb), 0.28);
 }
 
 .cardFirst {
@@ -63,12 +63,16 @@
   color: #faf7ff;
 }
 
+:root[data-theme='light'] .titleInverse {
+  color: var(--pp-color-text-primary);
+}
+
 .titleDefault {
-  color: #141826;
+  color: var(--pp-color-text-primary);
 }
 
 .accent {
-  color: #a66fff;
+  color: var(--pp-accent-main);
 }
 
 @media (min-width: 900px) {

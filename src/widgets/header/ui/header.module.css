@@ -43,7 +43,7 @@
   min-height: 80px;
   padding: 0 14px;
   text-decoration: none;
-  color: #f8f3ff;
+  color: var(--pp-color-text-primary);
   font-size: 1.15rem;
   font-weight: 700;
   position: relative;
@@ -57,7 +57,7 @@
   bottom: 12px;
   height: 4px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #bc7eff 0%, #9d66ff 100%);
+  background: var(--pp-gradient-purple);
 }
 
 .actions {
@@ -73,9 +73,9 @@
   min-height: 62px;
   padding: 0 16px 0 10px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.04);
-  color: #f6f0ff;
+  border: 1px solid var(--pp-surface-border);
+  background: var(--pp-surface-soft);
+  color: var(--pp-color-text-primary);
   max-width: 360px;
   text-decoration: none;
 }
@@ -83,7 +83,7 @@
 .profileAvatar {
   width: 42px !important;
   height: 42px !important;
-  background: #8e61ff !important;
+  background: var(--pp-gradient-purple-vertical) !important;
   color: #fdfbff !important;
   font-weight: 800 !important;
   font-size: 1.1rem !important;
@@ -92,14 +92,14 @@
 .profileEmail {
   font-size: 1rem !important;
   font-weight: 600 !important;
-  color: #f6f0ff !important;
+  color: var(--pp-color-text-primary) !important;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .profileArrow {
-  color: rgba(246, 240, 255, 0.88) !important;
+  color: var(--pp-color-text-secondary) !important;
 }
 
 .outlineButton,
@@ -112,40 +112,40 @@
 }
 
 .outlineButton {
-  color: #f8f3ff !important;
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  background: rgba(255, 255, 255, 0.02) !important;
+  color: var(--pp-color-text-primary) !important;
+  border: 1px solid var(--pp-surface-border) !important;
+  background: var(--pp-surface-soft) !important;
 }
 
 .outlineButton:hover {
-  border-color: rgba(255, 255, 255, 0.24) !important;
-  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--pp-accent-border) !important;
+  background: var(--pp-accent-soft) !important;
 }
 
 .filledButton {
   color: #ffffff !important;
-  background: linear-gradient(90deg, #b97bff 0%, #9e69ff 100%) !important;
-  box-shadow: 0 20px 36px rgba(143, 95, 255, 0.28) !important;
+  background: var(--pp-gradient-purple) !important;
+  box-shadow: 0 20px 36px rgba(var(--pp-accent-rgb), 0.28) !important;
 }
 
 .filledButton:hover {
-  background: linear-gradient(90deg, #c58bff 0%, #a96fff 100%) !important;
-  box-shadow: 0 22px 40px rgba(143, 95, 255, 0.34) !important;
+  background: linear-gradient(90deg, var(--pp-accent-light) 0%, var(--pp-accent-main) 100%) !important;
+  box-shadow: 0 22px 40px rgba(var(--pp-accent-rgb), 0.34) !important;
 }
 
 .logoutButton {
-  color: #f8f3ff !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  background: rgba(255, 255, 255, 0.02) !important;
+  color: var(--pp-color-text-primary) !important;
+  border: 1px solid var(--pp-surface-border) !important;
+  background: var(--pp-surface-soft) !important;
 }
 
 .logoutButton:hover {
-  border-color: rgba(255, 255, 255, 0.28) !important;
-  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--pp-accent-border) !important;
+  background: var(--pp-accent-soft) !important;
 }
 
 .defaultTextButton {
-  color: #0c2230 !important;
+  color: var(--pp-color-text-primary) !important;
 }
 
 .desktopTextButton {
@@ -153,9 +153,9 @@
 }
 
 .defaultOutlineButton {
-  color: #0c2230 !important;
-  border-color: rgba(12, 34, 48, 0.12) !important;
-  background: rgba(255, 255, 255, 0.7) !important;
+  color: var(--pp-color-text-primary) !important;
+  border-color: var(--pp-drawer-outline-border) !important;
+  background: var(--pp-drawer-profile-background) !important;
 }
 
 .gamesTriggerHero,
@@ -167,13 +167,13 @@
 }
 
 .gamesTriggerHero {
-  color: #f8f3ff !important;
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  background: rgba(255, 255, 255, 0.03) !important;
+  color: var(--pp-color-text-primary) !important;
+  border: 1px solid var(--pp-surface-border) !important;
+  background: var(--pp-surface-soft) !important;
 }
 
 .gamesTriggerDefault {
-  color: #0c2230 !important;
+  color: var(--pp-color-text-primary) !important;
 }
 
 .gamesTriggerDefaultLink {
@@ -182,7 +182,7 @@
   gap: 8px;
   min-height: 48px;
   padding: 0 12px;
-  color: #0c2230;
+  color: var(--pp-color-text-primary);
   text-decoration: none;
   font-size: 0.9375rem;
   font-weight: 700;
@@ -192,9 +192,9 @@
   width: min(92vw, 420px);
   margin-top: 12px;
   border-radius: 22px !important;
-  border: 1px solid rgba(12, 34, 48, 0.08);
-  background: linear-gradient(180deg, rgba(247, 250, 253, 0.98) 0%, rgba(241, 246, 251, 0.98) 100%) !important;
-  box-shadow: 0 24px 54px rgba(12, 34, 48, 0.16) !important;
+  border: 1px solid var(--pp-drawer-divider);
+  background: var(--pp-drawer-background) !important;
+  box-shadow: 0 24px 54px rgba(3, 6, 16, 0.18) !important;
 }
 
 .gamesMenuHeader,
@@ -203,7 +203,7 @@
 }
 
 .gamesMenuTitle {
-  color: #0c2230 !important;
+  color: var(--pp-color-text-primary) !important;
   font-size: 1rem !important;
   font-weight: 800 !important;
   margin-bottom: 12px !important;
@@ -233,7 +233,7 @@
 
 .gamesScopeButtonActive {
   color: #ffffff !important;
-  background: linear-gradient(90deg, #347be5 0%, #256dce 100%) !important;
+  background: var(--pp-gradient-primary) !important;
 }
 
 .gamesAlert {
@@ -247,7 +247,7 @@
 }
 
 .gamesStateText {
-  color: #536875 !important;
+  color: var(--pp-color-text-secondary) !important;
   text-align: center;
 }
 
@@ -258,7 +258,7 @@
   align-items: start;
   padding: 6px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--pp-drawer-profile-background);
 }
 
 .gameMenuPrimary {
@@ -276,7 +276,7 @@
 }
 
 .gameMenuName {
-  color: #0c2230 !important;
+  color: var(--pp-color-text-primary) !important;
   font-size: 0.98rem !important;
   font-weight: 800 !important;
   text-align: left;
@@ -284,7 +284,7 @@
 
 .gameMenuMeta,
 .gameMenuHint {
-  color: #5a6f7c !important;
+  color: var(--pp-color-text-secondary) !important;
   font-size: 0.83rem !important;
   text-align: left;
 }
@@ -322,7 +322,7 @@
 }
 
 .gameIconButton {
-  color: #256dce !important;
+  color: var(--pp-color-primary-strong) !important;
 }
 
 .gameIconButtonDanger {
@@ -335,7 +335,7 @@
   border-radius: 14px !important;
   margin-bottom: 18px !important;
   color: #ffffff !important;
-  background: linear-gradient(90deg, #347be5 0%, #256dce 100%) !important;
+  background: var(--pp-gradient-primary) !important;
 }
 
 .menuButton {
@@ -458,17 +458,17 @@
 
 .drawerPrimaryButton {
   color: #ffffff !important;
-  background: linear-gradient(90deg, #a66fff 0%, #8b56f6 100%) !important;
+  background: var(--pp-gradient-purple) !important;
 }
 
 .drawerSecondaryFilledButton {
   color: #ffffff !important;
-  background: linear-gradient(90deg, #347be5 0%, #256dce 100%) !important;
+  background: var(--pp-gradient-primary) !important;
 }
 
 .drawerRegisterButton {
   color: #ffffff !important;
-  background: linear-gradient(90deg, #b97bff 0%, #9e69ff 100%) !important;
+  background: var(--pp-gradient-purple) !important;
 }
 
 .drawerOutlineButton {
@@ -536,7 +536,7 @@
   grid-area: title;
   justify-self: center;
   text-align: center;
-  color: #f8f3ff !important;
+  color: var(--pp-color-text-primary) !important;
   font-size: 1.2rem !important;
   font-weight: 800 !important;
   line-height: 1.2 !important;
@@ -562,9 +562,9 @@
 .roomIconButton {
   width: 54px;
   height: 54px;
-  color: #f8f3ff !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  background: rgba(255, 255, 255, 0.04) !important;
+  color: var(--pp-color-text-primary) !important;
+  border: 1px solid var(--pp-surface-border) !important;
+  background: var(--pp-surface-soft) !important;
   border-radius: 14px !important;
 }
 
@@ -575,15 +575,15 @@
   min-height: 54px;
   padding: 8px 12px 8px 8px !important;
   border-radius: 16px !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  background: rgba(255, 255, 255, 0.04) !important;
-  color: #f8f3ff !important;
+  border: 1px solid var(--pp-surface-border) !important;
+  background: var(--pp-surface-soft) !important;
+  color: var(--pp-color-text-primary) !important;
 }
 
 .roomProfileAvatar {
   width: 38px !important;
   height: 38px !important;
-  background: linear-gradient(180deg, #a66fff 0%, #8b56f6 100%) !important;
+  background: var(--pp-gradient-purple-vertical) !important;
   color: #fdfbff !important;
   font-weight: 800 !important;
   font-size: 0.98rem !important;
@@ -597,7 +597,7 @@
 }
 
 .roomProfileName {
-  color: #f8f3ff !important;
+  color: var(--pp-color-text-primary) !important;
   font-size: 0.98rem !important;
   font-weight: 700 !important;
   line-height: 1.1 !important;
@@ -608,20 +608,20 @@
 }
 
 .roomProfileCaption {
-  color: rgba(231, 223, 248, 0.7) !important;
+  color: var(--pp-color-text-secondary) !important;
   font-size: 0.74rem !important;
   font-weight: 600 !important;
   line-height: 1.2 !important;
 }
 
 .roomProfileArrow {
-  color: rgba(246, 240, 255, 0.88) !important;
+  color: var(--pp-color-text-secondary) !important;
 }
 
 .accountDialogBackdrop {
   background:
-    radial-gradient(circle at 30% 20%, rgba(169, 111, 255, 0.2) 0%, transparent 34%),
-    radial-gradient(circle at 72% 80%, rgba(52, 123, 229, 0.18) 0%, transparent 36%),
+    radial-gradient(circle at 30% 20%, rgba(var(--pp-accent-rgb), 0.2) 0%, transparent 34%),
+    radial-gradient(circle at 72% 80%, rgba(var(--pp-accent-rgb), 0.16) 0%, transparent 36%),
     rgba(3, 5, 14, 0.72) !important;
   backdrop-filter: blur(10px);
 }
@@ -654,8 +654,8 @@
   border-radius: 52px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   background:
-    radial-gradient(circle at 18% 12%, rgba(185, 123, 255, 0.18) 0%, transparent 36%),
-    radial-gradient(circle at 88% 82%, rgba(52, 123, 229, 0.14) 0%, transparent 38%),
+    radial-gradient(circle at 18% 12%, rgba(var(--pp-accent-rgb), 0.18) 0%, transparent 36%),
+    radial-gradient(circle at 88% 82%, rgba(var(--pp-accent-rgb), 0.14) 0%, transparent 38%),
     linear-gradient(
       180deg,
       rgba(255, 255, 255, 0.035) 0%,

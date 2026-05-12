@@ -85,7 +85,7 @@
     position: absolute;
     inset: -18px;
     border-radius: 48px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--pp-surface-border);
     background: linear-gradient(180deg,
             rgba(255, 255, 255, 0.02) 0%,
             rgba(255, 255, 255, 0) 100%);
@@ -104,15 +104,18 @@
 
     overflow: hidden;
     border-radius: 40px;
-    border: 1px solid var(--pp-border-on-dark);
-    background: var(--pp-surface-dark);
-    box-shadow: var(--pp-shadow-panel);
+    border: 1px solid var(--pp-surface-border);
+    background: var(--pp-surface-panel-strong);
+    box-shadow: var(--pp-surface-shadow);
 
-    --form-accent-label: #86b9ff;
-    --form-accent-border: rgba(134, 185, 255, 0.88);
-    --form-accent-shadow: rgba(56, 118, 230, 0.16);
-    --form-scrollbar-thumb: rgba(52, 123, 229, 0.55);
-    --form-scrollbar-thumb-hover: rgba(52, 123, 229, 0.78);
+    --form-accent-label: var(--pp-accent-text);
+    --form-accent-border: var(--pp-accent-border-strong);
+    --form-accent-shadow: var(--pp-accent-soft);
+    --form-accent-soft-color: var(--pp-accent-text);
+    --form-accent-soft-bg: var(--pp-accent-soft);
+    --form-accent-soft-border: var(--pp-accent-border);
+    --form-scrollbar-thumb: var(--pp-accent-border);
+    --form-scrollbar-thumb-hover: var(--pp-accent-border-strong);
 }
 
 .card::before {
@@ -123,7 +126,7 @@
     width: 240px;
     height: 240px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(90, 155, 255, 0.2) 0%, transparent 72%);
+    background: radial-gradient(circle, rgba(var(--pp-accent-rgb), 0.2) 0%, transparent 72%);
     pointer-events: none;
 }
 
@@ -140,32 +143,32 @@
 }
 
 .cardAccentBlue {
-    --form-accent-label: #86b9ff;
-    --form-accent-border: rgba(134, 185, 255, 0.88);
-    --form-accent-shadow: rgba(56, 118, 230, 0.16);
-    --form-accent-soft-color: #cde0ff;
-    --form-accent-soft-bg: rgba(52, 123, 229, 0.16);
-    --form-accent-soft-border: rgba(52, 123, 229, 0.24);
-    --form-scrollbar-thumb: rgba(52, 123, 229, 0.55);
-    --form-scrollbar-thumb-hover: rgba(52, 123, 229, 0.78);
+    --form-accent-label: var(--pp-companion-main);
+    --form-accent-border: var(--pp-companion-border-strong);
+    --form-accent-shadow: var(--pp-companion-soft);
+    --form-accent-soft-color: var(--pp-companion-main);
+    --form-accent-soft-bg: var(--pp-companion-soft);
+    --form-accent-soft-border: var(--pp-companion-border);
+    --form-scrollbar-thumb: var(--pp-companion-border);
+    --form-scrollbar-thumb-hover: var(--pp-companion-border-strong);
 }
 
 .cardAccentPurple {
-    --form-accent-label: #d7b8ff;
-    --form-accent-border: rgba(185, 123, 255, 0.9);
-    --form-accent-shadow: rgba(139, 86, 246, 0.18);
-    --form-accent-soft-color: #d9c2ff;
-    --form-accent-soft-bg: rgba(173, 113, 255, 0.16);
-    --form-accent-soft-border: rgba(173, 113, 255, 0.18);
-    --form-scrollbar-thumb: rgba(185, 123, 255, 0.45);
-    --form-scrollbar-thumb-hover: rgba(185, 123, 255, 0.65);
+    --form-accent-label: var(--pp-accent-text);
+    --form-accent-border: var(--pp-accent-border-strong);
+    --form-accent-shadow: var(--pp-accent-soft);
+    --form-accent-soft-color: var(--pp-accent-text);
+    --form-accent-soft-bg: var(--pp-accent-soft);
+    --form-accent-soft-border: var(--pp-accent-border);
+    --form-scrollbar-thumb: var(--pp-accent-border);
+    --form-scrollbar-thumb-hover: var(--pp-accent-border-strong);
 }
 
 .cardAccentGreen {
-    --form-accent-label: #8ff0ba;
-    --form-accent-border: rgba(89, 220, 147, 0.88);
+    --form-accent-label: #38b975;
+    --form-accent-border: rgba(56, 185, 117, 0.58);
     --form-accent-shadow: rgba(56, 185, 117, 0.16);
-    --form-accent-soft-color: #c9ffdd;
+    --form-accent-soft-color: #188c55;
     --form-accent-soft-bg: rgba(56, 185, 117, 0.14);
     --form-accent-soft-border: rgba(56, 185, 117, 0.22);
     --form-scrollbar-thumb: rgba(56, 185, 117, 0.5);
@@ -173,10 +176,10 @@
 }
 
 .cardAccentOrange {
-    --form-accent-label: #ffd09a;
-    --form-accent-border: rgba(240, 165, 67, 0.88);
+    --form-accent-label: #d66f24;
+    --form-accent-border: rgba(240, 165, 67, 0.58);
     --form-accent-shadow: rgba(240, 165, 67, 0.16);
-    --form-accent-soft-color: #ffd09a;
+    --form-accent-soft-color: #d66f24;
     --form-accent-soft-bg: rgba(240, 165, 67, 0.14);
     --form-accent-soft-border: rgba(240, 165, 67, 0.22);
     --form-scrollbar-thumb: rgba(240, 165, 67, 0.5);
@@ -277,13 +280,13 @@
 }
 
 .iconBlue {
-    background: var(--pp-gradient-primary-vertical);
-    box-shadow: 0 24px 34px rgba(56, 118, 230, 0.28);
+    background: var(--pp-gradient-companion-vertical);
+    box-shadow: 0 24px 34px var(--pp-companion-shadow);
 }
 
 .iconPurple {
-    background: var(--pp-gradient-purple-vertical);
-    box-shadow: 0 24px 34px rgba(139, 86, 246, 0.28);
+    background: var(--pp-gradient-primary-vertical);
+    box-shadow: 0 24px 34px var(--pp-accent-shadow);
 }
 
 .iconGreen {
@@ -336,7 +339,7 @@
 }
 
 .field :global(.MuiInputLabel-root) {
-    color: rgba(226, 220, 245, 0.74) !important;
+    color: var(--pp-color-text-inverse-muted) !important;
 }
 
 .field :global(.MuiInputLabel-root.Mui-focused) {
@@ -346,27 +349,27 @@
 .field :global(.MuiOutlinedInput-root) {
     color: var(--pp-color-text-inverse) !important;
     border-radius: 18px !important;
-    background: rgba(255, 255, 255, 0.06) !important;
+    background: var(--pp-surface-soft) !important;
     transition:
         background-color 180ms ease,
         box-shadow 180ms ease !important;
 }
 
 .field :global(.MuiOutlinedInput-root:hover) {
-    background: rgba(255, 255, 255, 0.08) !important;
+    background: var(--pp-surface-strong) !important;
 }
 
 .field :global(.MuiOutlinedInput-root.Mui-focused) {
-    background: var(--pp-surface-dark-focus) !important;
+    background: var(--pp-surface-panel-strong) !important;
     box-shadow: 0 0 0 6px var(--form-accent-shadow) !important;
 }
 
 .field :global(.MuiOutlinedInput-notchedOutline) {
-    border-color: rgba(255, 255, 255, 0.12) !important;
+    border-color: var(--pp-surface-border) !important;
 }
 
 .field :global(.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline) {
-    border-color: rgba(255, 255, 255, 0.2) !important;
+    border-color: var(--pp-surface-border-strong) !important;
 }
 
 .field :global(.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline) {
@@ -374,7 +377,7 @@
 }
 
 .field :global(.MuiOutlinedInput-input::placeholder) {
-    color: rgba(226, 220, 245, 0.42);
+    color: var(--pp-color-text-inverse-muted);
     opacity: 1;
 }
 
@@ -417,13 +420,13 @@
 }
 
 .primaryBlue {
-    background: var(--pp-gradient-primary) !important;
-    box-shadow: 0 22px 38px rgba(56, 118, 230, 0.28) !important;
+    background: var(--pp-gradient-companion) !important;
+    box-shadow: 0 22px 38px var(--pp-companion-shadow) !important;
 }
 
 .primaryPurple {
-    background: var(--pp-gradient-purple) !important;
-    box-shadow: 0 22px 38px rgba(139, 86, 246, 0.28) !important;
+    background: var(--pp-gradient-primary) !important;
+    box-shadow: 0 22px 38px var(--pp-accent-shadow) !important;
 }
 
 .primaryGreen {
@@ -439,13 +442,13 @@
 .secondaryButton {
     min-height: 44px !important;
     border-radius: 14px !important;
-    color: #d9c2ff !important;
+    color: var(--pp-accent-text) !important;
     text-transform: none !important;
     font-weight: 700 !important;
 }
 
 .secondaryButton:hover {
-    background: rgba(173, 113, 255, 0.08) !important;
+    background: var(--pp-accent-soft) !important;
 }
 
 .closeButton {

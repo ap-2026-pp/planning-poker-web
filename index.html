@@ -8,6 +8,27 @@
       content="Planning Poker для scrum-команди: створення сесій, кімната голосування та історія оцінок."
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      (() => {
+        const themeKey = 'planning-poker.theme-mode';
+        const accentKey = 'planning-poker.accent-color';
+        const storedTheme = localStorage.getItem(themeKey);
+        const storedAccent = localStorage.getItem(accentKey);
+        const themeMode = ['light', 'dark', 'system'].includes(storedTheme)
+          ? storedTheme
+          : 'system';
+        const accentColor = ['blue', 'purple', 'green', 'orange', 'rose'].includes(storedAccent)
+          ? storedAccent
+          : 'blue';
+        const systemTheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        const resolvedTheme = themeMode === 'system' ? systemTheme : themeMode;
+
+        document.documentElement.dataset.theme = resolvedTheme;
+        document.documentElement.dataset.themeMode = themeMode;
+        document.documentElement.dataset.accent = accentColor;
+        document.documentElement.style.colorScheme = resolvedTheme;
+      })();
+    </script>
     <title>Planning Poker</title>
   </head>
   <body>
@@ -15,4 +36,3 @@
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

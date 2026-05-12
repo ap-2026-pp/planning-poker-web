@@ -60,6 +60,7 @@ export const HeroHeader = ({
     profileAnchorEl,
     themeAnchorEl,
     currentTheme,
+    currentAccent,
     menuError,
     isProfileMenuOpen,
     isThemeMenuOpen,
@@ -68,7 +69,8 @@ export const HeroHeader = ({
     handleOpenThemeMenu,
     handleCloseThemeMenu,
     handleSelectTheme,
-  } = useProfileMenu('system');
+    handleSelectAccent,
+  } = useProfileMenu();
 
   const displayNameDialog = useDisplayNameDialog({
     initialValue: user?.displayName ?? '',
@@ -183,8 +185,10 @@ export const HeroHeader = ({
         anchorEl={themeAnchorEl}
         isOpen={isThemeMenuOpen}
         currentTheme={currentTheme}
+        currentAccent={currentAccent}
         onClose={handleCloseThemeMenu}
         onSelectTheme={handleSelectTheme}
+        onSelectAccent={handleSelectAccent}
       />
 
       <DisplayNameDialog

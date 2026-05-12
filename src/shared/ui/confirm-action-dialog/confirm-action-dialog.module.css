@@ -1,8 +1,8 @@
 .dialogPaper {
   width: min(440px, calc(100vw - 24px));
   border-radius: 22px !important;
-  background: linear-gradient(180deg, rgba(28, 23, 49, 0.98) 0%, rgba(19, 18, 36, 0.98) 100%) !important;
-  color: #f8f3ff !important;
+  background: var(--pp-surface-panel-strong) !important;
+  color: var(--pp-color-text-primary) !important;
 }
 
 .dialogContent {
@@ -13,13 +13,13 @@
 }
 
 .dialogTitle {
-  color: #f8f3ff !important;
+  color: var(--pp-color-text-primary) !important;
   font-size: 1.15rem !important;
   font-weight: 800 !important;
 }
 
 .dialogDescription {
-  color: rgba(231, 223, 248, 0.76) !important;
+  color: var(--pp-color-text-secondary) !important;
   font-size: 0.95rem !important;
   line-height: 1.55 !important;
 }
@@ -41,9 +41,9 @@
 }
 
 .cancelButton {
-  color: #f8f3ff;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--pp-color-text-primary);
+  background: var(--pp-surface-soft);
+  border: 1px solid var(--pp-surface-border);
 }
 
 .confirmButton {

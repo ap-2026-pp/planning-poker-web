@@ -47,7 +47,7 @@
 }
 
 .title {
-  color: #fcfaff !important;
+  color: var(--pp-color-text-primary) !important;
   line-height: 1.02 !important;
 }
 
@@ -55,7 +55,7 @@
   margin-top: 4px !important;
   line-height: 1.14 !important;
   padding-bottom: 0.08em;
-  background: linear-gradient(90deg, #c18eff 0%, #8e61ff 100%);
+  background: linear-gradient(90deg, var(--pp-accent-light) 0%, var(--pp-accent-main) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -63,7 +63,7 @@
 .description {
   width: 100%;
   max-width: 580px;
-  color: rgba(225, 218, 244, 0.86) !important;
+  color: var(--pp-color-text-secondary) !important;
   font-size: 1.22rem !important;
   line-height: 1.55 !important;
 }

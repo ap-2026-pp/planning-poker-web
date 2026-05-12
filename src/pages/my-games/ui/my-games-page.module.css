@@ -61,7 +61,7 @@
 }
 
 .title {
-  color: #fcfaff !important;
+  color: var(--pp-color-text-primary) !important;
   line-height: 1.02 !important;
   display: flex;
   gap: 24px;
@@ -73,13 +73,13 @@
   margin-top: 4px !important;
   line-height: 1.14 !important;
   padding-bottom: 0.08em;
-  background: linear-gradient(90deg, #c18eff 0%, #8e61ff 100%);
+  background: linear-gradient(90deg, var(--pp-accent-light) 0%, var(--pp-accent-main) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .description {
-  color: rgba(225, 218, 244, 0.86) !important;
+  color: var(--pp-color-text-secondary) !important;
   font-size: 1.18rem !important;
   line-height: 1.6 !important;
 }
@@ -98,15 +98,15 @@
 }
 
 .scopeButton {
-  color: #f8f3ff !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  background: rgba(255, 255, 255, 0.04) !important;
+  color: var(--pp-color-text-primary) !important;
+  border: 1px solid var(--pp-surface-border) !important;
+  background: var(--pp-surface-soft) !important;
 }
 
 .scopeButtonActive {
   color: #ffffff !important;
-  background: linear-gradient(90deg, #b97bff 0%, #8b56f6 100%) !important;
-  box-shadow: 0 18px 30px rgba(143, 95, 255, 0.24) !important;
+  background: var(--pp-gradient-primary) !important;
+  box-shadow: 0 18px 30px var(--pp-accent-shadow) !important;
 }
 
 .createButton {
@@ -115,7 +115,7 @@
   border-radius: 14px !important;
   padding-inline: 22px !important;
   color: #ffffff !important;
-  background: linear-gradient(90deg, #347be5 0%, #256dce 100%) !important;
+  background: var(--pp-gradient-primary) !important;
 }
 
 .createButtonLabel {
@@ -125,9 +125,9 @@
 .listCard {
   width: 100%;
   border-radius: 36px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(180deg, rgba(31, 33, 54, 0.94) 0%, rgba(24, 25, 43, 0.92) 100%);
-  box-shadow: 0 28px 50px rgba(5, 8, 20, 0.32);
+  border: 1px solid var(--pp-surface-border);
+  background: var(--pp-surface-panel);
+  box-shadow: var(--pp-surface-shadow);
   padding: 24px;
 }
 
@@ -144,7 +144,7 @@
 }
 
 .stateText {
-  color: rgba(226, 220, 245, 0.76) !important;
+  color: var(--pp-color-text-secondary) !important;
 }
 
 .gamesList {
@@ -158,7 +158,7 @@
   align-items: start;
   padding: 10px;
   border-radius: 22px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--pp-surface-soft);
 }
 
 .gamePrimary {
@@ -176,7 +176,7 @@
 }
 
 .gameName {
-  color: #f8f5ff !important;
+  color: var(--pp-color-text-primary) !important;
   font-size: 1.02rem !important;
   font-weight: 800 !important;
   text-align: left;
@@ -184,7 +184,7 @@
 
 .gameMeta,
 .gameHint {
-  color: rgba(226, 220, 245, 0.72) !important;
+  color: var(--pp-color-text-secondary) !important;
   font-size: 0.88rem !important;
   text-align: left;
 }
@@ -212,8 +212,8 @@
 }
 
 .badgeOwner {
-  color: #d9c2ff;
-  background: rgba(173, 113, 255, 0.18);
+  color: var(--pp-accent-text);
+  background: var(--pp-accent-soft);
 }
 
 .gameActions {
@@ -228,7 +228,7 @@
 }
 
 .iconButton {
-  color: #8fc1ff !important;
+  color: var(--pp-accent-text) !important;
 }
 
 .iconButtonDanger {

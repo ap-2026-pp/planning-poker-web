@@ -1,21 +1,96 @@
 :root {
   --pp-font-family: 'Manrope', sans-serif;
 
-  --pp-color-text-primary: #0c2230;
-  --pp-color-text-secondary: #607789;
-  --pp-color-text-inverse: #f8f5ff;
-  --pp-color-text-inverse-muted: rgba(226, 220, 245, 0.74);
   --pp-color-white: #ffffff;
 
-  --pp-color-primary: #347be5;
-  --pp-color-primary-strong: #256dce;
-  --pp-color-purple: #b97bff;
-  --pp-color-purple-strong: #8b56f6;
   --pp-color-green: #38b975;
   --pp-color-green-strong: #188c55;
   --pp-color-orange: #f0a543;
   --pp-color-orange-strong: #d66f24;
   --pp-color-danger: #ff6081;
+}
+
+:root,
+:root[data-accent='blue'] {
+  --pp-accent-main: #347be5;
+  --pp-accent-light: #64adff;
+  --pp-accent-strong: #256dce;
+  --pp-accent-rgb: 52, 123, 229;
+  --pp-accent-contrast: #ffffff;
+  --pp-accent-soft: rgba(var(--pp-accent-rgb), 0.12);
+  --pp-accent-softer: rgba(var(--pp-accent-rgb), 0.07);
+  --pp-accent-border: rgba(var(--pp-accent-rgb), 0.28);
+  --pp-accent-border-strong: rgba(var(--pp-accent-rgb), 0.54);
+  --pp-accent-shadow: rgba(var(--pp-accent-rgb), 0.24);
+  --pp-companion-main: #a66fff;
+  --pp-companion-light: #c399ff;
+  --pp-companion-strong: #8b56f6;
+  --pp-companion-rgb: 166, 111, 255;
+  --pp-companion-contrast: #ffffff;
+}
+
+:root[data-accent='purple'] {
+  --pp-accent-main: #a66fff;
+  --pp-accent-light: #c399ff;
+  --pp-accent-strong: #8b56f6;
+  --pp-accent-rgb: 166, 111, 255;
+  --pp-accent-contrast: #ffffff;
+  --pp-companion-main: #347be5;
+  --pp-companion-light: #64adff;
+  --pp-companion-strong: #256dce;
+  --pp-companion-rgb: 52, 123, 229;
+  --pp-companion-contrast: #ffffff;
+}
+
+:root[data-accent='green'] {
+  --pp-accent-main: #38b975;
+  --pp-accent-light: #58d996;
+  --pp-accent-strong: #188c55;
+  --pp-accent-rgb: 56, 185, 117;
+  --pp-accent-contrast: #ffffff;
+  --pp-companion-main: #f0a543;
+  --pp-companion-light: #ffc16c;
+  --pp-companion-strong: #d66f24;
+  --pp-companion-rgb: 240, 165, 67;
+  --pp-companion-contrast: #1c1207;
+}
+
+:root[data-accent='orange'] {
+  --pp-accent-main: #f0a543;
+  --pp-accent-light: #ffc16c;
+  --pp-accent-strong: #d66f24;
+  --pp-accent-rgb: 240, 165, 67;
+  --pp-accent-contrast: #1c1207;
+  --pp-companion-main: #347be5;
+  --pp-companion-light: #64adff;
+  --pp-companion-strong: #256dce;
+  --pp-companion-rgb: 52, 123, 229;
+  --pp-companion-contrast: #ffffff;
+}
+
+:root[data-accent='rose'] {
+  --pp-accent-main: #ff6081;
+  --pp-accent-light: #ff91aa;
+  --pp-accent-strong: #d93b61;
+  --pp-accent-rgb: 255, 96, 129;
+  --pp-accent-contrast: #ffffff;
+  --pp-companion-main: #38b975;
+  --pp-companion-light: #58d996;
+  --pp-companion-strong: #188c55;
+  --pp-companion-rgb: 56, 185, 117;
+  --pp-companion-contrast: #ffffff;
+}
+
+:root {
+  --pp-color-primary: var(--pp-accent-main);
+  --pp-color-primary-strong: var(--pp-accent-strong);
+  --pp-color-purple: var(--pp-accent-main);
+  --pp-color-purple-strong: var(--pp-accent-strong);
+  --pp-companion-soft: rgba(var(--pp-companion-rgb), 0.12);
+  --pp-companion-softer: rgba(var(--pp-companion-rgb), 0.07);
+  --pp-companion-border: rgba(var(--pp-companion-rgb), 0.28);
+  --pp-companion-border-strong: rgba(var(--pp-companion-rgb), 0.54);
+  --pp-companion-shadow: rgba(var(--pp-companion-rgb), 0.24);
 
   --pp-surface-dark: linear-gradient(
     180deg,
@@ -30,21 +105,119 @@
   --pp-shadow-panel: 0 28px 50px rgba(5, 8, 20, 0.32);
 
   --pp-gradient-primary: linear-gradient(90deg, var(--pp-color-primary) 0%, var(--pp-color-primary-strong) 100%);
-  --pp-gradient-primary-vertical: linear-gradient(180deg, var(--pp-color-primary) 0%, #2564c3 100%);
+  --pp-gradient-primary-vertical: linear-gradient(180deg, var(--pp-color-primary) 0%, var(--pp-color-primary-strong) 100%);
+  --pp-gradient-companion: linear-gradient(90deg, var(--pp-companion-main) 0%, var(--pp-companion-strong) 100%);
+  --pp-gradient-companion-vertical: linear-gradient(180deg, var(--pp-companion-main) 0%, var(--pp-companion-strong) 100%);
   --pp-gradient-purple: linear-gradient(90deg, var(--pp-color-purple) 0%, var(--pp-color-purple-strong) 100%);
   --pp-gradient-purple-vertical: linear-gradient(180deg, var(--pp-color-purple) 0%, var(--pp-color-purple-strong) 100%);
   --pp-gradient-green: linear-gradient(90deg, var(--pp-color-green) 0%, var(--pp-color-green-strong) 100%);
   --pp-gradient-green-vertical: linear-gradient(180deg, var(--pp-color-green) 0%, var(--pp-color-green-strong) 100%);
   --pp-gradient-orange: linear-gradient(90deg, var(--pp-color-orange) 0%, var(--pp-color-orange-strong) 100%);
   --pp-gradient-orange-vertical: linear-gradient(180deg, var(--pp-color-orange) 0%, var(--pp-color-orange-strong) 100%);
+}
+
+:root,
+:root[data-theme='light'] {
+  --pp-color-text-primary: #0c2230;
+  --pp-color-text-secondary: #607789;
+  --pp-color-text-inverse: #0c2230;
+  --pp-color-text-inverse-muted: #607789;
 
   --pp-app-background:
-    radial-gradient(circle at 12% 12%, rgba(35, 94, 134, 0.16), transparent 26%),
+    radial-gradient(circle at 12% 12%, rgba(var(--pp-accent-rgb), 0.16), transparent 26%),
     radial-gradient(circle at 84% 14%, rgba(108, 160, 166, 0.18), transparent 24%),
     linear-gradient(180deg, #f3f8fc 0%, #e9f0f7 100%);
-  --pp-home-background: linear-gradient(120deg, #080a17 0%, #0b0d1b 46%, #1a1232 78%, #281541 100%);
+  --pp-surface-panel: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(245, 247, 250, 0.92) 100%);
+  --pp-surface-panel-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.99) 0%, rgba(239, 243, 248, 0.96) 100%);
+  --pp-surface-panel-accent: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(var(--pp-accent-rgb), 0.1) 100%);
+  --pp-surface-soft: rgba(12, 34, 48, 0.04);
+  --pp-surface-strong: rgba(12, 34, 48, 0.07);
+  --pp-surface-border: rgba(12, 34, 48, 0.1);
+  --pp-surface-border-strong: rgba(12, 34, 48, 0.16);
+  --pp-surface-shadow: 0 24px 54px rgba(12, 34, 48, 0.12);
+  --pp-accent-text: var(--pp-accent-strong);
+  --pp-header-border: rgba(12, 34, 48, 0.1);
+  --pp-header-background: rgba(239, 245, 251, 0.78);
+  --pp-menu-button-color: #0c2230;
+  --pp-menu-button-border: rgba(255, 255, 255, 0.8);
+  --pp-menu-button-background: rgba(255, 255, 255, 0.7);
+  --pp-drawer-background: rgba(255, 255, 255, 0.98);
+  --pp-drawer-text-color: #0c2230;
+  --pp-drawer-divider: rgba(12, 34, 48, 0.1);
+  --pp-drawer-profile-border: rgba(17, 24, 39, 0.08);
+  --pp-drawer-profile-background: rgba(17, 24, 39, 0.04);
+  --pp-drawer-outline-color: #0c2230;
+  --pp-drawer-outline-border: rgba(12, 34, 48, 0.1);
+  --pp-drawer-hover-background: rgba(17, 24, 39, 0.06);
+  --pp-drawer-hover-border: rgba(12, 34, 48, 0.18);
+  --pp-home-background:
+    radial-gradient(circle at 16% 8%, rgba(var(--pp-accent-rgb), 0.13), transparent 26%),
+    radial-gradient(circle at 92% 36%, rgba(var(--pp-accent-rgb), 0.1), transparent 28%),
+    linear-gradient(180deg, #f8fafc 0%, #eef2f7 48%, #e7ecf3 100%);
   --pp-home-overlay:
-    radial-gradient(circle at 18% 18%, rgba(82, 38, 167, 0.18), transparent 26%),
-    radial-gradient(circle at 88% 54%, rgba(153, 81, 255, 0.22), transparent 24%);
-  --pp-selection: rgba(35, 94, 134, 0.18);
+    radial-gradient(circle at 18% 18%, rgba(var(--pp-accent-rgb), 0.08), transparent 26%),
+    radial-gradient(circle at 88% 54%, rgba(var(--pp-accent-rgb), 0.08), transparent 24%);
+  --pp-selection: rgba(var(--pp-accent-rgb), 0.18);
+}
+
+:root[data-theme='dark'] {
+  --pp-color-text-primary: #f8f5ff;
+  --pp-color-text-secondary: rgba(226, 220, 245, 0.72);
+  --pp-color-text-inverse: #f8f5ff;
+  --pp-color-text-inverse-muted: rgba(226, 220, 245, 0.74);
+
+  --pp-app-background:
+    radial-gradient(circle at 12% 12%, rgba(var(--pp-accent-rgb), 0.18), transparent 28%),
+    radial-gradient(circle at 84% 14%, rgba(var(--pp-accent-rgb), 0.12), transparent 24%),
+    linear-gradient(180deg, #101323 0%, #090b16 100%);
+  --pp-surface-panel: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--pp-accent-strong) 18%, #17182b) 0%,
+    color-mix(in srgb, var(--pp-accent-strong) 10%, #101224) 100%
+  );
+  --pp-surface-panel-strong: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--pp-accent-strong) 28%, #1d1d34) 0%,
+    color-mix(in srgb, var(--pp-accent-strong) 14%, #101224) 100%
+  );
+  --pp-surface-panel-accent:
+    radial-gradient(circle at top right, rgba(var(--pp-accent-rgb), 0.24) 0%, transparent 42%),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--pp-accent-strong) 34%, #20213a) 0%,
+      color-mix(in srgb, var(--pp-accent-strong) 16%, #121426) 100%
+    );
+  --pp-surface-soft: rgba(255, 255, 255, 0.04);
+  --pp-surface-strong: rgba(255, 255, 255, 0.08);
+  --pp-surface-border: rgba(var(--pp-accent-rgb), 0.18);
+  --pp-surface-border-strong: rgba(var(--pp-accent-rgb), 0.34);
+  --pp-surface-shadow: 0 28px 56px rgba(3, 6, 16, 0.34);
+  --pp-accent-text: var(--pp-accent-light);
+  --pp-header-border: rgba(255, 255, 255, 0.08);
+  --pp-header-background: rgba(13, 16, 31, 0.78);
+  --pp-menu-button-color: #f8f3ff;
+  --pp-menu-button-border: rgba(255, 255, 255, 0.14);
+  --pp-menu-button-background: rgba(255, 255, 255, 0.04);
+  --pp-drawer-background: linear-gradient(180deg, rgba(14, 15, 29, 0.98) 0%, rgba(10, 11, 22, 0.99) 100%);
+  --pp-drawer-text-color: #f8f3ff;
+  --pp-drawer-divider: rgba(255, 255, 255, 0.12);
+  --pp-drawer-profile-border: rgba(255, 255, 255, 0.12);
+  --pp-drawer-profile-background: rgba(255, 255, 255, 0.04);
+  --pp-drawer-outline-color: #f8f3ff;
+  --pp-drawer-outline-border: rgba(255, 255, 255, 0.18);
+  --pp-drawer-hover-background: rgba(255, 255, 255, 0.08);
+  --pp-drawer-hover-border: rgba(255, 255, 255, 0.28);
+  --pp-home-background:
+    radial-gradient(circle at 18% 8%, rgba(var(--pp-accent-rgb), 0.18), transparent 28%),
+    radial-gradient(circle at 92% 42%, rgba(var(--pp-accent-rgb), 0.2), transparent 32%),
+    linear-gradient(
+      150deg,
+      color-mix(in srgb, var(--pp-accent-strong) 28%, #050713) 0%,
+      #080a17 46%,
+      color-mix(in srgb, var(--pp-accent-strong) 22%, #080a17) 100%
+    );
+  --pp-home-overlay:
+    radial-gradient(circle at 18% 18%, rgba(var(--pp-accent-rgb), 0.18), transparent 26%),
+    radial-gradient(circle at 88% 54%, rgba(var(--pp-accent-rgb), 0.24), transparent 24%);
+  --pp-selection: rgba(var(--pp-accent-rgb), 0.32);
 }

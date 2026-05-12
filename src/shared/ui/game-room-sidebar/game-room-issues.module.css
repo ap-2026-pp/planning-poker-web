@@ -300,9 +300,9 @@
   min-height: 34px;
   padding: 0 12px;
   border-radius: 999px;
-  color: #cde0ff;
-  background: rgba(52, 123, 229, 0.16);
-  border: 1px solid rgba(52, 123, 229, 0.24);
+  color: var(--pp-accent-text);
+  background: var(--pp-accent-soft);
+  border: 1px solid var(--pp-accent-border);
   font-size: 0.82rem;
   font-weight: 800;
 }
@@ -314,9 +314,9 @@
   margin-top: 18px;
   padding: 28px 24px;
   border-radius: 40px;
-  border: 1px solid var(--pp-border-on-dark);
-  background: var(--pp-surface-dark);
-  box-shadow: var(--pp-shadow-panel);
+  border: 1px solid var(--pp-surface-border);
+  background: var(--pp-surface-panel-strong);
+  box-shadow: var(--pp-surface-shadow);
   position: relative;
   overflow: hidden;
 }
@@ -329,7 +329,7 @@
   width: 240px;
   height: 240px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(90, 155, 255, 0.2) 0%, transparent 72%);
+  background: radial-gradient(circle, rgba(var(--pp-accent-rgb), 0.2) 0%, transparent 72%);
   pointer-events: none;
 }
 
@@ -362,19 +362,19 @@
   place-items: center;
   color: #ffffff;
   font-size: 38px;
-  background: linear-gradient(180deg, #347be5 0%, #2564c3 100%);
-  box-shadow: 0 24px 34px rgba(56, 118, 230, 0.28);
+  background: var(--pp-gradient-primary-vertical);
+  box-shadow: 0 24px 34px var(--pp-accent-shadow);
 }
 
 .issueFormTitle {
-  color: #f8f5ff !important;
+  color: var(--pp-color-text-inverse) !important;
   font-size: 2rem !important;
   line-height: 1.08 !important;
   font-weight: 800 !important;
 }
 
 .issueFormSubtitle {
-  color: rgba(226, 220, 245, 0.74) !important;
+  color: var(--pp-color-text-inverse-muted) !important;
   font-size: 0.98rem !important;
   line-height: 1.55 !important;
 }
@@ -384,14 +384,14 @@
   position: relative;
   z-index: 1;
 
-  --issue-accent-label: #86b9ff;
-  --issue-accent-border: rgba(134, 185, 255, 0.88);
-  --issue-accent-shadow: rgba(56, 118, 230, 0.16);
+  --issue-accent-label: var(--pp-accent-text);
+  --issue-accent-border: var(--pp-accent-border-strong);
+  --issue-accent-shadow: var(--pp-accent-soft);
 }
 
 .issueField :global(.MuiInputLabel-root),
 .issueFieldBlue :global(.MuiInputLabel-root) {
-  color: rgba(226, 220, 245, 0.74) !important;
+  color: var(--pp-color-text-inverse-muted) !important;
 }
 
 .issueField :global(.MuiInputLabel-root.Mui-focused),
@@ -401,9 +401,9 @@
 
 .issueField :global(.MuiOutlinedInput-root),
 .issueFieldBlue :global(.MuiOutlinedInput-root) {
-  color: #f8f5ff !important;
+  color: var(--pp-color-text-inverse) !important;
   border-radius: 18px !important;
-  background: rgba(255, 255, 255, 0.06) !important;
+  background: var(--pp-surface-soft) !important;
   transition:
     background-color 180ms ease,
     box-shadow 180ms ease !important;
@@ -411,23 +411,23 @@
 
 .issueField :global(.MuiOutlinedInput-root:hover),
 .issueFieldBlue :global(.MuiOutlinedInput-root:hover) {
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: var(--pp-surface-strong) !important;
 }
 
 .issueField :global(.MuiOutlinedInput-root.Mui-focused),
 .issueFieldBlue :global(.MuiOutlinedInput-root.Mui-focused) {
-  background: rgba(22, 16, 31, 0.92) !important;
+  background: var(--pp-surface-panel-strong) !important;
   box-shadow: 0 0 0 6px var(--issue-accent-shadow) !important;
 }
 
 .issueField :global(.MuiOutlinedInput-notchedOutline),
 .issueFieldBlue :global(.MuiOutlinedInput-notchedOutline) {
-  border-color: rgba(255, 255, 255, 0.12) !important;
+  border-color: var(--pp-surface-border) !important;
 }
 
 .issueField :global(.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline),
 .issueFieldBlue :global(.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline) {
-  border-color: rgba(255, 255, 255, 0.2) !important;
+  border-color: var(--pp-surface-border-strong) !important;
 }
 
 .issueField :global(.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline),
@@ -441,7 +441,7 @@
 .issueFieldBlue :global(.MuiInputBase-input),
 .issueFieldBlue :global(.MuiOutlinedInput-input),
 .issueFieldBlue :global(textarea) {
-  color: #f8f5ff !important;
+  color: var(--pp-color-text-inverse) !important;
 }
 
 .issueField :global(.MuiInputBase-input::placeholder),
@@ -480,16 +480,16 @@
   width: 36px !important;
   height: 36px !important;
   margin-right: -6px !important;
-  color: #cde0ff !important;
+  color: var(--pp-accent-text) !important;
   border-radius: 12px !important;
-  background: rgba(52, 123, 229, 0.12) !important;
-  border: 1px solid rgba(52, 123, 229, 0.18) !important;
+  background: var(--pp-accent-soft) !important;
+  border: 1px solid var(--pp-accent-border) !important;
 }
 
 .issueCopyButton:hover {
-  color: #ffffff !important;
-  background: rgba(52, 123, 229, 0.2) !important;
-  border-color: rgba(134, 185, 255, 0.34) !important;
+  color: var(--pp-accent-text) !important;
+  background: var(--pp-accent-soft) !important;
+  border-color: var(--pp-accent-border-strong) !important;
 }
 
 .issueFormActions {
@@ -519,23 +519,23 @@
   border: none;
   color: #ffffff;
   background: var(--pp-gradient-primary);
-  box-shadow: 0 22px 38px rgba(56, 118, 230, 0.28);
+  box-shadow: 0 22px 38px var(--pp-accent-shadow);
 }
 
 .issuePrimaryButton:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 24px 42px rgba(56, 118, 230, 0.32);
+  box-shadow: 0 24px 42px var(--pp-accent-shadow);
 }
 
 .issueSecondaryButton {
-  border: 1px solid rgba(134, 185, 255, 0.24);
-  background: rgba(255, 255, 255, 0.04);
-  color: #d9ecff;
+  border: 1px solid var(--pp-accent-border);
+  background: var(--pp-surface-soft);
+  color: var(--pp-accent-text);
 }
 
 .issueSecondaryButton:hover:not(:disabled) {
   transform: translateY(-1px);
-  background: rgba(52, 123, 229, 0.08);
+  background: var(--pp-accent-soft);
 }
 
 .issuePrimaryButton:disabled,

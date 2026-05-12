@@ -39,6 +39,7 @@ export const DefaultHeader = ({
     profileAnchorEl,
     themeAnchorEl,
     currentTheme,
+    currentAccent,
     menuError,
     isProfileMenuOpen,
     isThemeMenuOpen,
@@ -47,7 +48,8 @@ export const DefaultHeader = ({
     handleOpenThemeMenu,
     handleCloseThemeMenu,
     handleSelectTheme,
-  } = useProfileMenu('system');
+    handleSelectAccent,
+  } = useProfileMenu();
 
   const userInitials = getUserInitials(userLabel);
 
@@ -165,8 +167,10 @@ export const DefaultHeader = ({
         anchorEl={themeAnchorEl}
         isOpen={isThemeMenuOpen}
         currentTheme={currentTheme}
+        currentAccent={currentAccent}
         onClose={handleCloseThemeMenu}
         onSelectTheme={handleSelectTheme}
+        onSelectAccent={handleSelectAccent}
       />
 
       <DisplayNameDialog
