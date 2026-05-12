@@ -340,37 +340,98 @@
 
 .menuButton {
   display: inline-flex !important;
+  width: 54px;
+  height: 54px;
   color: var(--menu-button-color) !important;
   border: 1px solid var(--menu-button-border) !important;
   background: var(--menu-button-background) !important;
+  border-radius: 14px !important;
+}
+
+.menuButton:hover {
+  border-color: var(--drawer-hover-border) !important;
+  background: var(--drawer-hover-background) !important;
 }
 
 .drawerPaper {
-  width: 312px !important;
+  width: min(420px, 100vw) !important;
+  min-width: min(360px, 100vw) !important;
+  max-width: 100vw !important;
   background: var(--drawer-background) !important;
   color: var(--drawer-text-color) !important;
+  border-left: 1px solid var(--drawer-divider);
+  box-shadow: -28px 0 60px rgba(2, 4, 15, 0.34) !important;
+  overflow: hidden !important;
 }
 
 .drawerBody {
-  padding: 24px;
+  display: flex;
+  min-height: 100%;
+  height: 100%;
+  min-width: 0;
+  flex-direction: column;
+  padding: 22px;
+  overflow-y: auto;
+}
+
+.drawerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  margin-bottom: 16px;
+}
+
+.drawerCloseButton {
+  flex: 0 0 auto;
+  color: var(--drawer-outline-color) !important;
+  border: 1px solid var(--drawer-outline-border) !important;
+  background: var(--drawer-profile-background) !important;
+  border-radius: 14px !important;
+}
+
+.drawerCloseButton:hover {
+  border-color: var(--drawer-hover-border) !important;
+  background: var(--drawer-hover-background) !important;
 }
 
 .drawerStack {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
+  padding-top: 18px;
 }
 
 .drawerDivider {
+  flex: 0 0 auto;
   border-color: var(--drawer-divider) !important;
+}
+
+.drawerNavButton {
+  min-height: 50px !important;
+  justify-content: flex-start !important;
+  border-radius: 14px !important;
+  padding-inline: 14px !important;
+  color: var(--drawer-outline-color) !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  text-transform: none !important;
+  font-weight: 700 !important;
+}
+
+.drawerNavButton:hover {
+  border-color: var(--drawer-outline-border) !important;
+  background: var(--drawer-profile-background) !important;
 }
 
 .drawerProfile {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-height: 62px;
   padding: 10px;
-  border-radius: 0;
+  border-radius: 14px;
   border: 1px solid var(--drawer-profile-border);
   background: var(--drawer-profile-background);
   color: inherit;
@@ -379,6 +440,20 @@
 
 .drawerProfileText {
   font-weight: 600 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drawerPrimaryButton,
+.drawerSecondaryFilledButton,
+.drawerRegisterButton,
+.drawerOutlineButton,
+.drawerDangerButton {
+  min-height: 52px !important;
+  border-radius: 14px !important;
+  text-transform: none !important;
+  font-weight: 800 !important;
 }
 
 .drawerPrimaryButton {
@@ -399,6 +474,38 @@
 .drawerOutlineButton {
   color: var(--drawer-outline-color) !important;
   border-color: var(--drawer-outline-border) !important;
+  background: var(--drawer-profile-background) !important;
+}
+
+.drawerOutlineButton:hover {
+  border-color: var(--drawer-hover-border) !important;
+  background: var(--drawer-hover-background) !important;
+}
+
+.drawerDangerButton {
+  justify-content: flex-start !important;
+  padding-inline: 14px !important;
+  color: #ff9db2 !important;
+  border: 1px solid rgba(255, 126, 153, 0.18) !important;
+  background: rgba(140, 28, 55, 0.12) !important;
+}
+
+.drawerDangerButton:hover {
+  border-color: rgba(255, 126, 153, 0.32) !important;
+  background: rgba(140, 28, 55, 0.2) !important;
+}
+
+@media (max-width: 640px) {
+  .drawerPaper {
+    width: 100vw !important;
+    min-width: 100vw !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .drawerBody {
+    padding: 18px;
+  }
 }
 
 .gameRoomContainer {
@@ -421,6 +528,10 @@
   align-items: center;
 }
 
+.gameRoomBrandLink {
+  min-width: 0;
+}
+
 .gameRoomTitle {
   grid-area: title;
   justify-self: center;
@@ -437,6 +548,12 @@
 .gameRoomActions {
   grid-area: right;
   justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gameRoomIconActions {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -586,21 +703,36 @@
 
 @media (max-width: 899px) {
   .gameRoomContainer {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
       'left right'
-      'title title';
+      'title profile';
     padding-inline: 16px;
+    column-gap: 12px;
     row-gap: 10px;
   }
 
   .gameRoomTitle {
     width: 100%;
+    justify-self: start;
+    align-self: center;
+    text-align: left;
     font-size: 1rem !important;
   }
 
   .gameRoomActions {
+    display: contents !important;
+  }
+
+  .gameRoomIconActions {
+    grid-area: right;
+    justify-self: end;
     gap: 8px;
+  }
+
+  .gameRoomProfileAction {
+    grid-area: profile;
+    justify-self: end;
   }
 
   .roomIconButton {
@@ -633,16 +765,247 @@
 }
 
 @media (max-width: 640px) {
+  .gameRoomContainer {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'left right'
+      'title title';
+    align-items: center;
+    padding:
+      12px calc(16px + env(safe-area-inset-right, 0px)) 14px
+      calc(16px + env(safe-area-inset-left, 0px));
+    row-gap: 10px;
+    column-gap: 10px;
+  }
+
+  .gameRoomBrandLink > div > p {
+    display: none;
+  }
+
   .gameRoomActions {
-    flex-wrap: wrap;
-    justify-content: flex-end;
+    grid-area: right;
+    justify-self: end;
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .gameRoomIconActions {
+    grid-area: auto;
+    justify-self: auto;
+    gap: 8px;
+  }
+
+  .gameRoomProfileAction {
+    grid-area: auto;
+    justify-self: auto;
+  }
+
+  .gameRoomTitle {
+    max-width: 100%;
+    padding-inline: 2px;
+    font-size: 1.05rem !important;
+  }
+
+  .roomIconButton {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px !important;
   }
 
   .roomProfileButton {
-    order: 1;
-    width: 100%;
-    justify-content: flex-start;
+    width: 44px;
+    min-width: 0;
+    max-width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0 !important;
+    justify-content: center;
+    border-radius: 14px !important;
   }
+
+  .roomProfileAvatar {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 0.86rem !important;
+  }
+
+  .roomProfileText,
+  .roomProfileArrow {
+    display: none !important;
+  }
+
+  .roomProfileName {
+    max-width: 82px;
+    font-size: 0.86rem !important;
+  }
+
+  .roomProfileCaption {
+    font-size: 0.66rem !important;
+  }
+
+  .roomProfileArrow {
+    font-size: 1.05rem !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .gameRoomContainer {
+    padding:
+      10px calc(12px + env(safe-area-inset-right, 0px)) 12px
+      calc(12px + env(safe-area-inset-left, 0px));
+    column-gap: 6px;
+  }
+
+  .gameRoomActions,
+  .gameRoomIconActions {
+    gap: 6px;
+  }
+
+  .roomIconButton {
+    width: 40px;
+    height: 40px;
+  }
+
+  .roomProfileButton {
+    width: 40px;
+    max-width: 40px;
+    height: 40px;
+    min-height: 40px;
+  }
+
+  .roomProfileAvatar {
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  .roomProfileName {
+    max-width: 58px;
+  }
+}
+
+.drawerProfileBlock {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drawerProfileButton {
+  width: 100%;
+  min-height: 76px;
+  padding: 12px 14px;
+  border: 1px solid var(--drawer-profile-border);
+  border-radius: 18px;
+  background: var(--drawer-profile-background);
+  color: var(--drawer-text-color);
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.drawerProfileButton:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.drawerProfileTextBlock {
+  min-width: 0;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.drawerProfileText {
+  color: var(--drawer-text-color) !important;
+  font-size: 1rem !important;
+  font-weight: 800 !important;
+  line-height: 1.2 !important;
+  word-break: break-word;
+}
+
+.drawerProfileHint {
+  color: color-mix(in srgb, var(--drawer-text-color) 68%, transparent) !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+}
+
+.drawerProfileArrow {
+  flex-shrink: 0;
+  color: var(--drawer-text-color);
+  opacity: 0.72;
+  transition: transform 220ms ease;
+}
+
+.drawerProfileArrowExpanded {
+  transform: rotate(180deg);
+}
+
+.drawerProfileSubmenu {
+  width: 100%;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.drawerProfileSubmenuItem {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--drawer-text-color);
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+
+  transition:
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.drawerProfileSubmenuItem:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.drawerProfileSubmenuItem svg {
+  color: #cde0ff;
+}
+
+.drawerProfileSubmenuItemDanger {
+  color: #ff9bb3;
+}
+
+.drawerProfileSubmenuItemDanger:hover {
+  background: rgba(255, 96, 129, 0.12);
+}
+
+.drawerProfileSubmenuItemDanger svg {
+  color: #ff9bb3;
 }
 
 @media (min-width: 900px) {

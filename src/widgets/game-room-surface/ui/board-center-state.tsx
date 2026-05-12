@@ -16,8 +16,9 @@ export const BoardCenterState = ({
   <Box className={styles.centerState}>
     <Box className={styles.centerVisual}>
       <Box className={[styles.centerCard, styles.centerCardBack].join(' ')} />
-      <Box className={[styles.centerCard, styles.centerCardFront].join(' ')} />
-      <QuestionMarkRoundedIcon className={styles.centerQuestion} />
+      <Box className={[styles.centerCard, styles.centerCardFront].join(' ')}>
+        <QuestionMarkRoundedIcon className={styles.centerQuestion} />
+      </Box>
     </Box>
 
     <Typography className={styles.centerText}>

@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 
-import type { Issue } from '@entities/issue';
+import { getIssueToneIndex, type Issue } from '@entities/issue';
 import type { GameParticipant } from '@entities/participant';
 import type { VoteDeckCard } from '@entities/game';
 import type { PositionedParticipant } from '@widgets/game-room-surface';
@@ -55,7 +55,10 @@ export const GameRoomSurface = ({
       onOpenGameSettings={onOpenGameSettings}
     />
 
-    <RoundStatusLine roundLabel={roundLabel} />
+    <RoundStatusLine
+      roundLabel={roundLabel}
+      issueToneIndex={activeIssue ? getIssueToneIndex(activeIssue) : null}
+    />
 
     <Box className={styles.boardArena}>
       {positionedParticipants.map(({ participant, left, top }) => (

@@ -1,12 +1,15 @@
+// issue-form-card.tsx
+
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
-import LockRoundedIcon from '@mui/icons-material/LockRounded';
-import { Box, IconButton, InputAdornment, Stack, TextField, Typography } from '@mui/material';
-import { useState } from 'react';
+import { Box, Button, IconButton, InputAdornment, TextField } from '@mui/material';
+import { useState, type FormEvent } from 'react';
 
 import { type IssueDraft } from '../model/types';
+import { FormCard } from '@shared/ui/form-layout';
+import formStyles from '@shared/ui/form-layout/form-layout.module.css';
 import styles from '@shared/ui/game-room-sidebar/game-room-issues.module.css';
 
 type IssueFormCardProps = {
@@ -25,14 +28,23 @@ const htmlToPlainText = (value: string) => {
         return '';
     }
 
+    const normalizedValue = value
+        .replace(/&nbsp;/g, ' ')
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/p>/gi, '\n');
+
     if (typeof window === 'undefined') {
-        return value.replace(/<[^>]*>/g, '').trim();
+        return normalizedValue.replace(/<[^>]*>/g, '').trim();
     }
 
     const parser = new DOMParser();
-    const document = parser.parseFromString(value, 'text/html');
+    const document = parser.parseFromString(normalizedValue, 'text/html');
 
-    return document.body.textContent?.trim() ?? '';
+    return (document.body.textContent ?? '')
+        .replace(/\u00A0/g, ' ')
+        .replace(/[ \t]+\n/g, '\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
 };
 
 export const IssueFormCard = ({
@@ -49,6 +61,23 @@ export const IssueFormCard = ({
     const descriptionValue = isImported ? htmlToPlainText(draft.description) : draft.description;
 
     const [isUrlCopied, setUrlCopied] = useState(false);
+
+    const formTitle = mode === 'edit' ? 'Редагувати issue' : 'Створити issue';
+
+    const formSubtitle = isImported
+        ? 'Цю задачу імпортовано з Plane. Назва, посилання та опис доступні лише для перегляду.'
+        : mode === 'edit'
+            ? 'Оновіть назву, код, посилання або опис задачі для поточного planning poker раунду.'
+            : 'Додайте нову задачу до списку оцінювання.';
+
+    const getFieldClassName = (extraClassName = '') =>
+        [
+            isDialog ? formStyles.field : styles.issueField,
+            isDialog ? '' : styles.issueFieldBlue,
+            extraClassName,
+        ]
+            .join(' ')
+            .trim();
 
     const handleCopyIssueUrl = async () => {
         const url = draft.url.trim();
@@ -69,46 +98,18 @@ export const IssueFormCard = ({
         }
     };
 
-    return (
-        <Box
-            className={[
-                styles.issueFormCard,
-                isDialog ? styles.issueFormCardDialog : '',
-            ]
-                .join(' ')
-                .trim()}
-        >
-            {isDialog ? (
-                <Stack className={styles.issueFormIntro}>
-                    <Box className={styles.issueFormIconShellBlue}>
-                        {mode === 'edit' ? (
-                            <EditRoundedIcon fontSize="inherit" />
-                        ) : (
-                            <AddRoundedIcon fontSize="inherit" />
-                        )}
-                    </Box>
+    const handleDialogSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
 
-                    <Typography className={styles.issueFormTitle}>
-                        {mode === 'edit' ? 'Редагувати issue' : 'Створити issue'}
-                    </Typography>
+        if (!draft.title.trim() || isSubmitting) {
+            return;
+        }
 
-                    <Typography className={styles.issueFormSubtitle}>
-                        {isImported
-                            ? 'Цю задачу імпортовано з Plane. Назва, посилання та опис доступні лише для перегляду.'
-                            : mode === 'edit'
-                                ? 'Оновіть назву, код, посилання або опис задачі для поточного planning poker раунду.'
-                                : 'Додайте нову задачу до списку оцінювання.'}
-                    </Typography>
+        onSubmit();
+    };
 
-                    {isImported ? (
-                        <Box className={styles.readonlyBadge}>
-                            <LockRoundedIcon fontSize="small" />
-                            <span>Readonly · imported from Plane</span>
-                        </Box>
-                    ) : null}
-                </Stack>
-            ) : null}
-
+    const formFields = (
+        <>
             <TextField
                 fullWidth
                 label={isDialog ? 'Назва issue' : undefined}
@@ -117,13 +118,7 @@ export const IssueFormCard = ({
                 onChange={(event) => onChange({ ...draft, title: event.target.value })}
                 variant="outlined"
                 disabled={isImported}
-                className={[
-                    styles.issueField,
-                    styles.issueFieldBlue,
-                    isImported ? styles.issueReadonlyField : '',
-                ]
-                    .join(' ')
-                    .trim()}
+                className={getFieldClassName(isImported ? styles.issueReadonlyField : '')}
             />
 
             {mode === 'edit' ? (
@@ -135,7 +130,7 @@ export const IssueFormCard = ({
                         value={draft.code}
                         onChange={(event) => onChange({ ...draft, code: event.target.value })}
                         variant="outlined"
-                        className={[styles.issueField, styles.issueFieldBlue].join(' ')}
+                        className={getFieldClassName()}
                     />
 
                     <TextField
@@ -145,13 +140,7 @@ export const IssueFormCard = ({
                         value={draft.url}
                         onChange={(event) => onChange({ ...draft, url: event.target.value })}
                         variant="outlined"
-                        className={[
-                            styles.issueField,
-                            styles.issueFieldBlue,
-                            isImported ? styles.issueReadonlyField : '',
-                        ]
-                            .join(' ')
-                            .trim()}
+                        className={getFieldClassName(isImported ? styles.issueReadonlyField : '')}
                         InputProps={{
                             readOnly: isImported,
                             endAdornment: draft.url ? (
@@ -188,16 +177,50 @@ export const IssueFormCard = ({
                         onChange={(event) => onChange({ ...draft, description: event.target.value })}
                         variant="outlined"
                         disabled={isImported}
-                        className={[
-                            styles.issueField,
-                            styles.issueFieldBlue,
-                            isImported ? styles.issueReadonlyField : '',
-                        ]
-                            .join(' ')
-                            .trim()}
+                        className={getFieldClassName(isImported ? styles.issueReadonlyField : '')}
                     />
                 </>
             ) : null}
+        </>
+    );
+
+    if (isDialog) {
+        return (
+            <FormCard
+                title={formTitle}
+                subtitle={formSubtitle}
+                badge={isImported ? 'Readonly · imported from Plane' : undefined}
+                icon={
+                    mode === 'edit' ? (
+                        <EditRoundedIcon fontSize="inherit" />
+                    ) : (
+                        <AddRoundedIcon fontSize="inherit" />
+                    )
+                }
+                accent="purple"
+                onSubmit={handleDialogSubmit}
+                onClose={onCancel}
+                actions={
+                    <>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            className={[formStyles.primaryButton, formStyles.primaryPurple].join(' ')}
+                            disabled={!draft.title.trim() || isSubmitting}
+                        >
+                            {isSubmitting ? 'Зберігаємо...' : 'Зберегти зміни'}
+                        </Button>
+                    </>
+                }
+            >
+                {formFields}
+            </FormCard>
+        );
+    }
+
+    return (
+        <Box className={styles.issueFormCard}>
+            {formFields}
 
             <Box className={styles.issueFormActions}>
                 <button

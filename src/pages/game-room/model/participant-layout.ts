@@ -34,7 +34,7 @@ const mobileLayoutConfig: LayoutConfig = {
   centerX: 50,
   centerY: 50,
   baseHalfWidth: 18,
-  baseHalfHeight: 24,
+  baseHalfHeight: 32,
   layerGapX: 10,
   layerGapY: 8,
   minTopBottomGap: 16,

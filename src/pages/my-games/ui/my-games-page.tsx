@@ -223,13 +223,14 @@ export const MyGamesPage = () => {
                     variant="contained"
                     startIcon={<AddRoundedIcon />}
                     className={styles.createButton}
+                    aria-label="Створити гру"
                     onClick={() =>
                       navigate(appRoutes.createGame, {
                         state: { from: pathname + search },
                       })
                     }
                   >
-                    Створити гру
+                    <span className={styles.createButtonLabel}>Створити гру</span>
                   </Button>
                 </Box>
 

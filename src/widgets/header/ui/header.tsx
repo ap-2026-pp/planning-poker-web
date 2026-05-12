@@ -105,6 +105,7 @@ export const Header = () => {
         isAuthenticated={isAuthenticated}
         userLabel={userLabel}
         userInitials={userInitials}
+        headerVars={headerVars}
         onClose={() => setMobileMenuOpen(false)}
         onLogout={logout}
       />

@@ -23,9 +23,17 @@
 }
 
 .sidebarCloseButton {
+  width: 54px;
+  height: 54px;
   color: #f8f4ff !important;
   border: 1px solid rgba(255, 255, 255, 0.14) !important;
   background: rgba(255, 255, 255, 0.03) !important;
+  border-radius: 14px !important;
+}
+
+.sidebarCloseButton:hover {
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
 }
 
 .sidebarTabs {

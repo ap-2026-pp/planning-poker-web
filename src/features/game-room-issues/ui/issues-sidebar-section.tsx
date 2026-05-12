@@ -8,6 +8,7 @@ import { IssueFormCard } from './issue-form-card';
 import { IssuesActionsMenu } from './issues-actions-menu';
 import { IssuesEmptyState } from './issues-empty-state';
 import { IssuesList } from './issues-list';
+import { FormDialog } from '@shared/ui/form-layout';
 import styles from '@shared/ui/game-room-sidebar/game-room-issues.module.css';
 import sidebarStyles from '@shared/ui/game-room-sidebar/game-room-sidebar.module.css';
 
@@ -233,30 +234,21 @@ export const IssuesSidebarSection = ({
                 </Box>
             </Box>
 
-            <Dialog
+            <FormDialog
                 open={isEditIssueDialogOpen}
                 onClose={closeEditIssueDialog}
-                fullScreen
-                PaperProps={{ className: styles.issueDialogPaper }}
-                BackdropProps={{ className: styles.issueDialogBackdrop }}
             >
-                <Box className={styles.issueDialogRoot}>
-                    <Box className={styles.issueDialogGlow}>
-                        <Box className={styles.issueDialogBody}>
-                            <IssueFormCard
-                                mode="edit"
-                                variant="dialog"
-                                draft={issueDraft}
-                                isImported={isSelectedIssueImported}
-                                isSubmitting={isSubmittingIssue}
-                                onChange={setIssueDraft}
-                                onCancel={closeEditIssueDialog}
-                                onSubmit={() => void handleUpdateIssue()}
-                            />
-                        </Box>
-                    </Box>
-                </Box>
-            </Dialog>
+                <IssueFormCard
+                    mode="edit"
+                    variant="dialog"
+                    draft={issueDraft}
+                    isImported={isSelectedIssueImported}
+                    isSubmitting={isSubmittingIssue}
+                    onChange={setIssueDraft}
+                    onCancel={closeEditIssueDialog}
+                    onSubmit={() => void handleUpdateIssue()}
+                />
+            </FormDialog>
 
             <ImportPlaneIssuesDialog
                 open={isImportPlaneOpen}

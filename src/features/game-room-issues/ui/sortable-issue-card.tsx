@@ -8,8 +8,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Box, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import { useMemo, useState } from 'react';
 
-import type { Issue } from '@entities/issue';
-import { getIssueToneIndex } from '../model/get-issue-tone-index';
+import { getIssueToneIndex, type Issue } from '@entities/issue';
 import styles from '@shared/ui/game-room-sidebar/game-room-issues.module.css';
 
 type SortableIssueCardProps = {

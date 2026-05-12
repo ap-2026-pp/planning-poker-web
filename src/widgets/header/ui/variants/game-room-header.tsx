@@ -155,7 +155,11 @@ export const GameRoomHeader = ({
         <Toolbar className={styles.toolbar}>
           <Box className={styles.gameRoomContainer}>
             <Box className={styles.gameRoomLeft}>
-              <Box component={RouterLink} to={appRoutes.home} className={styles.brandLink}>
+              <Box
+                component={RouterLink}
+                to={appRoutes.home}
+                className={[styles.brandLink, styles.gameRoomBrandLink].join(' ')}
+              >
                 <BrandMark inverse />
               </Box>
             </Box>
@@ -164,7 +168,7 @@ export const GameRoomHeader = ({
 
             <Stack direction="row" className={styles.gameRoomActions}>
               <ButtonBase
-                className={styles.roomProfileButton}
+                className={[styles.roomProfileButton, styles.gameRoomProfileAction].join(' ')}
                 onClick={handleOpenProfileMenu}
                 aria-label="Відкрити меню учасника"
               >
@@ -182,29 +186,31 @@ export const GameRoomHeader = ({
                 <KeyboardArrowDownRoundedIcon className={styles.roomProfileArrow} />
               </ButtonBase>
 
-              <IconButton
-                className={styles.roomIconButton}
-                onClick={onOpenInviteDialog}
-                aria-label="Запросити гравців"
-              >
-                <PersonAddAlt1RoundedIcon />
-              </IconButton>
+              <Stack direction="row" className={styles.gameRoomIconActions}>
+                <IconButton
+                  className={styles.roomIconButton}
+                  onClick={onOpenInviteDialog}
+                  aria-label="Запросити гравців"
+                >
+                  <PersonAddAlt1RoundedIcon />
+                </IconButton>
 
-              <IconButton
-                className={styles.roomIconButton}
-                onClick={onLeaveRoom}
-                aria-label="Вийти з гри"
-              >
-                <LogoutRoundedIcon />
-              </IconButton>
+                <IconButton
+                  className={styles.roomIconButton}
+                  onClick={onLeaveRoom}
+                  aria-label="Вийти з гри"
+                >
+                  <LogoutRoundedIcon />
+                </IconButton>
 
-              <IconButton
-                className={styles.roomIconButton}
-                onClick={onToggleSidebar}
-                aria-label="Відкрити бічну панель кімнати"
-              >
-                <MenuRoundedIcon />
-              </IconButton>
+                <IconButton
+                  className={styles.roomIconButton}
+                  onClick={onToggleSidebar}
+                  aria-label="Відкрити бічну панель кімнати"
+                >
+                  <MenuRoundedIcon />
+                </IconButton>
+              </Stack>
             </Stack>
           </Box>
         </Toolbar>
