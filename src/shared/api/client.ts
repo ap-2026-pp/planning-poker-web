@@ -3,6 +3,7 @@ import axios, { AxiosHeaders, type AxiosError, type AxiosRequestConfig, type Int
 import { env } from '@shared/config/env';
 import { getGuestAccessToken, getStoredSession, getValidAccessToken, refreshStoredSession } from '@shared/auth';
 import { isApiEnvelope } from '@shared/model/api';
+import { invalidateStoredSession } from '../auth/session-refresh';
 
 const apiClient = axios.create({
   baseURL: env.apiUrl,
@@ -31,14 +32,40 @@ const setAuthorizationHeader = (
 };
 
 apiClient.interceptors.request.use(async (config) => {
-  const token = (await getValidAccessToken()) ?? getGuestAccessToken();
 
-  if (token) {
-    setAuthorizationHeader(config, token);
+  const accessToken = await getValidAccessToken();
+
+  const guestAccessToken = getGuestAccessToken();
+
+  if (accessToken) {
+
+    config.headers.Authorization = `Bearer ${accessToken}`;
+
+  } else if (guestAccessToken) {
+
+    config.headers.Authorization = `Bearer ${guestAccessToken}`;
+
   }
 
   return config;
+
 });
+
+apiClient.interceptors.response.use(
+  (response) => {
+    if (isApiEnvelope(response.data)) {
+      response.data = response.data.data;
+    }
+    return response;
+  },
+
+  (error) => {
+    if (error.response?.status === 401) {
+      invalidateStoredSession();
+    }
+    return Promise.reject(error);
+  },
+);
 
 const toErrorMessage = (error: AxiosError<unknown>) => {
   const responseBody = error.response?.data;

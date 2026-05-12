@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, CircularProgress, Stack, Typography } from '@mui/material';
 
 import { useSession } from '@shared/auth';
 import {
@@ -11,7 +11,25 @@ import { FeatureWidget } from './feature-widget';
 import styles from './main-page.module.css';
 
 export const MainPage = () => {
-  const { isAuthenticated } = useSession();
+  const { status, isAuthenticated } = useSession();
+
+  if (status === 'loading') {
+    return (
+      <Box className={styles.layout}>
+        <Box
+          sx={{
+            width: '100%',
+            minHeight: '50vh',
+            display: 'grid',
+            placeItems: 'center',
+          }}
+        >
+          <CircularProgress color="primary" />
+        </Box>
+      </Box>
+    );
+  }
+
   const heroContent = getMainPageHeroContent(isAuthenticated);
   const actionWidgets = getMainPageActions(isAuthenticated);
 
@@ -29,7 +47,9 @@ export const MainPage = () => {
             </Typography>
           </Box>
 
-          <Typography className={styles.description}>{heroContent.description}</Typography>
+          <Typography className={styles.description}>
+            {heroContent.description}
+          </Typography>
 
           <Box className={styles.featureGrid}>
             {featureWidgets.map((feature) => (
@@ -43,7 +63,9 @@ export const MainPage = () => {
         <Box
           className={[
             styles.widgetsGrid,
-            isAuthenticated ? styles.widgetsGridAuthenticated : styles.widgetsGridGuest,
+            isAuthenticated
+              ? styles.widgetsGridAuthenticated
+              : styles.widgetsGridGuest,
           ].join(' ')}
         >
           {actionWidgets.map((widget) => (

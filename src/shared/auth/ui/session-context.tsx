@@ -1,7 +1,7 @@
 import { createContext } from 'react';
 
 import type { User } from '@entities/user';
-import type { LoginPayload, RegisterPayload } from './auth-contracts';
+import type { LoginPayload, RegisterPayload } from '../auth-contracts';
 
 export type AuthStatus = 'loading' | 'authenticated' | 'guest';
 

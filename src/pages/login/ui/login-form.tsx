@@ -1,7 +1,7 @@
 import LoginRoundedIcon from '@mui/icons-material/LoginRounded';
 import { Button, TextField } from '@mui/material';
 import { useState, type ChangeEvent, type FormEvent } from 'react';
-import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 import { buildAuthRedirectPath, getAuthReturnTo, useSession } from '@shared/auth';
 import { appRoutes } from '@shared/config/routes';
@@ -30,7 +30,7 @@ const isAuthRoute = (path?: string) =>
 export const LoginForm = () => {
   const navigate = useNavigate();
   const { search, state } = useLocation();
-  const { login } = useSession();
+  const { login, isAuthenticated, status } = useSession();
 
   const returnTo = getAuthReturnTo(search);
   const from = (state as LocationState | null)?.from;
@@ -44,12 +44,17 @@ export const LoginForm = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  if (status !== 'loading' && isAuthenticated) {
+    return <Navigate to={fallbackPath} replace />;
+  }
+
   const handleClose = () => {
-    navigate(fallbackPath, { replace: true });
+    navigate(appRoutes.home, { replace: true });
   };
 
   const handleFieldChange =
-    (field: keyof LoginFormValues) => (event: ChangeEvent<HTMLInputElement>) => {
+    (field: keyof LoginFormValues) =>
+    (event: ChangeEvent<HTMLInputElement>) => {
       setValues((current) => ({ ...current, [field]: event.target.value }));
       setErrors((current) => ({ ...current, [field]: undefined }));
       setSubmitError(null);
@@ -58,6 +63,7 @@ export const LoginForm = () => {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSubmitting(true);
+    setSubmitError(null);
 
     try {
       const nextErrors = await validateSchema(loginSchema, values);
@@ -68,7 +74,10 @@ export const LoginForm = () => {
       }
 
       await login(values);
-      await navigate(fallbackPath, { replace: true });
+
+      await navigate(fallbackPath, {
+        replace: true,
+      });
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Не вдалося увійти');
     } finally {

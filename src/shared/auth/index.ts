@@ -10,8 +10,9 @@ export {
   getCurrentRoomParticipantSession,
   setCurrentRoomParticipantSession,
 } from './current-room-participant';
-export { SessionContext } from './session-context';
-export type { AuthStatus, SessionContextValue } from './session-context';
+export { SessionContext } from './ui/session-context';
+export type { AuthStatus, SessionContextValue } from './ui/session-context';
+export { ProtectedRoute } from './ui/protected-route';
 export {
   clearGuestAccessToken,
   clearStoredSession,

@@ -5,10 +5,12 @@ import { isApiEnvelope } from '@shared/model/api';
 
 import type { StoredSession } from './auth-contracts';
 import {
+  clearGuestAccessToken,
   clearStoredSession,
   getStoredSession,
   setStoredSession,
-} from './token-storage';
+  clearCurrentRoomParticipantSession
+} from '@shared/auth';
 
 type RefreshTokenPayload = {
   accessToken: string;
@@ -90,6 +92,13 @@ export const refreshStoredSession = async (force = false): Promise<StoredSession
   }
 
   return refreshSessionPromise;
+};
+
+export const invalidateStoredSession = () => {
+  clearStoredSession();
+  clearCurrentRoomParticipantSession();
+  clearGuestAccessToken();
+  notifySessionInvalidated();
 };
 
 export const getValidAccessToken = async () => {

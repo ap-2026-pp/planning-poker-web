@@ -3,6 +3,7 @@ import { Box, CircularProgress } from '@mui/material';
 import { useRoutes } from 'react-router-dom';
 
 import { AppLayout } from '@app/layouts/app-layout';
+import { ProtectedRoute } from '@shared/auth';
 import styles from './routes.module.css';
 
 const MainPage = lazy(() => import('@pages/main').then((module) => ({ default: module.MainPage })));
@@ -10,20 +11,20 @@ const LoginPage = lazy(() => import('@pages/login').then((module) => ({ default:
 const RegisterPage = lazy(() => import('@pages/register').then((module) => ({ default: module.RegisterPage })));
 const AccountPage = lazy(() => import('@pages/account').then((module) => ({ default: module.AccountPage })));
 const MyGamesPage = lazy(() =>
-  import('@pages/my-games').then((module) => ({ default: module.MyGamesPage }))
+  import('@pages/my-games').then((module) => ({ default: module.MyGamesPage })),
 );
 const CreateGamePage = lazy(() =>
-  import('@pages/create-game').then((module) => ({ default: module.CreateGamePage }))
+  import('@pages/create-game').then((module) => ({ default: module.CreateGamePage })),
 );
 const EditGamePage = lazy(() =>
-  import('@pages/edit-game').then((module) => ({ default: module.EditGamePage }))
+  import('@pages/edit-game').then((module) => ({ default: module.EditGamePage })),
 );
 const JoinGamePage = lazy(() => import('@pages/join-game').then((module) => ({ default: module.JoinGamePage })));
 const GameRoomPage = lazy(() =>
-  import('@pages/game-room').then((module) => ({ default: module.GameRoomPage }))
+  import('@pages/game-room').then((module) => ({ default: module.GameRoomPage })),
 );
 const VotingHistoryPage = lazy(() =>
-  import('@pages/voting-history').then((module) => ({ default: module.VotingHistoryPage }))
+  import('@pages/voting-history').then((module) => ({ default: module.VotingHistoryPage })),
 );
 
 const NotFoundPage = () => <MainPage />;
@@ -34,6 +35,20 @@ const RouterFallback = () => (
   </Box>
 );
 
+const withSuspense = (element: React.ReactNode) => (
+  <Suspense fallback={<RouterFallback />}>
+    {element}
+  </Suspense>
+);
+
+const withProtectedSuspense = (element: React.ReactNode) => (
+  <ProtectedRoute>
+    <Suspense fallback={<RouterFallback />}>
+      {element}
+    </Suspense>
+  </ProtectedRoute>
+);
+
 export const AppRoutes = () =>
   useRoutes([
     {
@@ -42,91 +57,47 @@ export const AppRoutes = () =>
       children: [
         {
           index: true,
-          element: (
-            <Suspense fallback={<RouterFallback />}>
-              <MainPage />
-            </Suspense>
-          ),
+          element: withSuspense(<MainPage />),
         },
         {
           path: 'login',
-          element: (
-            <Suspense fallback={<RouterFallback />}>
-              <LoginPage />
-            </Suspense>
-          ),
+          element: withSuspense(<LoginPage />),
         },
         {
           path: 'register',
-          element: (
-            <Suspense fallback={<RouterFallback />}>
-              <RegisterPage />
-            </Suspense>
-          ),
+          element: withSuspense(<RegisterPage />),
         },
         {
           path: 'account',
-          element: (
-            <Suspense fallback={<RouterFallback />}>
-              <AccountPage />
-            </Suspense>
-          ),
+          element: withProtectedSuspense(<AccountPage />),
         },
         {
           path: 'games',
-          element: (
-            <Suspense fallback={<RouterFallback />}>
-              <MyGamesPage />
-            </Suspense>
-          ),
+          element: withProtectedSuspense(<MyGamesPage />),
         },
         {
           path: 'games/create',
-          element: (
-            <Suspense fallback={<RouterFallback />}>
-              <CreateGamePage />
-            </Suspense>
-          ),
+          element: withProtectedSuspense(<CreateGamePage />),
         },
         {
           path: 'games/:gameId/edit',
-          element: (
-            <Suspense fallback={<RouterFallback />}>
-              <EditGamePage />
-            </Suspense>
-          ),
+          element: withProtectedSuspense(<EditGamePage />),
         },
         {
           path: 'join',
-          element: (
-            <Suspense fallback={<RouterFallback />}>
-              <JoinGamePage />
-            </Suspense>
-          ),
+          element: withSuspense(<JoinGamePage />),
         },
         {
           path: 'games/:gameId',
-          element: (
-            <Suspense fallback={<RouterFallback />}>
-              <GameRoomPage />
-            </Suspense>
-          ),
+          element: withProtectedSuspense(<GameRoomPage />),
         },
         {
           path: 'games/:gameId/history',
-          element: (
-            <Suspense fallback={<RouterFallback />}>
-              <VotingHistoryPage />
-            </Suspense>
-          ),
+          element: withProtectedSuspense(<VotingHistoryPage />),
         },
         {
           path: '*',
-          element: (
-            <Suspense fallback={<RouterFallback />}>
-              <NotFoundPage />
-            </Suspense>
-          ),
+          element: withSuspense(<NotFoundPage />),
         },
       ],
     },
