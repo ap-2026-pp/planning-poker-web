@@ -2,7 +2,8 @@ import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import PlaylistAddCheckRoundedIcon from '@mui/icons-material/PlaylistAddCheckRounded';
 import { Box, Typography } from '@mui/material';
 
-import styles from '@widgets/game-room-sidebar/ui/game-room-sidebar.module.css';
+import sidebarStyles from '@shared/ui/game-room-sidebar/game-room-sidebar.module.css';
+import styles from '@shared/ui/game-room-sidebar/game-room-issues.module.css';
 
 type IssuesEmptyStateProps = {
   isCurrentParticipantMaster: boolean;
@@ -30,14 +31,14 @@ export const IssuesEmptyState = ({
       </Box>
 
       <Box className={styles.issuesEmptyCenter}>
-        <Box className={styles.issueEmptyState}>
-          <Box className={styles.footerIconWrap}>
-            <PlaylistAddCheckRoundedIcon className={styles.footerIcon} />
+        <Box className={sidebarStyles.issueEmptyState}>
+          <Box className={sidebarStyles.footerIconWrap}>
+            <PlaylistAddCheckRoundedIcon className={sidebarStyles.footerIcon} />
           </Box>
 
-          <Typography className={styles.footerTitle}>Ще немає issues</Typography>
+          <Typography className={sidebarStyles.footerTitle}>Ще немає issues</Typography>
 
-          <Typography className={styles.footerDescription}>
+          <Typography className={sidebarStyles.footerDescription}>
             {isCurrentParticipantMaster
               ? 'Додайте першу задачу, щоб відкрити раунд оцінювання.'
               : 'Master ще не додав задачі для оцінювання.'}

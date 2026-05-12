@@ -1,5 +1,6 @@
 import { ParticipantRole, type GameParticipant } from '@entities/participant';
-import { getGuestAccessToken, getValidAccessToken } from '@shared/auth';
+import { getValidAccessToken } from '@shared/auth/session-refresh';
+import { getGuestAccessToken } from '@shared/auth/token-storage';
 import { env } from '@shared/config/env';
 
 export const gameRoomRealtimeEventNames = {
@@ -20,8 +21,12 @@ export const buildGameRoomHubUrl = (gameId: string) => {
   return `${env.signalRHubPath}${separator}gameId=${encodeURIComponent(gameId)}`;
 };
 
-export const getGameRoomRealtimeAccessToken = () => {
-  return getValidAccessToken().then((token) => token ?? getGuestAccessToken());
+export const getGameRoomRealtimeAccessToken = async () => {
+  try {
+    return (await getValidAccessToken()) ?? getGuestAccessToken();
+  } catch {
+    return getGuestAccessToken();
+  }
 };
 
 export const upsertGameRoomParticipant = (

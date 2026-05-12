@@ -1,7 +1,7 @@
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { IconButton, Typography, Box } from '@mui/material';
 
-import styles from './game-room-sidebar.module.css';
+import styles from '@shared/ui/game-room-sidebar/game-room-sidebar.module.css';
 
 type GameRoomSidebarHeaderProps = {
   onClose: () => void;

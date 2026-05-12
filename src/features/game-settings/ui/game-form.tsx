@@ -27,7 +27,7 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import type { CreateGamePayload, UpdateGamePayload } from '@entities/game';
-import { IssuesPolicy, RevealPolicy, VotingSystem } from '@entities/game';
+import { IssuesPolicy, RevealPolicy, VotingSystem, votingSystemOptions } from '@entities/game';
 import type { GameParticipant } from '@entities/participant';
 import {
   createGameRequest,
@@ -36,14 +36,13 @@ import {
   updateGameRequest,
 } from '@shared/api';
 import { appRoutes } from '@shared/config/routes';
-import { votingSystemOptions } from '@shared/model/voting';
 import { FormCard } from '@shared/ui/form-layout';
 import formStyles from '@shared/ui/form-layout/form-layout.module.css';
 import { validateSchema, type FormErrors } from '@shared/utils/yup';
-import { createGameSchema } from '../model/create-game-schema';
-import styles from './create-game-form.module.css';
+import { createGameSchema } from '../model/game-settings-schema';
+import styles from './game-form.module.css';
 
-type GameFormMode = 'create' | 'edit';
+export type GameFormMode = 'create' | 'edit';
 
 type GameFormValues = UpdateGamePayload & {
   hostDisplayName: string;

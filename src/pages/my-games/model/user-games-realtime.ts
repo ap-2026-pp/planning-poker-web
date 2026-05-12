@@ -1,4 +1,5 @@
-import { getGuestAccessToken, getValidAccessToken } from '@shared/auth';
+import { getValidAccessToken } from '@shared/auth/session-refresh';
+import { getGuestAccessToken } from '@shared/auth/token-storage';
 import { env } from '@shared/config/env';
 
 export const userGamesRealtimeEventNames = {

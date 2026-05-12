@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import { useState } from 'react';
 
-import type { VoteDeckCard } from '@shared/model/voting';
+import type { VoteDeckCard } from '@entities/game';
 import styles from './game-room-surface.module.css';
 
 type VoteDeckProps = {

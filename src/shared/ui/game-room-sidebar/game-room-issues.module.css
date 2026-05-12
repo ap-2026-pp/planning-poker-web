@@ -1,0 +1,654 @@
+.issuesToolbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  box-shadow: 0 10px 24px rgba(4, 6, 16, 0.22);
+}
+
+.issuesTitle {
+  color: #f8f4ff !important;
+  font-size: 1.4rem !important;
+  font-weight: 800 !important;
+}
+
+.issuesSubtitle {
+  margin-top: 4px !important;
+  color: rgba(216, 206, 235, 0.72) !important;
+  font-size: 0.96rem !important;
+  font-weight: 700 !important;
+}
+
+.issuesScrollArea {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-top: 18px;
+}
+
+.issueList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.issueCard {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid var(--pp-border-on-dark);
+  background: var(--pp-surface-dark-softer);
+  touch-action: none;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.issueCardDragging {
+  opacity: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(43, 46, 74, 0.98) 0%,
+    rgba(33, 36, 60, 0.98) 100%
+  );
+  border-color: rgba(134, 185, 255, 0.28);
+  box-shadow:
+    0 18px 32px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(134, 185, 255, 0.12);
+}
+
+.issueHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.issueDot {
+  width: 12px;
+  height: 12px;
+  margin-top: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.issueTone0 {
+  background: #a96fff;
+}
+
+.issueTone1 {
+  background: #4391ff;
+}
+
+.issueTone2 {
+  background: #ff8a4c;
+}
+
+.issueTone3 {
+  background: #2bd4b6;
+}
+
+.issueText {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  cursor: grab;
+  user-select: none;
+}
+
+.issueText:active {
+  cursor: grabbing;
+}
+
+.issueTitle {
+  color: #f8f4ff !important;
+  font-size: 1.15rem !important;
+  line-height: 1.25 !important;
+  font-weight: 800 !important;
+}
+
+.issueDescription {
+  color: rgba(219, 210, 236, 0.82) !important;
+  font-size: 0.98rem !important;
+  line-height: 1.55 !important;
+}
+
+.issueFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.issueFooterActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.issueMeta {
+  color: rgba(214, 203, 235, 0.78) !important;
+  font-size: 0.93rem !important;
+}
+
+.issueCodeBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f1e9ff;
+  font-size: 0.86rem;
+  font-weight: 800;
+  padding-inline: 10px;
+}
+
+.issueCardMenuButton {
+  margin-left: auto;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  color: rgba(248, 244, 255, 0.82) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.issuesMenuButton {
+  color: #f8f4ff !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.issuesMenuPaper {
+  min-width: 280px !important;
+  border-radius: 18px !important;
+  background: rgba(34, 37, 56, 0.96) !important;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 22px 50px rgba(3, 6, 16, 0.34) !important;
+  padding: 8px !important;
+}
+
+.issuesMenuItem {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  min-height: 52px !important;
+  border-radius: 14px !important;
+  color: #e9e2f8 !important;
+  font-size: 1rem !important;
+}
+
+.issuesMenuItem:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.issuesMenuItemDanger {
+  color: #ff7d9d !important;
+}
+
+.issuesMenuItemDanger:hover {
+  background: rgba(255, 96, 129, 0.12) !important;
+}
+
+.issueVoteButton {
+  min-height: 36px;
+  padding-inline: 14px;
+  border: none;
+  border-radius: 12px;
+  background: var(--pp-gradient-primary);
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 14px 24px rgba(56, 118, 230, 0.22);
+}
+
+.issueVoteButton:disabled {
+  opacity: 0.72;
+  cursor: default;
+}
+
+.issueVoteButtonActive {
+  background: linear-gradient(90deg, #5b6578 0%, #454f60 100%);
+  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.2);
+}
+
+.issueEstimatePanel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 96px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.issueEstimateLabel {
+  color: rgba(216, 206, 235, 0.72) !important;
+  font-size: 0.8rem !important;
+}
+
+.issueEstimateValue {
+  color: #f8f4ff !important;
+  font-size: 1rem !important;
+  font-weight: 800 !important;
+}
+
+.addIssueButton,
+.addAnotherIssueButton {
+  margin-top: 18px;
+  min-height: 58px;
+  border: 0;
+  background: transparent;
+  color: rgba(232, 228, 241, 0.9);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.addIssueButton {
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.03);
+  justify-content: center;
+  color: #f8f5ff;
+}
+
+.issuesEmptyLayout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+}
+
+.issuesEmptyTop {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.issuesEmptyCenter {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.readonlyBadge {
+  position: relative;
+  z-index: 1;
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: #cde0ff;
+  background: rgba(52, 123, 229, 0.16);
+  border: 1px solid rgba(52, 123, 229, 0.24);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.issueDialogPaper {
+  width: 100vw !important;
+  height: 100dvh !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+
+.issueDialogBackdrop {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(52, 123, 229, 0.2) 0%, transparent 34%),
+    radial-gradient(circle at 72% 80%, rgba(52, 123, 229, 0.18) 0%, transparent 36%),
+    rgba(3, 5, 14, 0.74) !important;
+  backdrop-filter: blur(10px);
+}
+
+.issueDialogRoot {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 88px 16px 36px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.issueDialogGlow {
+  position: relative;
+  width: min(620px, 100%);
+  max-height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.issueDialogGlow::before {
+  content: '';
+  position: absolute;
+  inset: -18px;
+  border-radius: 52px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background:
+    radial-gradient(circle at 18% 12%, rgba(52, 123, 229, 0.18) 0%, transparent 36%),
+    radial-gradient(circle at 88% 82%, rgba(52, 123, 229, 0.14) 0%, transparent 38%),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.035) 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  pointer-events: none;
+}
+
+.issueDialogBody {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.issueFormCard {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 18px;
+  padding: 28px 24px;
+  border-radius: 40px;
+  border: 1px solid var(--pp-border-on-dark);
+  background: var(--pp-surface-dark);
+  box-shadow: var(--pp-shadow-panel);
+  position: relative;
+  overflow: hidden;
+}
+
+.issueFormCard::before {
+  content: '';
+  position: absolute;
+  top: -92px;
+  right: -48px;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(90, 155, 255, 0.2) 0%, transparent 72%);
+  pointer-events: none;
+}
+
+.issueFormCard::after {
+  content: '';
+  position: absolute;
+  inset: auto 24px 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.issueFormCardDialog {
+  width: 100%;
+  max-height: 100%;
+  min-height: 0;
+  margin-top: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.issueFormCardDialog::-webkit-scrollbar {
+  width: 8px;
+}
+
+.issueFormCardDialog::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+}
+
+.issueFormCardDialog::-webkit-scrollbar-thumb {
+  background: rgba(134, 185, 255, 0.45);
+  border-radius: 999px;
+}
+
+.issueFormCardDialog::-webkit-scrollbar-thumb:hover {
+  background: rgba(134, 185, 255, 0.65);
+}
+
+.issueFormIntro {
+  position: relative;
+  z-index: 1;
+  gap: 14px;
+}
+
+.issueFormIconShell {
+  width: 74px;
+  height: 74px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-size: 38px;
+  background: linear-gradient(180deg, #347be5 0%, #2564c3 100%);
+  box-shadow: 0 24px 34px rgba(56, 118, 230, 0.28);
+}
+
+.issueFormTitle {
+  color: #f8f5ff !important;
+  font-size: 2rem !important;
+  line-height: 1.08 !important;
+  font-weight: 800 !important;
+}
+
+.issueFormSubtitle {
+  color: rgba(226, 220, 245, 0.74) !important;
+  font-size: 0.98rem !important;
+  line-height: 1.55 !important;
+}
+
+.issueField {
+  position: relative;
+  z-index: 1;
+
+  --issue-accent-label: #86b9ff;
+  --issue-accent-border: rgba(134, 185, 255, 0.88);
+  --issue-accent-shadow: rgba(56, 118, 230, 0.16);
+}
+
+.issueField :global(.MuiInputLabel-root) {
+  color: rgba(226, 220, 245, 0.74) !important;
+}
+
+.issueField :global(.MuiInputLabel-root.Mui-focused) {
+  color: var(--issue-accent-label) !important;
+}
+
+.issueField :global(.MuiOutlinedInput-root) {
+  color: #f8f5ff !important;
+  border-radius: 18px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  transition:
+    background-color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+.issueField :global(.MuiOutlinedInput-root:hover) {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.issueField :global(.MuiOutlinedInput-root.Mui-focused) {
+  background: rgba(22, 16, 31, 0.92) !important;
+  box-shadow: 0 0 0 6px var(--issue-accent-shadow) !important;
+}
+
+.issueField :global(.MuiOutlinedInput-notchedOutline) {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.issueField :global(.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline) {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.issueField :global(.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline) {
+  border-color: var(--issue-accent-border) !important;
+}
+
+.issueField :global(.MuiInputBase-input),
+.issueField :global(.MuiOutlinedInput-input),
+.issueField :global(textarea) {
+  color: #f8f5ff !important;
+}
+
+.issueField :global(.MuiInputBase-input::placeholder),
+.issueField :global(textarea::placeholder) {
+  color: rgba(226, 220, 245, 0.42) !important;
+  opacity: 1;
+}
+
+.issueField :global(.MuiFormHelperText-root) {
+  margin-inline: 4px !important;
+  color: #ffb4c5 !important;
+}
+
+.issueReadonlyField :global(.MuiOutlinedInput-root.Mui-disabled) {
+  color: rgba(248, 245, 255, 0.72) !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+}
+
+.issueReadonlyField :global(.MuiInputBase-input.Mui-disabled) {
+  -webkit-text-fill-color: rgba(248, 245, 255, 0.72) !important;
+}
+
+.issueReadonlyField :global(.MuiInputLabel-root.Mui-disabled) {
+  color: rgba(226, 220, 245, 0.48) !important;
+}
+
+.issueReadonlyField :global(.MuiOutlinedInput-input[readonly]) {
+  -webkit-text-fill-color: rgba(248, 245, 255, 0.72) !important;
+  color: rgba(248, 245, 255, 0.72) !important;
+}
+
+.issueCopyButton {
+  width: 36px !important;
+  height: 36px !important;
+  margin-right: -6px !important;
+  color: #cde0ff !important;
+  border-radius: 12px !important;
+  background: rgba(52, 123, 229, 0.12) !important;
+  border: 1px solid rgba(52, 123, 229, 0.18) !important;
+}
+
+.issueCopyButton:hover {
+  color: #ffffff !important;
+  background: rgba(52, 123, 229, 0.2) !important;
+  border-color: rgba(134, 185, 255, 0.34) !important;
+}
+
+.issueFormActions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.issuePrimaryButton,
+.issueSecondaryButton {
+  min-height: 60px;
+  border-radius: 14px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-transform: none;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease;
+}
+
+.issuePrimaryButton {
+  border: none;
+  color: #ffffff;
+  background: var(--pp-gradient-primary);
+  box-shadow: 0 22px 38px rgba(56, 118, 230, 0.28);
+}
+
+.issuePrimaryButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 24px 42px rgba(56, 118, 230, 0.32);
+}
+
+.issueSecondaryButton {
+  border: 1px solid rgba(134, 185, 255, 0.24);
+  background: rgba(255, 255, 255, 0.04);
+  color: #d9ecff;
+}
+
+.issueSecondaryButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(52, 123, 229, 0.08);
+}
+
+.issuePrimaryButton:disabled,
+.issueSecondaryButton:disabled {
+  opacity: 0.64;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+@media (max-width: 640px) {
+  .issueDialogRoot {
+    padding: 76px 12px 24px;
+  }
+
+  .issueDialogGlow::before {
+    display: none;
+  }
+
+  .issueFormCardDialog {
+    border-radius: 28px;
+    padding: 24px 18px;
+  }
+
+  .issueFormIconShell {
+    width: 62px;
+    height: 62px;
+    border-radius: 18px;
+    font-size: 32px;
+  }
+
+  .issueFormTitle {
+    font-size: 1.85rem !important;
+  }
+}

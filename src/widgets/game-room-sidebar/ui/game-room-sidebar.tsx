@@ -6,7 +6,7 @@ import { IssuesSidebarSection } from '@features/game-room-issues';
 import { ParticipantsSidebarSection } from '@features/game-room-participants';
 import { GameRoomSidebarHeader } from './game-room-sidebar-header';
 import { GameRoomSidebarTabs } from './game-room-sidebar-tabs';
-import styles from './game-room-sidebar.module.css';
+import styles from '@shared/ui/game-room-sidebar/game-room-sidebar.module.css';
 
 export type SidebarView = 'players' | 'issues';
 

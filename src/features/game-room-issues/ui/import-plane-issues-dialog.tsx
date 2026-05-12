@@ -4,7 +4,7 @@ import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 
 import type { ImportPlaneIssuesPayload } from '@entities/issue';
 import formStyles from '@shared/ui/form-layout/form-layout.module.css';
-import styles from '@widgets/game-room-sidebar/ui/game-room-sidebar.module.css';
+import styles from '@shared/ui/game-room-sidebar/game-room-issues.module.css';
 
 type ImportPlaneIssuesDialogProps = {
   open: boolean;

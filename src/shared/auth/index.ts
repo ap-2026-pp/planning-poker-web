@@ -4,7 +4,13 @@ export type {
   RegisterPayload,
   StoredSession,
 } from './auth-contracts';
-export { buildAuthRedirectPath, getAuthReturnTo } from './auth-redirect';
+export {
+  buildAuthRedirectPath,
+  buildSessionExpiredRedirectPath,
+  getAuthExpectedEmail,
+  getAuthReturnTo,
+  isSessionExpiredRedirect,
+} from './auth-redirect';
 export {
   clearCurrentRoomParticipantSession,
   getCurrentRoomParticipantSession,
@@ -18,6 +24,7 @@ export {
   clearStoredSession,
   getAccessToken,
   getGuestAccessToken,
+  getStoredSessionEmail,
   getStoredSession,
   hasGuestTokenCookie,
   setGuestAccessToken,
@@ -25,6 +32,8 @@ export {
 } from './token-storage';
 export {
   getValidAccessToken,
+  invalidateGuestSession,
+  invalidateStoredSession,
   refreshStoredSession,
   subscribeToSessionInvalidated,
 } from './session-refresh';

@@ -1,5 +1,5 @@
 .passwordSection {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--pp-border-on-dark);
   padding-top: 12px;
   margin-top: 4px;
 }
@@ -25,13 +25,13 @@
 }
 
 .passwordTitle {
-  color: #f8f5ff !important;
+  color: var(--pp-color-text-inverse) !important;
   font-size: 1rem !important;
   font-weight: 800 !important;
 }
 
 .passwordHint {
-  color: rgba(226, 220, 245, 0.64) !important;
+  color: var(--pp-color-text-inverse-muted) !important;
   font-size: 0.9rem !important;
   line-height: 1.4 !important;
 }

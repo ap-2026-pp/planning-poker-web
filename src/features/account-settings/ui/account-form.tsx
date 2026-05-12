@@ -25,7 +25,7 @@ import { validateSchema, type FormErrors } from '@shared/utils/yup';
 import {
   accountDisplayNameSchema,
   accountPasswordSchema,
-} from '../model/account-schemas';
+} from '../model/account-settings-schemas';
 import styles from './account-form.module.css';
 
 type AccountDisplayNameValues = {

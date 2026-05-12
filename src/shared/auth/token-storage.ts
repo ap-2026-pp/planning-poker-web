@@ -4,6 +4,23 @@ const SESSION_KEY = 'planning-poker.session';
 const GUEST_TOKEN_COOKIE_KEY = 'guestToken';
 const GUEST_TOKEN_COOKIE_NAMES = ['guestToken', 'guest_token', 'guest-token'];
 
+const isStoredSession = (value: unknown): value is StoredSession => {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const session = value as Partial<StoredSession>;
+
+  return Boolean(
+    session.accessToken &&
+      session.refreshToken &&
+      session.expiration &&
+      typeof session.accessToken === 'string' &&
+      typeof session.refreshToken === 'string' &&
+      typeof session.expiration === 'string',
+  );
+};
+
 export const getStoredSession = (): StoredSession | null => {
   const rawValue = localStorage.getItem(SESSION_KEY);
 
@@ -12,9 +29,32 @@ export const getStoredSession = (): StoredSession | null => {
   }
 
   try {
-    return JSON.parse(rawValue) as StoredSession;
+    const session = JSON.parse(rawValue) as unknown;
+
+    if (!isStoredSession(session)) {
+      localStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+
+    return session;
   } catch {
     localStorage.removeItem(SESSION_KEY);
+    return null;
+  }
+};
+
+export const getStoredSessionEmail = () => {
+  const rawValue = localStorage.getItem(SESSION_KEY);
+
+  if (!rawValue) {
+    return null;
+  }
+
+  try {
+    const value = JSON.parse(rawValue) as Partial<StoredSession>;
+
+    return typeof value.email === 'string' && value.email ? value.email : null;
+  } catch {
     return null;
   }
 };

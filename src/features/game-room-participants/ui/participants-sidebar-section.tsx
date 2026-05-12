@@ -5,7 +5,7 @@ import type { GameParticipant } from '@entities/participant';
 import { ConfirmActionDialog } from '@shared/ui/confirm-action-dialog/confirm-action-dialog';
 import { ParticipantsEmptyState } from './participants-empty-state';
 import { ParticipantsList } from './participants-list';
-import styles from '@widgets/game-room-sidebar/ui/game-room-sidebar.module.css';
+import styles from '@shared/ui/game-room-sidebar/game-room-players.module.css';
 
 type ParticipantsSidebarSectionProps = {
   participants: GameParticipant[];

@@ -8,7 +8,9 @@ import { IssueFormCard } from './issue-form-card';
 import { IssuesActionsMenu } from './issues-actions-menu';
 import { IssuesEmptyState } from './issues-empty-state';
 import { IssuesList } from './issues-list';
-import styles from '@widgets/game-room-sidebar/ui/game-room-sidebar.module.css';
+import styles from '@shared/ui/game-room-sidebar/game-room-issues.module.css';
+import sidebarStyles from '@shared/ui/game-room-sidebar/game-room-sidebar.module.css';
+
 
 type IssuesSidebarSectionProps = {
     issues: Issue[];
@@ -174,7 +176,7 @@ export const IssuesSidebarSection = ({
 
     return (
         <>
-            <Box className={styles.sidebarContent}>
+            <Box className={sidebarStyles.sidebarContent}>
                 <Box className={styles.issuesToolbar}>
                     <Box>
                         <Typography className={styles.issuesTitle}>Issues</Typography>

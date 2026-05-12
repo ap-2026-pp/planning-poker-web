@@ -1,0 +1,60 @@
+.darkField :global(.MuiInputLabel-root) {
+  color: var(--pp-color-text-inverse-muted) !important;
+}
+
+.darkField :global(.MuiInputLabel-root.Mui-focused) {
+  color: var(--form-accent-label, #86b9ff) !important;
+}
+
+.darkField :global(.MuiOutlinedInput-root) {
+  color: var(--pp-color-text-inverse) !important;
+  border-radius: 18px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  transition:
+    background-color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+.darkField :global(.MuiOutlinedInput-root:hover) {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.darkField :global(.MuiOutlinedInput-root.Mui-focused) {
+  background: var(--pp-surface-dark-focus) !important;
+  box-shadow: 0 0 0 6px var(--form-accent-shadow, rgba(56, 118, 230, 0.16)) !important;
+}
+
+.darkField :global(.MuiOutlinedInput-notchedOutline) {
+  border-color: var(--pp-border-on-dark-strong) !important;
+}
+
+.darkField :global(.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline) {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.darkField :global(.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline) {
+  border-color: var(--form-accent-border, rgba(134, 185, 255, 0.88)) !important;
+}
+
+.darkField :global(.MuiInputBase-input::placeholder),
+.darkField :global(textarea::placeholder) {
+  color: rgba(226, 220, 245, 0.42) !important;
+  opacity: 1;
+}
+
+.darkField :global(.MuiInputBase-input),
+.darkField :global(.MuiOutlinedInput-input),
+.darkField :global(textarea) {
+  color: var(--pp-color-text-inverse) !important;
+}
+
+.darkField :global(.MuiFormHelperText-root) {
+  margin-inline: 4px !important;
+  color: #ffb4c5 !important;
+}
+
+.darkPanel {
+  border: 1px solid var(--pp-border-on-dark);
+  background: var(--pp-surface-dark);
+  box-shadow: var(--pp-shadow-panel);
+}

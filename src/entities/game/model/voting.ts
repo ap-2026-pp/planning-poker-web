@@ -1,4 +1,4 @@
-import { VotingSystem } from '@entities/game';
+import { VotingSystem } from './game';
 
 export type VoteDeckCard = {
   value: string;

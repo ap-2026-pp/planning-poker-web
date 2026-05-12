@@ -11,3 +11,9 @@ export {
   UserGamesScope,
   type UserGame,
 } from './model/game';
+export {
+  getVotingSystemDeck,
+  getVotingSystemLabel,
+  votingSystemOptions,
+  type VoteDeckCard,
+} from './model/voting';

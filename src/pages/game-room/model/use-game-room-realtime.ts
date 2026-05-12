@@ -28,7 +28,6 @@ type UseGameRoomRealtimeParams = {
     onIssueUpdated?: (issue: Issue) => void | Promise<void>;
     onIssuesImported?: (importedIssues: Issue[]) => void | Promise<void>;
     onReconnected?: () => void | Promise<void>;
-    onDeleteAllIssues?: () => void | Promise<void>;
 };
 
 export const useGameRoomRealtime = ({

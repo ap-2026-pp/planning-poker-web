@@ -3,7 +3,7 @@ import ViewKanbanRoundedIcon from '@mui/icons-material/ViewKanbanRounded';
 import { Box } from '@mui/material';
 
 import type { SidebarView } from './game-room-sidebar';
-import styles from './game-room-sidebar.module.css';
+import styles from '@shared/ui/game-room-sidebar/game-room-sidebar.module.css';
 
 type GameRoomSidebarTabsProps = {
   sidebarView: SidebarView;

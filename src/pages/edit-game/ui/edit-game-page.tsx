@@ -1,9 +1,9 @@
 import { Navigate, useParams } from 'react-router-dom';
 
+import { GameForm } from '@features/game-settings';
 import { useSession } from '@shared/auth';
 import { appRoutes } from '@shared/config/routes';
 import { FormPageLayout } from '@shared/ui/form-layout';
-import { GameForm } from '@pages/create-game/ui/game-form';
 
 export const EditGamePage = () => {
   const { isAuthenticated } = useSession();

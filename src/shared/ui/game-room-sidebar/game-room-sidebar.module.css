@@ -1,0 +1,105 @@
+.sidebarPanel {
+  display: flex;
+  min-height: 100%;
+  height: 100%;
+  min-width: 0;
+  flex-direction: column;
+  background: transparent;
+  padding: 22px;
+}
+
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.sidebarHeaderTitle {
+  color: var(--pp-color-text-inverse) !important;
+  font-size: 1.22rem !important;
+  font-weight: 800 !important;
+}
+
+.sidebarCloseButton {
+  color: #f8f4ff !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.sidebarTabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebarTab {
+  min-height: 48px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: rgba(221, 213, 238, 0.74);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sidebarTabActive {
+  color: #f9f5ff;
+  border-bottom-color: #a96fff;
+}
+
+.sidebarTabIcon {
+  font-size: 1.35rem !important;
+}
+
+.sidebarContent {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+}
+
+.sidebarFooter,
+.issueEmptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  text-align: center;
+}
+
+.footerIconWrap {
+  width: 116px;
+  height: 116px;
+  border-radius: 28px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 32% 26%, rgba(173, 121, 255, 0.16) 0%, transparent 44%),
+    rgba(255, 255, 255, 0.02);
+}
+
+.footerIcon {
+  font-size: 4rem !important;
+  color: rgba(159, 110, 255, 0.62) !important;
+}
+
+.footerTitle {
+  color: #f7f2ff !important;
+  font-size: 1.25rem !important;
+  font-weight: 800 !important;
+}
+
+.footerDescription {
+  color: rgba(216, 206, 235, 0.82) !important;
+  font-size: 1rem !important;
+}

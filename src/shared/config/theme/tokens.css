@@ -1,0 +1,50 @@
+:root {
+  --pp-font-family: 'Manrope', sans-serif;
+
+  --pp-color-text-primary: #0c2230;
+  --pp-color-text-secondary: #607789;
+  --pp-color-text-inverse: #f8f5ff;
+  --pp-color-text-inverse-muted: rgba(226, 220, 245, 0.74);
+  --pp-color-white: #ffffff;
+
+  --pp-color-primary: #347be5;
+  --pp-color-primary-strong: #256dce;
+  --pp-color-purple: #b97bff;
+  --pp-color-purple-strong: #8b56f6;
+  --pp-color-green: #38b975;
+  --pp-color-green-strong: #188c55;
+  --pp-color-orange: #f0a543;
+  --pp-color-orange-strong: #d66f24;
+  --pp-color-danger: #ff6081;
+
+  --pp-surface-dark: linear-gradient(
+    180deg,
+    rgba(31, 33, 54, 0.94) 0%,
+    rgba(24, 25, 43, 0.92) 100%
+  );
+  --pp-surface-dark-soft: rgba(255, 255, 255, 0.04);
+  --pp-surface-dark-softer: rgba(255, 255, 255, 0.03);
+  --pp-surface-dark-focus: rgba(22, 16, 31, 0.92);
+  --pp-border-on-dark: rgba(255, 255, 255, 0.08);
+  --pp-border-on-dark-strong: rgba(255, 255, 255, 0.12);
+  --pp-shadow-panel: 0 28px 50px rgba(5, 8, 20, 0.32);
+
+  --pp-gradient-primary: linear-gradient(90deg, var(--pp-color-primary) 0%, var(--pp-color-primary-strong) 100%);
+  --pp-gradient-primary-vertical: linear-gradient(180deg, var(--pp-color-primary) 0%, #2564c3 100%);
+  --pp-gradient-purple: linear-gradient(90deg, var(--pp-color-purple) 0%, var(--pp-color-purple-strong) 100%);
+  --pp-gradient-purple-vertical: linear-gradient(180deg, var(--pp-color-purple) 0%, var(--pp-color-purple-strong) 100%);
+  --pp-gradient-green: linear-gradient(90deg, var(--pp-color-green) 0%, var(--pp-color-green-strong) 100%);
+  --pp-gradient-green-vertical: linear-gradient(180deg, var(--pp-color-green) 0%, var(--pp-color-green-strong) 100%);
+  --pp-gradient-orange: linear-gradient(90deg, var(--pp-color-orange) 0%, var(--pp-color-orange-strong) 100%);
+  --pp-gradient-orange-vertical: linear-gradient(180deg, var(--pp-color-orange) 0%, var(--pp-color-orange-strong) 100%);
+
+  --pp-app-background:
+    radial-gradient(circle at 12% 12%, rgba(35, 94, 134, 0.16), transparent 26%),
+    radial-gradient(circle at 84% 14%, rgba(108, 160, 166, 0.18), transparent 24%),
+    linear-gradient(180deg, #f3f8fc 0%, #e9f0f7 100%);
+  --pp-home-background: linear-gradient(120deg, #080a17 0%, #0b0d1b 46%, #1a1232 78%, #281541 100%);
+  --pp-home-overlay:
+    radial-gradient(circle at 18% 18%, rgba(82, 38, 167, 0.18), transparent 26%),
+    radial-gradient(circle at 88% 54%, rgba(153, 81, 255, 0.22), transparent 24%);
+  --pp-selection: rgba(35, 94, 134, 0.18);
+}

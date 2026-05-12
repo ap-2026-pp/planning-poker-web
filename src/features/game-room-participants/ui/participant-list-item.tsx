@@ -7,7 +7,7 @@ import {
   roleLabels,
   type GameParticipant,
 } from '@entities/participant';
-import styles from '@widgets/game-room-sidebar/ui/game-room-sidebar.module.css';
+import styles from '@shared/ui/game-room-sidebar/game-room-players.module.css';
 
 type ParticipantListItemProps = {
   participant: GameParticipant;

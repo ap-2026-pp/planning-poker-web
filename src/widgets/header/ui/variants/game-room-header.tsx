@@ -16,7 +16,7 @@ import {
 import { useMemo, useState, type CSSProperties } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { AccountForm } from '@pages/account/ui/account-form';
+import { AccountForm } from '@features/account-settings';
 import { appRoutes } from '@shared/config/routes';
 import type {
   GameRoomParticipantSummary,

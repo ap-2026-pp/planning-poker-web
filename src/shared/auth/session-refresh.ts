@@ -4,13 +4,13 @@ import { env } from '@shared/config/env';
 import { isApiEnvelope } from '@shared/model/api';
 
 import type { StoredSession } from './auth-contracts';
+import { clearCurrentRoomParticipantSession } from './current-room-participant';
 import {
   clearGuestAccessToken,
   clearStoredSession,
   getStoredSession,
   setStoredSession,
-  clearCurrentRoomParticipantSession
-} from '@shared/auth';
+} from './token-storage';
 
 type RefreshTokenPayload = {
   accessToken: string;
@@ -96,8 +96,12 @@ export const refreshStoredSession = async (force = false): Promise<StoredSession
 
 export const invalidateStoredSession = () => {
   clearStoredSession();
-  clearCurrentRoomParticipantSession();
+  notifySessionInvalidated();
+};
+
+export const invalidateGuestSession = () => {
   clearGuestAccessToken();
+  clearCurrentRoomParticipantSession();
   notifySessionInvalidated();
 };
 

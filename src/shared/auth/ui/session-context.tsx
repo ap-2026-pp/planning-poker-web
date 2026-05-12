@@ -10,6 +10,8 @@ export type SessionContextValue = {
   status: AuthStatus;
   isAuthenticated: boolean;
   isGuestSession: boolean;
+  hasGuestAccess: boolean;
+  expiredSessionEmail: string | null;
   login: (payload: LoginPayload) => Promise<void>;
   register: (payload: RegisterPayload) => Promise<void>;
   logout: () => Promise<void>;

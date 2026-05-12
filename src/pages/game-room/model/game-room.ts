@@ -2,7 +2,7 @@ import { VotingSystem } from '@entities/game';
 import type { Issue } from '@entities/issue';
 import type { GameParticipant } from '@entities/participant';
 import { ParticipantRole } from '@entities/participant';
-import { getVotingSystemDeck, getVotingSystemLabel } from '@shared/model/voting';
+import { getVotingSystemDeck, getVotingSystemLabel } from '@entities/game';
 
 export type SidebarView = 'players' | 'issues';
 export type CopiedItem = 'code' | 'invite-link' | null;

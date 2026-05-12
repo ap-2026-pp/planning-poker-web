@@ -2,7 +2,7 @@ import { Stack } from '@mui/material';
 
 import type { GameParticipant } from '@entities/participant';
 import { ParticipantListItem } from './participant-list-item';
-import styles from '@widgets/game-room-sidebar/ui/game-room-sidebar.module.css';
+import styles from '@shared/ui/game-room-sidebar/game-room-players.module.css';
 
 type ParticipantsListProps = {
   participants: GameParticipant[];

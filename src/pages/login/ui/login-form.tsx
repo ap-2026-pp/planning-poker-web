@@ -3,8 +3,14 @@ import { Button, TextField } from '@mui/material';
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link as RouterLink, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
-import { buildAuthRedirectPath, getAuthReturnTo, useSession } from '@shared/auth';
-import { appRoutes } from '@shared/config/routes';
+import {
+  buildAuthRedirectPath,
+  getAuthExpectedEmail,
+  getAuthReturnTo,
+  isSessionExpiredRedirect,
+  useSession,
+} from '@shared/auth';
+import { appRoutes, isGameRoomRoute } from '@shared/config/routes';
 import { FormCard } from '@shared/ui/form-layout';
 import { validateSchema, type FormErrors } from '@shared/utils/yup';
 import { loginSchema } from '../model/login-schema';
@@ -30,9 +36,11 @@ const isAuthRoute = (path?: string) =>
 export const LoginForm = () => {
   const navigate = useNavigate();
   const { search, state } = useLocation();
-  const { login, isAuthenticated, status } = useSession();
+  const { login, isAuthenticated, status, user } = useSession();
 
   const returnTo = getAuthReturnTo(search);
+  const expectedEmail = getAuthExpectedEmail(search);
+  const isSessionExpired = isSessionExpiredRedirect(search);
   const from = (state as LocationState | null)?.from;
   const safeFrom = isAuthRoute(from) ? undefined : from;
   const fallbackPath = returnTo || safeFrom || appRoutes.home;
@@ -41,11 +49,29 @@ export const LoginForm = () => {
 
   const [values, setValues] = useState<LoginFormValues>(initialValues);
   const [errors, setErrors] = useState<FormErrors<LoginFormValues>>({});
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(
+    isSessionExpired ? 'Сесія в кімнаті закінчилась. Увійдіть знову, щоб продовжити.' : null,
+  );
   const [submitting, setSubmitting] = useState(false);
 
+  const resolvePostLoginPath = (email: string | null | undefined) => {
+    const normalizedEmail = email?.trim().toLowerCase();
+    const normalizedExpectedEmail = expectedEmail?.trim().toLowerCase();
+
+    if (
+      isSessionExpired &&
+      returnTo &&
+      isGameRoomRoute(returnTo) &&
+      (!normalizedExpectedEmail || normalizedEmail !== normalizedExpectedEmail)
+    ) {
+      return appRoutes.myGames;
+    }
+
+    return fallbackPath;
+  };
+
   if (status !== 'loading' && isAuthenticated) {
-    return <Navigate to={fallbackPath} replace />;
+    return <Navigate to={resolvePostLoginPath(user?.email ?? values.email)} replace />;
   }
 
   const handleClose = () => {
@@ -75,7 +101,7 @@ export const LoginForm = () => {
 
       await login(values);
 
-      await navigate(fallbackPath, {
+      await navigate(resolvePostLoginPath(values.email), {
         replace: true,
       });
     } catch (error) {

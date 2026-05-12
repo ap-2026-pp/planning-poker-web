@@ -1,7 +1,7 @@
 import Groups2RoundedIcon from '@mui/icons-material/Groups2Rounded';
 import { Box, Typography } from '@mui/material';
 
-import styles from '@widgets/game-room-sidebar/ui/game-room-sidebar.module.css';
+import styles from '@shared/ui/game-room-sidebar/game-room-players.module.css';
 
 export const ParticipantsEmptyState = () => {
   return (

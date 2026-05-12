@@ -5,7 +5,7 @@ import UploadRoundedIcon from '@mui/icons-material/UploadRounded';
 import { IconButton, Menu, MenuItem } from '@mui/material';
 import { useState } from 'react';
 
-import styles from '@widgets/game-room-sidebar/ui/game-room-sidebar.module.css';
+import styles from '@shared/ui/game-room-sidebar/game-room-issues.module.css';
 
 type IssuesActionsMenuProps = {
     isCurrentParticipantMaster: boolean;

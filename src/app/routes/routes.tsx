@@ -41,8 +41,8 @@ const withSuspense = (element: React.ReactNode) => (
   </Suspense>
 );
 
-const withProtectedSuspense = (element: React.ReactNode) => (
-  <ProtectedRoute>
+const withProtectedSuspense = (element: React.ReactNode, options?: { allowGuest?: boolean }) => (
+  <ProtectedRoute allowGuest={options?.allowGuest}>
     <Suspense fallback={<RouterFallback />}>
       {element}
     </Suspense>
@@ -89,7 +89,7 @@ export const AppRoutes = () =>
         },
         {
           path: 'games/:gameId',
-          element: withProtectedSuspense(<GameRoomPage />),
+          element: withProtectedSuspense(<GameRoomPage />, { allowGuest: true }),
         },
         {
           path: 'games/:gameId/history',

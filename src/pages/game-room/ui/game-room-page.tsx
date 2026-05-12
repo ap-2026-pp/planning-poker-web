@@ -2,10 +2,10 @@ import { Alert, Box, Dialog, Drawer, Snackbar, Stack } from '@mui/material';
 import { useCallback, useEffect, useState, type MouseEvent } from 'react';
 
 import { ConnectionStatus } from '@features/connection-status';
+import { GameForm } from '@features/game-settings';
 import { GameRoomInviteDialog, GameRoomQrDialog } from '@widgets/game-room-invite';
 import { GameRoomSidebar } from '@widgets/game-room-sidebar';
 import { GameRoomSurface } from '@widgets/game-room-surface';
-import { GameForm } from '@pages/create-game/ui/game-form';
 import { useGameRoomPage } from '../model/use-game-room-page';
 import styles from './game-room-page.module.css';
 

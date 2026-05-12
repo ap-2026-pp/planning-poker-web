@@ -1,9 +1,14 @@
 import axios, { AxiosHeaders, type AxiosError, type AxiosRequestConfig, type InternalAxiosRequestConfig } from 'axios';
 
 import { env } from '@shared/config/env';
-import { getGuestAccessToken, getStoredSession, getValidAccessToken, refreshStoredSession } from '@shared/auth';
+import {
+  getValidAccessToken,
+  invalidateGuestSession,
+  invalidateStoredSession,
+  refreshStoredSession,
+} from '@shared/auth/session-refresh';
+import { getGuestAccessToken, getStoredSession } from '@shared/auth/token-storage';
 import { isApiEnvelope } from '@shared/model/api';
-import { invalidateStoredSession } from '../auth/session-refresh';
 
 const apiClient = axios.create({
   baseURL: env.apiUrl,
@@ -32,8 +37,13 @@ const setAuthorizationHeader = (
 };
 
 apiClient.interceptors.request.use(async (config) => {
+  let accessToken: string | null = null;
 
-  const accessToken = await getValidAccessToken();
+  try {
+    accessToken = await getValidAccessToken();
+  } catch {
+    accessToken = null;
+  }
 
   const guestAccessToken = getGuestAccessToken();
 
@@ -57,13 +67,6 @@ apiClient.interceptors.response.use(
       response.data = response.data.data;
     }
     return response;
-  },
-
-  (error) => {
-    if (error.response?.status === 401) {
-      invalidateStoredSession();
-    }
-    return Promise.reject(error);
   },
 );
 
@@ -116,6 +119,30 @@ apiClient.interceptors.response.use(
         }
       } catch {
         // handled by session refresh manager
+      }
+
+      const guestAccessToken = getGuestAccessToken();
+
+      if (guestAccessToken) {
+        setAuthorizationHeader(originalRequest, guestAccessToken);
+        return apiClient(originalRequest);
+      }
+    }
+
+    if (isUnauthorized) {
+      const hasStoredSession = Boolean(getStoredSession());
+      const hasGuestSession = Boolean(getGuestAccessToken());
+
+      if (hasStoredSession) {
+        invalidateStoredSession();
+      }
+
+      if (hasGuestSession) {
+        invalidateGuestSession();
+      }
+
+      if (!hasStoredSession && !hasGuestSession) {
+        invalidateStoredSession();
       }
     }
 

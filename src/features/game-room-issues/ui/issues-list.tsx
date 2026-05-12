@@ -16,7 +16,7 @@ import { Stack } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 
 import type { Issue } from '@entities/issue';
-import styles from '@widgets/game-room-sidebar/ui/game-room-sidebar.module.css';
+import styles from '@shared/ui/game-room-sidebar/game-room-issues.module.css';
 import { SortableIssueCard } from './sortable-issue-card';
 
 type IssuesListProps = {
