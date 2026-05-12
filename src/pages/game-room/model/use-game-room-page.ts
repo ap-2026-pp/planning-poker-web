@@ -9,6 +9,7 @@ import {
   createIssueRequest,
   deleteGameParticipantRequest,
   deleteIssueRequest,
+  exportIssuesToCsvRequest,
   getGameInviteRequest,
   getGameRequest,
   getIssuesRequest,
@@ -766,6 +767,188 @@ export const useGameRoomPage = () => {
     [gameId],
   );
 
+  const htmlToPlainText = (value: string) => {
+    if (!value) {
+      return '';
+    }
+
+    const normalizedValue = value
+      .replace(/&nbsp;/g, ' ')
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/p>/gi, '\n');
+
+    if (typeof window === 'undefined') {
+      return normalizedValue
+        .replace(/<[^>]*>/g, '')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+    }
+
+    const parser = new DOMParser();
+    const document = parser.parseFromString(normalizedValue, 'text/html');
+
+    return (document.body.textContent ?? '')
+      .replace(/\u00A0/g, ' ')
+      .replace(/[ \t]+\n/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  };
+
+  const escapeCsvValue = (value: string) => {
+    const escapedValue = value.replace(/"/g, '""');
+
+    return /["\r\n,]/.test(escapedValue) ? `"${escapedValue}"` : escapedValue;
+  };
+
+  const parseCsvText = (csvText: string) => {
+    const rows: string[][] = [];
+    let currentRow: string[] = [];
+    let currentValue = '';
+    let inQuotes = false;
+
+    for (let index = 0; index < csvText.length; index += 1) {
+      const char = csvText[index];
+      const nextChar = csvText[index + 1];
+
+      if (char === '"') {
+        if (inQuotes && nextChar === '"') {
+          currentValue += '"';
+          index += 1;
+          continue;
+        }
+
+        inQuotes = !inQuotes;
+        continue;
+      }
+
+      if (char === ',' && !inQuotes) {
+        currentRow.push(currentValue);
+        currentValue = '';
+        continue;
+      }
+
+      if (char === '\r') {
+        continue;
+      }
+
+      if (char === '\n' && !inQuotes) {
+        currentRow.push(currentValue);
+        rows.push(currentRow);
+        currentRow = [];
+        currentValue = '';
+        continue;
+      }
+
+      currentValue += char;
+    }
+
+    if (currentValue || currentRow.length > 0) {
+      currentRow.push(currentValue);
+      rows.push(currentRow);
+    }
+
+    return rows;
+  };
+
+  const normalizeCsvDescription = async (
+    csvBlob: Blob,
+    descriptionColumnName: string,
+  ) => {
+    const csvText = await csvBlob.text();
+    const rows = parseCsvText(csvText);
+
+    if (!rows.length) {
+      return csvBlob;
+    }
+
+    const headerRow = rows[0];
+
+    const descriptionColumnIndex = headerRow.findIndex(
+      (column) =>
+        column.trim().toLowerCase() === descriptionColumnName.trim().toLowerCase(),
+    );
+
+    if (descriptionColumnIndex === -1) {
+      return csvBlob;
+    }
+
+    const normalizedRows = rows.map((row, rowIndex) => {
+      if (rowIndex === 0) {
+        return row;
+      }
+
+      if (row.length <= descriptionColumnIndex) {
+        return row;
+      }
+
+      const normalizedRow = [...row];
+
+      normalizedRow[descriptionColumnIndex] = htmlToPlainText(
+        normalizedRow[descriptionColumnIndex],
+      );
+
+      return normalizedRow;
+    });
+
+    const normalizedCsv = normalizedRows
+      .map((row) => row.map((cell) => escapeCsvValue(cell ?? '')).join(','))
+      .join('\r\n');
+
+    return new Blob([`\uFEFF${normalizedCsv}`], {
+      type: 'text/csv;charset=utf-8;',
+    });
+  };
+
+  const downloadBlob = (blob: Blob, fileName: string) => {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = fileName;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    window.URL.revokeObjectURL(url);
+  };
+
+  const exportIssuesAsCsv = useCallback(async () => {
+    const exportPayload = {
+      summaryColumnName: 'Summary',
+      keyColumnName: 'Key',
+      descriptionColumnName: 'Description',
+      linkColumnName: 'Link',
+      estimateColumnName: 'Estimate',
+    };
+
+    try {
+      const csvBlob = await exportIssuesToCsvRequest(gameId, exportPayload);
+
+      const normalizedCsvBlob = await normalizeCsvDescription(
+        csvBlob,
+        exportPayload.descriptionColumnName,
+      );
+
+      const date = new Date().toISOString().split('T')[0];
+
+      downloadBlob(normalizedCsvBlob, `issues-${gameId}-${date}.csv`);
+
+      setNotification({
+        message: 'Issues експортовано',
+        tone: 'success',
+      });
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : 'Не вдалося експортувати issues',
+      );
+
+      throw requestError;
+    }
+  }, [gameId]);
+
   const setIssueActive = useCallback(
     async (issueId: string) => {
       const previousIssues = issuesRef.current;
@@ -935,6 +1118,7 @@ export const useGameRoomPage = () => {
     reorderIssue,
     reorderIssues,
     importIssuesFromPlane,
+    exportIssuesAsCsv,
     sidebarParticipants,
     sortedParticipants,
     sortedIssues,

@@ -28,3 +28,11 @@ export type ImportPlaneIssuesPayload = {
   projectUrl: string;
 };
 
+export type ExportIssuesRequestDto = {
+  summaryColumnName?: string;
+  keyColumnName?: string;
+  descriptionColumnName?: string;
+  linkColumnName?: string;
+  estimateColumnName?: string;
+};
+

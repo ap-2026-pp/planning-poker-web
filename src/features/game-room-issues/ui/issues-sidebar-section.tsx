@@ -21,6 +21,7 @@ type IssuesSidebarSectionProps = {
     ) => Promise<void>;
     onDeleteIssue?: (issueId: string) => Promise<void>;
     onDeleteAllIssues?: () => Promise<void>;
+    onExportIssuesAsCsv?: () => Promise<void>;
     onImportIssuesFromPlane?: (payload: ImportPlaneIssuesPayload) => Promise<void>;
     onSetIssueActive?: (issueId: string) => Promise<void>;
     onMoveIssue?: (issueId: string, direction: 'up' | 'down') => Promise<void>;
@@ -42,6 +43,7 @@ export const IssuesSidebarSection = ({
     onUpdateIssue,
     onDeleteIssue,
     onDeleteAllIssues,
+    onExportIssuesAsCsv,
     onImportIssuesFromPlane,
     onSetIssueActive,
     onMoveIssue,
@@ -185,6 +187,7 @@ export const IssuesSidebarSection = ({
                         isCurrentParticipantMaster={canManageIssues}
                         hasIssues={visibleIssues.length > 0}
                         onDeleteAllIssues={onDeleteAllIssues}
+                        onExportIssuesAsCsv={onExportIssuesAsCsv}
                         onOpenImportPlaneDialog={() => {
                             setImportPlaneError(null);
                             setImportPlaneOpen(true);

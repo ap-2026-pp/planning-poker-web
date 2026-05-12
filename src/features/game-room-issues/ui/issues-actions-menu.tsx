@@ -11,6 +11,7 @@ type IssuesActionsMenuProps = {
     isCurrentParticipantMaster: boolean;
     hasIssues: boolean;
     onDeleteAllIssues?: () => Promise<void>;
+    onExportIssuesAsCsv?: () => Promise<void>;
     onOpenImportPlaneDialog?: () => void;
 };
 
@@ -18,10 +19,12 @@ export const IssuesActionsMenu = ({
     isCurrentParticipantMaster,
     hasIssues,
     onDeleteAllIssues,
+    onExportIssuesAsCsv,
     onOpenImportPlaneDialog,
 }: IssuesActionsMenuProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isExporting, setIsExporting] = useState(false);
 
     if (!isCurrentParticipantMaster) {
         return null;
@@ -51,6 +54,21 @@ export const IssuesActionsMenu = ({
         onOpenImportPlaneDialog?.();
     };
 
+    const handleExportIssuesAsCsv = async () => {
+        if (!onExportIssuesAsCsv || !hasIssues || isExporting) {
+            return;
+        }
+
+        setIsExporting(true);
+
+        try {
+            await onExportIssuesAsCsv();
+            closeMenu();
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
     return (
         <>
             <IconButton
@@ -67,9 +85,13 @@ export const IssuesActionsMenu = ({
                 onClose={closeMenu}
                 PaperProps={{ className: styles.issuesMenuPaper }}
             >
-                <MenuItem className={styles.issuesMenuItem} onClick={closeMenu}>
+                <MenuItem 
+                    className={styles.issuesMenuItem} 
+                    disabled={!hasIssues || isExporting}
+                    onClick={() => void handleExportIssuesAsCsv()}
+                >
                     <DownloadRoundedIcon fontSize="small" />
-                    <span>Download issues as CSV</span>
+                    <span>{isExporting ? 'Exporting...' : 'Download issues as CSV'}</span>
                 </MenuItem>
 
                 <MenuItem className={styles.issuesMenuItem} onClick={handleOpenImport}>

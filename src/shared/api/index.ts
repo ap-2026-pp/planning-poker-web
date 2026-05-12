@@ -29,5 +29,6 @@ export {
   deleteIssueRequest,
   reorderIssuesRequest,
   importPlaneIssuesRequest,
+  exportIssuesToCsvRequest,
   setIssueActiveRequest,
 } from './games';

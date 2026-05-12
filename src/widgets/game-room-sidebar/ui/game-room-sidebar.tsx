@@ -29,6 +29,7 @@ type GameRoomSidebarProps = {
   ) => Promise<void>;
   onDeleteIssue?: (issueId: string) => Promise<void>;
   onDeleteAllIssues?: () => Promise<void>;
+  onExportIssuesAsCsv?: () => Promise<void>;
   onSetIssueActive?: (issueId: string) => Promise<void>;
   onMoveIssue?: (issueId: string, direction: 'up' | 'down') => Promise<void>;
   onReorderIssues?: (issueIds: string[]) => Promise<void>;
@@ -45,6 +46,7 @@ export const GameRoomSidebar = ({
   canRevealCards,
   pendingParticipantActionId,
   onDeleteAllIssues,
+  onExportIssuesAsCsv,
   onSidebarViewChange,
   onClose,
   onRemoveParticipant,
@@ -74,6 +76,7 @@ export const GameRoomSidebar = ({
           onUpdateIssue={onUpdateIssue}
           onDeleteIssue={onDeleteIssue}
           onDeleteAllIssues={onDeleteAllIssues}
+          onExportIssuesAsCsv={onExportIssuesAsCsv}
           onSetIssueActive={onSetIssueActive}
           onMoveIssue={onMoveIssue}
           onReorderIssues={onReorderIssues}

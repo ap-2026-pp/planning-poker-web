@@ -9,7 +9,7 @@ import type {
   UserGamesScope,
 } from '@entities/game';
 import type { VotingHistoryList } from '@entities/history';
-import type { ImportPlaneIssuesPayload, Issue } from '@entities/issue';
+import type { ExportIssuesRequestDto, ImportPlaneIssuesPayload, Issue } from '@entities/issue';
 import type { GameParticipant } from '@entities/participant';
 
 import { clearCurrentRoomParticipantSession, clearGuestAccessToken } from '@shared/auth';
@@ -122,4 +122,13 @@ export const importPlaneIssuesRequest = (
   apiClientService.post<Issue[], ImportPlaneIssuesPayload>(
     `/games/${gameId}/issues/import-plane`,
     payload,
+  );
+
+export const exportIssuesToCsvRequest = (gameId: string, payload: ExportIssuesRequestDto = {}) =>
+  apiClientService.post<Blob, ExportIssuesRequestDto>(
+    `/games/${gameId}/issues/export-csv`,
+    payload,
+    {
+      responseType: 'blob',
+    }
   );
