@@ -11,6 +11,7 @@ type ParticipantCardProps = {
     isCurrentParticipantMaster: boolean;
     isSelected: boolean;
     isPending: boolean;
+    areVotesRevealed?: boolean;
     left?: string;
     top?: string;
     compact?: boolean;
@@ -25,6 +26,7 @@ export const ParticipantCard = ({
     isCurrentParticipantMaster,
     isSelected,
     isPending,
+    areVotesRevealed = false,
     left,
     top,
     compact = false,
@@ -55,7 +57,7 @@ export const ParticipantCard = ({
         }
     ).voteValue;
 
-    const votePreviewState = voteValue ? 'hidden' : 'empty';
+    const votePreviewState = voteValue ? (areVotesRevealed ? 'revealed' : 'hidden') : 'empty';
 
     return (
         <Box

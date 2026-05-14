@@ -6,16 +6,16 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Box, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material';
-import { useMemo, useState } from 'react';
+import { useState, type MouseEvent } from 'react';
 
 import { getIssueToneIndex, type Issue } from '@entities/issue';
 import styles from '@shared/ui/game-room-sidebar/game-room-issues.module.css';
 
 type SortableIssueCardProps = {
     issue: Issue;
-    index: number;
     canManageIssues: boolean;
     canRevealCards: boolean;
+    isSortableEnabled: boolean;
     isFirst: boolean;
     isLast: boolean;
     onEditIssue: (issue: Issue) => void;
@@ -36,6 +36,7 @@ export const SortableIssueCard = ({
     issue,
     canManageIssues,
     canRevealCards,
+    isSortableEnabled,
     isFirst,
     isLast,
     onEditIssue,
@@ -44,11 +45,6 @@ export const SortableIssueCard = ({
     onMoveIssue,
 }: SortableIssueCardProps) => {
     const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
-
-    const toneIndex = useMemo(
-        () => getIssueToneIndex(issue),
-        [issue.id, issue.code, issue.title],
-    );
 
     const {
         attributes,
@@ -59,14 +55,13 @@ export const SortableIssueCard = ({
         isDragging,
     } = useSortable({
         id: issue.id,
-        disabled: !canManageIssues,
+        disabled: !isSortableEnabled,
         animateLayoutChanges,
     });
 
     const style = {
         transform: transform ? CSS.Translate.toString(transform) : undefined,
         transition: isDragging ? 'none' : transition,
-        zIndex: isDragging ? 9999 : undefined,
     };
 
     const handleOpenIssue = () => {
@@ -88,75 +83,24 @@ export const SortableIssueCard = ({
                     .trim()}
                 onClick={handleOpenIssue}
             >
-                <Stack direction="row" className={styles.issueHeader}>
-                    <span
-                        className={[
-                            styles.issueDot,
-                            styles[`issueTone${toneIndex}`],
-                        ]
-                            .join(' ')
-                            .trim()}
-                    />
-
-                    <Stack
-                        className={styles.issueText}
-                        {...(canManageIssues ? attributes : {})}
-                        {...(canManageIssues ? listeners : {})}
-                    >
-                        <Typography className={styles.issueTitle}>{issue.title}</Typography>
-                    </Stack>
-
-                    {canManageIssues ? (
-                        <IconButton
-                            className={styles.issueCardMenuButton}
-                            onClick={(event) => {
-                                event.stopPropagation();
-                                setMenuAnchor(event.currentTarget);
-                            }}
-                            aria-label={`Дії для ${issue.title}`}
-                        >
-                            <MoreVertRoundedIcon fontSize="small" />
-                        </IconButton>
-                    ) : null}
-                </Stack>
-
-                <Box className={styles.issueFooter}>
-                    <Box className={styles.issueFooterActions}>
-                        {canRevealCards ? (
-                            <button
-                                type="button"
-                                className={[
-                                    styles.issueVoteButton,
-                                    issue.isCurrent ? styles.issueVoteButtonActive : '',
-                                ]
-                                    .join(' ')
-                                    .trim()}
-                                onClick={(event) => {
-                                    event.stopPropagation();
-                                    void onSetIssueActive?.(issue.id);
-                                }}
-                            >
-                                {issue.isCurrent ? 'Зупинити оцінювання' : 'Почати оцінювати'}
-                            </button>
-                        ) : null}
-
-                        {issue.code ? (
-                            <Box className={styles.issueCodeBadge}>{issue.code}</Box>
-                        ) : null}
-                    </Box>
-                </Box>
-
-                {(issue.isCurrent || issue.finalEstimate) && (
-                    <Box className={styles.issueEstimatePanel}>
-                        <Typography className={styles.issueEstimateLabel}>
-                            {issue.isCurrent ? 'Поточна оцінка' : 'Фінальна оцінка'}
-                        </Typography>
-
-                        <Typography className={styles.issueEstimateValue}>
-                            {issue.finalEstimate ?? '—'}
-                        </Typography>
-                    </Box>
-                )}
+                <IssueCardContent
+                    issue={issue}
+                    canManageIssues={canManageIssues}
+                    canRevealCards={canRevealCards}
+                    showMenuButton={canManageIssues}
+                    dragHandleProps={
+                        isSortableEnabled
+                            ? { ...attributes, ...listeners }
+                            : undefined
+                    }
+                    onOpenMenu={(event) => {
+                        event.stopPropagation();
+                        setMenuAnchor(event.currentTarget);
+                    }}
+                    onSetIssueActive={() => {
+                        void onSetIssueActive?.(issue.id);
+                    }}
+                />
             </Box>
 
             <Menu
@@ -219,3 +163,108 @@ export const SortableIssueCard = ({
         </>
     );
 };
+
+type IssueCardContentProps = {
+    issue: Issue;
+    canManageIssues: boolean;
+    canRevealCards: boolean;
+    showMenuButton?: boolean;
+    dragHandleProps?: Record<string, unknown>;
+    onOpenMenu?: (event: MouseEvent<HTMLButtonElement>) => void;
+    onSetIssueActive?: () => void;
+};
+
+const IssueCardContent = ({
+    issue,
+    canManageIssues,
+    canRevealCards,
+    showMenuButton = false,
+    dragHandleProps,
+    onOpenMenu,
+    onSetIssueActive,
+}: IssueCardContentProps) => {
+    const toneIndex = getIssueToneIndex(issue);
+
+    return (
+        <>
+            <Stack direction="row" className={styles.issueHeader}>
+                <span
+                    className={[
+                        styles.issueDot,
+                        styles[`issueTone${toneIndex}`],
+                    ]
+                        .join(' ')
+                        .trim()}
+                />
+
+                <Stack className={styles.issueText} {...(dragHandleProps ?? {})}>
+                    <Typography className={styles.issueTitle}>{issue.title}</Typography>
+                </Stack>
+
+                {showMenuButton && canManageIssues ? (
+                    <IconButton
+                        className={styles.issueCardMenuButton}
+                        onClick={onOpenMenu}
+                        aria-label={`Дії для ${issue.title}`}
+                    >
+                        <MoreVertRoundedIcon fontSize="small" />
+                    </IconButton>
+                ) : null}
+            </Stack>
+
+            <Box className={styles.issueFooter}>
+                <Box className={styles.issueFooterActions}>
+                    {canRevealCards ? (
+                        <button
+                            type="button"
+                            className={[
+                                styles.issueVoteButton,
+                                issue.isCurrent ? styles.issueVoteButtonActive : '',
+                            ]
+                                .join(' ')
+                                .trim()}
+                            onClick={(event) => {
+                                event.stopPropagation();
+                                onSetIssueActive?.();
+                            }}
+                        >
+                            {issue.isCurrent ? 'Зупинити оцінювання' : 'Почати оцінювати'}
+                        </button>
+                    ) : null}
+
+                    {issue.code ? <Box className={styles.issueCodeBadge}>{issue.code}</Box> : null}
+                </Box>
+            </Box>
+
+            {(issue.isCurrent || issue.finalEstimate) && (
+                <Box className={styles.issueEstimatePanel}>
+                    <Typography className={styles.issueEstimateLabel}>
+                        {issue.isCurrent ? 'Поточна оцінка' : 'Фінальна оцінка'}
+                    </Typography>
+
+                    <Typography className={styles.issueEstimateValue}>
+                        {issue.finalEstimate ?? '—'}
+                    </Typography>
+                </Box>
+            )}
+        </>
+    );
+};
+
+type IssueDragOverlayCardProps = {
+    issue: Issue;
+    canRevealCards: boolean;
+};
+
+export const IssueDragOverlayCard = ({
+    issue,
+    canRevealCards,
+}: IssueDragOverlayCardProps) => (
+    <Box className={[styles.issueCard, styles.issueCardOverlay].join(' ')}>
+        <IssueCardContent
+            issue={issue}
+            canManageIssues={false}
+            canRevealCards={canRevealCards}
+        />
+    </Box>
+);

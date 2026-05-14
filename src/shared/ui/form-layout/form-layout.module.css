@@ -29,24 +29,24 @@
 }
 
 .backdrop::before {
-    top: 10%;
-    left: 10%;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle,
-            rgba(153, 81, 255, 0.16) 0%,
-            rgba(153, 81, 255, 0.08) 38%,
+  top: 10%;
+  left: 10%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle,
+            rgba(var(--pp-accent-rgb), 0.18) 0%,
+            rgba(var(--pp-accent-rgb), 0.08) 38%,
             transparent 74%);
 }
 
 .backdrop::after {
-    right: 8%;
-    bottom: 8%;
-    width: 360px;
-    height: 360px;
-    background: radial-gradient(circle,
-            rgba(44, 104, 226, 0.14) 0%,
-            rgba(44, 104, 226, 0.06) 36%,
+  right: 8%;
+  bottom: 8%;
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(circle,
+            rgba(var(--pp-companion-rgb), 0.16) 0%,
+            rgba(var(--pp-companion-rgb), 0.07) 36%,
             transparent 76%);
 }
 
@@ -86,9 +86,10 @@
     inset: -18px;
     border-radius: 48px;
     border: 1px solid var(--pp-surface-border);
-    background: linear-gradient(180deg,
-            rgba(255, 255, 255, 0.02) 0%,
-            rgba(255, 255, 255, 0) 100%);
+    background: transparent;
+    box-shadow:
+        0 0 0 1px rgba(var(--pp-accent-rgb), 0.06),
+        0 34px 72px rgba(9, 12, 24, 0.12);
     pointer-events: none;
 }
 
@@ -106,7 +107,8 @@
     border-radius: 40px;
     border: 1px solid var(--pp-surface-border);
     background: var(--pp-surface-panel-strong);
-    box-shadow: var(--pp-surface-shadow);
+    box-shadow: var(--pp-card-lift-shadow-strong);
+    backdrop-filter: blur(18px);
 
     --form-accent-label: var(--pp-accent-text);
     --form-accent-border: var(--pp-accent-border-strong);
@@ -119,27 +121,11 @@
 }
 
 .card::before {
-    content: '';
-    position: absolute;
-    top: -92px;
-    right: -48px;
-    width: 240px;
-    height: 240px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(var(--pp-accent-rgb), 0.2) 0%, transparent 72%);
-    pointer-events: none;
+    display: none;
 }
 
 .card::after {
-    content: '';
-    position: absolute;
-    inset: auto 24px 0;
-    height: 1px;
-    background: linear-gradient(90deg,
-            transparent 0%,
-            rgba(255, 255, 255, 0.12) 50%,
-            transparent 100%);
-    pointer-events: none;
+    display: none;
 }
 
 .cardAccentBlue {
@@ -300,14 +286,14 @@
 }
 
 .title {
-    color: var(--pp-color-text-inverse) !important;
+    color: var(--pp-color-text-primary) !important;
     font-size: 2rem !important;
     line-height: 1.08 !important;
     font-weight: 800 !important;
 }
 
 .subtitle {
-    color: var(--pp-color-text-inverse-muted) !important;
+    color: var(--pp-color-text-secondary) !important;
     font-size: 0.98rem !important;
     line-height: 1.55 !important;
 }
@@ -339,7 +325,7 @@
 }
 
 .field :global(.MuiInputLabel-root) {
-    color: var(--pp-color-text-inverse-muted) !important;
+    color: var(--pp-color-text-secondary) !important;
 }
 
 .field :global(.MuiInputLabel-root.Mui-focused) {
@@ -347,7 +333,7 @@
 }
 
 .field :global(.MuiOutlinedInput-root) {
-    color: var(--pp-color-text-inverse) !important;
+    color: var(--pp-color-text-primary) !important;
     border-radius: 18px !important;
     background: var(--pp-surface-soft) !important;
     transition:
@@ -377,7 +363,7 @@
 }
 
 .field :global(.MuiOutlinedInput-input::placeholder) {
-    color: var(--pp-color-text-inverse-muted);
+    color: var(--pp-color-text-secondary);
     opacity: 1;
 }
 
@@ -387,16 +373,25 @@
 }
 
 .field :global(.MuiOutlinedInput-root.Mui-disabled) {
-    color: rgba(248, 245, 255, 0.7) !important;
-    background: rgba(255, 255, 255, 0.035) !important;
+    color: color-mix(in srgb, var(--pp-color-text-primary) 72%, transparent) !important;
+    background: color-mix(in srgb, var(--pp-surface-soft) 82%, transparent) !important;
 }
 
 .field :global(.MuiInputBase-input.Mui-disabled) {
-    -webkit-text-fill-color: rgba(248, 245, 255, 0.7) !important;
+    -webkit-text-fill-color: color-mix(in srgb, var(--pp-color-text-primary) 72%, transparent) !important;
 }
 
 .field :global(.MuiInputLabel-root.Mui-disabled) {
-    color: rgba(226, 220, 245, 0.48) !important;
+    color: color-mix(in srgb, var(--pp-color-text-secondary) 68%, transparent) !important;
+}
+
+.field :global(.MuiIconButton-root) {
+    color: var(--pp-color-text-secondary) !important;
+}
+
+.field :global(.MuiIconButton-root:hover) {
+    color: var(--pp-accent-text) !important;
+    background: var(--pp-accent-soft) !important;
 }
 
 .actions {
@@ -455,15 +450,15 @@
     width: 34px;
     height: 34px;
     padding: 4px !important;
-    color: rgba(248, 245, 255, 0.72) !important;
+    color: var(--pp-color-text-secondary) !important;
     background: transparent !important;
     border: none !important;
     border-radius: 999px !important;
 }
 
 .closeButton:hover {
-    color: #ffffff !important;
-    background: rgba(255, 255, 255, 0.06) !important;
+    color: var(--pp-color-text-primary) !important;
+    background: var(--pp-accent-soft) !important;
 }
 
 
@@ -570,7 +565,10 @@
 }
 
 .dialogBackdrop {
-  background: rgba(3, 5, 14, 0.74) !important;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(var(--pp-accent-rgb), 0.12), transparent 30%),
+    radial-gradient(circle at 82% 78%, rgba(var(--pp-companion-rgb), 0.1), transparent 32%),
+    rgba(3, 5, 14, 0.74) !important;
   backdrop-filter: blur(10px);
 }
 

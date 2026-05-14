@@ -1,6 +1,7 @@
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
+import PaletteRoundedIcon from '@mui/icons-material/PaletteRounded';
 import {
   AppBar,
   Avatar,
@@ -135,6 +136,15 @@ export const HeroHeader = ({
                 </Stack>
               ) : (
                 <Stack direction="row" spacing={2} alignItems="center">
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    startIcon={<PaletteRoundedIcon />}
+                    className={[styles.outlineButton, styles.themeButton].join(' ')}
+                    onClick={handleOpenThemeMenu}
+                  >
+                    Вигляд
+                  </Button>
                   <Button
                     component={RouterLink}
                     to={appRoutes.login}

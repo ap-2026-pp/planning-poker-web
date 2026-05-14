@@ -1,17 +1,27 @@
+import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import { Box } from '@mui/material';
+import type { MouseEvent } from 'react';
 
 import styles from './game-room-surface.module.css';
 
 type SurfaceMetaBarProps = {
   onlineParticipantsCount: number;
   showSettings: boolean;
+  showTimerControl: boolean;
+  timerLabel: string;
+  isTimerActive: boolean;
+  onOpenTimerMenu: (event: MouseEvent<HTMLButtonElement>) => void;
   onOpenGameSettings: () => void;
 };
 
 export const SurfaceMetaBar = ({
   onlineParticipantsCount,
   showSettings,
+  showTimerControl,
+  timerLabel,
+  isTimerActive,
+  onOpenTimerMenu,
   onOpenGameSettings,
 }: SurfaceMetaBarProps) => (
   <Box className={styles.surfaceTopBar}>
@@ -29,6 +39,21 @@ export const SurfaceMetaBar = ({
         >
           <SettingsRoundedIcon className={styles.settingsPillIcon} />
           <span>Налаштування</span>
+        </button>
+      ) : null}
+
+      {showTimerControl ? (
+        <button
+          type="button"
+          className={[
+            styles.timerPillButton,
+            isTimerActive ? styles.timerPillButtonActive : '',
+          ].join(' ').trim()}
+          onClick={onOpenTimerMenu}
+          aria-label="Налаштувати таймер"
+        >
+          <AccessTimeRoundedIcon className={styles.settingsPillIcon} />
+          <span>{timerLabel}</span>
         </button>
       ) : null}
     </Box>

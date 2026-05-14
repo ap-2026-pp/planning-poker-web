@@ -3,81 +3,81 @@
 
   --pp-color-white: #ffffff;
 
-  --pp-color-green: #38b975;
-  --pp-color-green-strong: #188c55;
-  --pp-color-orange: #f0a543;
-  --pp-color-orange-strong: #d66f24;
-  --pp-color-danger: #ff6081;
+  --pp-color-green: #62b883;
+  --pp-color-green-strong: #4b9568;
+  --pp-color-orange: #d9a05f;
+  --pp-color-orange-strong: #bc7f46;
+  --pp-color-danger: #df8198;
 }
 
 :root,
 :root[data-accent='blue'] {
-  --pp-accent-main: #347be5;
-  --pp-accent-light: #64adff;
-  --pp-accent-strong: #256dce;
-  --pp-accent-rgb: 52, 123, 229;
+  --pp-accent-main: #6f9fda;
+  --pp-accent-light: #a0c2ec;
+  --pp-accent-strong: #5685c6;
+  --pp-accent-rgb: 111, 159, 218;
   --pp-accent-contrast: #ffffff;
   --pp-accent-soft: rgba(var(--pp-accent-rgb), 0.12);
   --pp-accent-softer: rgba(var(--pp-accent-rgb), 0.07);
   --pp-accent-border: rgba(var(--pp-accent-rgb), 0.28);
   --pp-accent-border-strong: rgba(var(--pp-accent-rgb), 0.54);
   --pp-accent-shadow: rgba(var(--pp-accent-rgb), 0.24);
-  --pp-companion-main: #a66fff;
-  --pp-companion-light: #c399ff;
-  --pp-companion-strong: #8b56f6;
-  --pp-companion-rgb: 166, 111, 255;
+  --pp-companion-main: #a98cf0;
+  --pp-companion-light: #c7b7f7;
+  --pp-companion-strong: #8d72d8;
+  --pp-companion-rgb: 169, 140, 240;
   --pp-companion-contrast: #ffffff;
 }
 
 :root[data-accent='purple'] {
-  --pp-accent-main: #a66fff;
-  --pp-accent-light: #c399ff;
-  --pp-accent-strong: #8b56f6;
-  --pp-accent-rgb: 166, 111, 255;
+  --pp-accent-main: #9b7bea;
+  --pp-accent-light: #c4aff7;
+  --pp-accent-strong: #8065d4;
+  --pp-accent-rgb: 155, 123, 234;
   --pp-accent-contrast: #ffffff;
-  --pp-companion-main: #347be5;
-  --pp-companion-light: #64adff;
-  --pp-companion-strong: #256dce;
-  --pp-companion-rgb: 52, 123, 229;
+  --pp-companion-main: #78a8dd;
+  --pp-companion-light: #a8caee;
+  --pp-companion-strong: #5d8fca;
+  --pp-companion-rgb: 120, 168, 221;
   --pp-companion-contrast: #ffffff;
 }
 
 :root[data-accent='green'] {
-  --pp-accent-main: #38b975;
-  --pp-accent-light: #58d996;
-  --pp-accent-strong: #188c55;
-  --pp-accent-rgb: 56, 185, 117;
+  --pp-accent-main: #62b8bc;
+  --pp-accent-light: #95d7da;
+  --pp-accent-strong: #4a9397;
+  --pp-accent-rgb: 98, 184, 188;
   --pp-accent-contrast: #ffffff;
-  --pp-companion-main: #f0a543;
-  --pp-companion-light: #ffc16c;
-  --pp-companion-strong: #d66f24;
-  --pp-companion-rgb: 240, 165, 67;
-  --pp-companion-contrast: #1c1207;
+  --pp-companion-main: #a88fe1;
+  --pp-companion-light: #cfbef2;
+  --pp-companion-strong: #8770bf;
+  --pp-companion-rgb: 168, 143, 225;
+  --pp-companion-contrast: #ffffff;
 }
 
 :root[data-accent='orange'] {
-  --pp-accent-main: #f0a543;
-  --pp-accent-light: #ffc16c;
-  --pp-accent-strong: #d66f24;
-  --pp-accent-rgb: 240, 165, 67;
+  --pp-accent-main: #d9a05f;
+  --pp-accent-light: #efc68e;
+  --pp-accent-strong: #bc7f46;
+  --pp-accent-rgb: 217, 160, 95;
   --pp-accent-contrast: #1c1207;
-  --pp-companion-main: #347be5;
-  --pp-companion-light: #64adff;
-  --pp-companion-strong: #256dce;
-  --pp-companion-rgb: 52, 123, 229;
+  --pp-companion-main: #78a8dd;
+  --pp-companion-light: #a8caee;
+  --pp-companion-strong: #5d8fca;
+  --pp-companion-rgb: 120, 168, 221;
   --pp-companion-contrast: #ffffff;
 }
 
 :root[data-accent='rose'] {
-  --pp-accent-main: #ff6081;
-  --pp-accent-light: #ff91aa;
-  --pp-accent-strong: #d93b61;
-  --pp-accent-rgb: 255, 96, 129;
+  --pp-accent-main: #df8198;
+  --pp-accent-light: #f0adbb;
+  --pp-accent-strong: #c2647d;
+  --pp-accent-rgb: 223, 129, 152;
   --pp-accent-contrast: #ffffff;
-  --pp-companion-main: #38b975;
-  --pp-companion-light: #58d996;
-  --pp-companion-strong: #188c55;
-  --pp-companion-rgb: 56, 185, 117;
+  --pp-companion-main: #70ba88;
+  --pp-companion-light: #9bd5ad;
+  --pp-companion-strong: #53986b;
+  --pp-companion-rgb: 112, 186, 136;
   --pp-companion-contrast: #ffffff;
 }
 
@@ -94,12 +94,12 @@
 
   --pp-surface-dark: linear-gradient(
     180deg,
-    rgba(31, 33, 54, 0.94) 0%,
-    rgba(24, 25, 43, 0.92) 100%
+    rgba(28, 30, 38, 0.96) 0%,
+    rgba(19, 21, 28, 0.94) 100%
   );
   --pp-surface-dark-soft: rgba(255, 255, 255, 0.04);
   --pp-surface-dark-softer: rgba(255, 255, 255, 0.03);
-  --pp-surface-dark-focus: rgba(22, 16, 31, 0.92);
+  --pp-surface-dark-focus: rgba(29, 29, 29, 0.92);
   --pp-border-on-dark: rgba(255, 255, 255, 0.08);
   --pp-border-on-dark-strong: rgba(255, 255, 255, 0.12);
   --pp-shadow-panel: 0 28px 50px rgba(5, 8, 20, 0.32);
@@ -118,106 +118,107 @@
 
 :root,
 :root[data-theme='light'] {
-  --pp-color-text-primary: #0c2230;
-  --pp-color-text-secondary: #607789;
-  --pp-color-text-inverse: #0c2230;
-  --pp-color-text-inverse-muted: #607789;
+  --pp-color-text-primary: #162331;
+  --pp-color-text-secondary: #5f7285;
+  --pp-color-text-inverse: #162331;
+  --pp-color-text-inverse-muted: #667789;
 
   --pp-app-background:
-    radial-gradient(circle at 12% 12%, rgba(var(--pp-accent-rgb), 0.16), transparent 26%),
-    radial-gradient(circle at 84% 14%, rgba(108, 160, 166, 0.18), transparent 24%),
-    linear-gradient(180deg, #f3f8fc 0%, #e9f0f7 100%);
-  --pp-surface-panel: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(245, 247, 250, 0.92) 100%);
-  --pp-surface-panel-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.99) 0%, rgba(239, 243, 248, 0.96) 100%);
-  --pp-surface-panel-accent: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(var(--pp-accent-rgb), 0.1) 100%);
+    radial-gradient(circle at 12% 12%, rgba(var(--pp-accent-rgb), 0.08), transparent 28%),
+    radial-gradient(circle at 84% 14%, rgba(var(--pp-companion-rgb), 0.07), transparent 26%),
+    linear-gradient(180deg, #f7f8fa 0%, #eceff3 100%);
+  --pp-surface-panel: rgba(255, 255, 255, 0.94);
+  --pp-surface-panel-strong: rgba(251, 252, 254, 0.98);
+  --pp-surface-panel-accent: color-mix(in srgb, var(--pp-accent-main) 8%, #ffffff);
   --pp-surface-soft: rgba(12, 34, 48, 0.04);
   --pp-surface-strong: rgba(12, 34, 48, 0.07);
-  --pp-surface-border: rgba(12, 34, 48, 0.1);
-  --pp-surface-border-strong: rgba(12, 34, 48, 0.16);
-  --pp-surface-shadow: 0 24px 54px rgba(12, 34, 48, 0.12);
+  --pp-surface-border: rgba(33, 43, 58, 0.14);
+  --pp-surface-border-strong: rgba(33, 43, 58, 0.22);
+  --pp-surface-shadow: 0 18px 42px rgba(33, 43, 58, 0.12);
+  --pp-card-lift-shadow: 0 22px 46px rgba(33, 43, 58, 0.14), 0 10px 24px rgba(var(--pp-accent-rgb), 0.1);
+  --pp-card-lift-shadow-strong: 0 28px 60px rgba(33, 43, 58, 0.18), 0 14px 34px rgba(var(--pp-accent-rgb), 0.14);
+  --pp-accent-card-bg: color-mix(in srgb, var(--pp-accent-main) 10%, #ffffff);
+  --pp-accent-card-bg-strong: color-mix(in srgb, var(--pp-accent-main) 14%, #ffffff);
+  --pp-accent-card-border: color-mix(in srgb, var(--pp-accent-main) 42%, #ffffff);
+  --pp-accent-card-border-strong: color-mix(in srgb, var(--pp-accent-light) 56%, var(--pp-accent-main));
+  --pp-companion-card-bg: color-mix(in srgb, var(--pp-companion-main) 10%, #ffffff);
+  --pp-companion-card-bg-strong: color-mix(in srgb, var(--pp-companion-main) 14%, #ffffff);
+  --pp-companion-card-border: color-mix(in srgb, var(--pp-companion-main) 42%, #ffffff);
+  --pp-companion-card-border-strong: color-mix(in srgb, var(--pp-companion-light) 56%, var(--pp-companion-main));
   --pp-accent-text: var(--pp-accent-strong);
-  --pp-header-border: rgba(12, 34, 48, 0.1);
-  --pp-header-background: rgba(239, 245, 251, 0.78);
-  --pp-menu-button-color: #0c2230;
+  --pp-header-border: rgba(33, 43, 58, 0.1);
+  --pp-header-background: rgba(246, 248, 251, 0.84);
+  --pp-menu-button-color: #162331;
   --pp-menu-button-border: rgba(255, 255, 255, 0.8);
   --pp-menu-button-background: rgba(255, 255, 255, 0.7);
   --pp-drawer-background: rgba(255, 255, 255, 0.98);
-  --pp-drawer-text-color: #0c2230;
-  --pp-drawer-divider: rgba(12, 34, 48, 0.1);
+  --pp-drawer-text-color: #162331;
+  --pp-drawer-divider: rgba(33, 43, 58, 0.1);
   --pp-drawer-profile-border: rgba(17, 24, 39, 0.08);
   --pp-drawer-profile-background: rgba(17, 24, 39, 0.04);
-  --pp-drawer-outline-color: #0c2230;
-  --pp-drawer-outline-border: rgba(12, 34, 48, 0.1);
+  --pp-drawer-outline-color: #162331;
+  --pp-drawer-outline-border: rgba(33, 43, 58, 0.1);
   --pp-drawer-hover-background: rgba(17, 24, 39, 0.06);
   --pp-drawer-hover-border: rgba(12, 34, 48, 0.18);
   --pp-home-background:
-    radial-gradient(circle at 16% 8%, rgba(var(--pp-accent-rgb), 0.13), transparent 26%),
-    radial-gradient(circle at 92% 36%, rgba(var(--pp-accent-rgb), 0.1), transparent 28%),
-    linear-gradient(180deg, #f8fafc 0%, #eef2f7 48%, #e7ecf3 100%);
+    radial-gradient(circle at 16% 8%, rgba(var(--pp-accent-rgb), 0.08), transparent 28%),
+    radial-gradient(circle at 92% 36%, rgba(var(--pp-companion-rgb), 0.06), transparent 30%),
+    linear-gradient(180deg, #fafbfc 0%, #f0f2f5 48%, #e8ebef 100%);
   --pp-home-overlay:
-    radial-gradient(circle at 18% 18%, rgba(var(--pp-accent-rgb), 0.08), transparent 26%),
-    radial-gradient(circle at 88% 54%, rgba(var(--pp-accent-rgb), 0.08), transparent 24%);
-  --pp-selection: rgba(var(--pp-accent-rgb), 0.18);
+    radial-gradient(circle at 18% 18%, rgba(var(--pp-accent-rgb), 0.04), transparent 28%),
+    radial-gradient(circle at 88% 54%, rgba(var(--pp-companion-rgb), 0.035), transparent 26%);
+  --pp-selection: rgba(var(--pp-accent-rgb), 0.16);
 }
 
 :root[data-theme='dark'] {
-  --pp-color-text-primary: #f8f5ff;
-  --pp-color-text-secondary: rgba(226, 220, 245, 0.72);
-  --pp-color-text-inverse: #f8f5ff;
-  --pp-color-text-inverse-muted: rgba(226, 220, 245, 0.74);
+  --pp-color-text-primary: #eef1f7;
+  --pp-color-text-secondary: rgba(218, 223, 233, 0.78);
+  --pp-color-text-inverse: #eef1f7;
+  --pp-color-text-inverse-muted: rgba(218, 223, 233, 0.76);
 
   --pp-app-background:
-    radial-gradient(circle at 12% 12%, rgba(var(--pp-accent-rgb), 0.18), transparent 28%),
-    radial-gradient(circle at 84% 14%, rgba(var(--pp-accent-rgb), 0.12), transparent 24%),
-    linear-gradient(180deg, #101323 0%, #090b16 100%);
-  --pp-surface-panel: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--pp-accent-strong) 18%, #17182b) 0%,
-    color-mix(in srgb, var(--pp-accent-strong) 10%, #101224) 100%
-  );
-  --pp-surface-panel-strong: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--pp-accent-strong) 28%, #1d1d34) 0%,
-    color-mix(in srgb, var(--pp-accent-strong) 14%, #101224) 100%
-  );
-  --pp-surface-panel-accent:
-    radial-gradient(circle at top right, rgba(var(--pp-accent-rgb), 0.24) 0%, transparent 42%),
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--pp-accent-strong) 34%, #20213a) 0%,
-      color-mix(in srgb, var(--pp-accent-strong) 16%, #121426) 100%
-    );
+    radial-gradient(circle at 14% 12%, rgba(255, 255, 255, 0.022), transparent 28%),
+    radial-gradient(circle at 86% 14%, rgba(255, 255, 255, 0.014), transparent 26%),
+    linear-gradient(180deg, #16181f 0%, #101218 52%, #0a0c11 100%);
+  --pp-surface-panel: rgba(26, 29, 37, 0.94);
+  --pp-surface-panel-strong: rgba(29, 32, 41, 0.98);
+  --pp-surface-panel-accent: color-mix(in srgb, var(--pp-accent-main) 10%, #1d2028);
   --pp-surface-soft: rgba(255, 255, 255, 0.04);
   --pp-surface-strong: rgba(255, 255, 255, 0.08);
-  --pp-surface-border: rgba(var(--pp-accent-rgb), 0.18);
-  --pp-surface-border-strong: rgba(var(--pp-accent-rgb), 0.34);
-  --pp-surface-shadow: 0 28px 56px rgba(3, 6, 16, 0.34);
+  --pp-surface-border: rgba(255, 255, 255, 0.14);
+  --pp-surface-border-strong: rgba(255, 255, 255, 0.24);
+  --pp-surface-shadow: 0 24px 50px rgba(0, 0, 0, 0.36);
+  --pp-card-lift-shadow: 0 30px 64px rgba(0, 0, 0, 0.42), 0 14px 34px rgba(var(--pp-accent-rgb), 0.12);
+  --pp-card-lift-shadow-strong: 0 38px 78px rgba(0, 0, 0, 0.5), 0 18px 42px rgba(var(--pp-accent-rgb), 0.16);
+  --pp-accent-card-bg: color-mix(in srgb, var(--pp-accent-main) 15%, #191b22);
+  --pp-accent-card-bg-strong: color-mix(in srgb, var(--pp-accent-main) 20%, #1a1d25);
+  --pp-accent-card-border: color-mix(in srgb, var(--pp-accent-light) 34%, #30333d);
+  --pp-accent-card-border-strong: color-mix(in srgb, var(--pp-accent-light) 52%, #3a3d48);
+  --pp-companion-card-bg: color-mix(in srgb, var(--pp-companion-main) 15%, #191b22);
+  --pp-companion-card-bg-strong: color-mix(in srgb, var(--pp-companion-main) 20%, #1a1d25);
+  --pp-companion-card-border: color-mix(in srgb, var(--pp-companion-light) 34%, #30333d);
+  --pp-companion-card-border-strong: color-mix(in srgb, var(--pp-companion-light) 52%, #3a3d48);
   --pp-accent-text: var(--pp-accent-light);
-  --pp-header-border: rgba(255, 255, 255, 0.08);
-  --pp-header-background: rgba(13, 16, 31, 0.78);
-  --pp-menu-button-color: #f8f3ff;
+  --pp-header-border: rgba(255, 255, 255, 0.1);
+  --pp-header-background: rgba(18, 20, 27, 0.86);
+  --pp-menu-button-color: #eef1f7;
   --pp-menu-button-border: rgba(255, 255, 255, 0.14);
   --pp-menu-button-background: rgba(255, 255, 255, 0.04);
-  --pp-drawer-background: linear-gradient(180deg, rgba(14, 15, 29, 0.98) 0%, rgba(10, 11, 22, 0.99) 100%);
-  --pp-drawer-text-color: #f8f3ff;
+  --pp-drawer-background: rgba(18, 20, 27, 0.98);
+  --pp-drawer-text-color: #eef1f7;
   --pp-drawer-divider: rgba(255, 255, 255, 0.12);
   --pp-drawer-profile-border: rgba(255, 255, 255, 0.12);
   --pp-drawer-profile-background: rgba(255, 255, 255, 0.04);
-  --pp-drawer-outline-color: #f8f3ff;
+  --pp-drawer-outline-color: #eef1f7;
   --pp-drawer-outline-border: rgba(255, 255, 255, 0.18);
   --pp-drawer-hover-background: rgba(255, 255, 255, 0.08);
   --pp-drawer-hover-border: rgba(255, 255, 255, 0.28);
   --pp-home-background:
-    radial-gradient(circle at 18% 8%, rgba(var(--pp-accent-rgb), 0.18), transparent 28%),
-    radial-gradient(circle at 92% 42%, rgba(var(--pp-accent-rgb), 0.2), transparent 32%),
-    linear-gradient(
-      150deg,
-      color-mix(in srgb, var(--pp-accent-strong) 28%, #050713) 0%,
-      #080a17 46%,
-      color-mix(in srgb, var(--pp-accent-strong) 22%, #080a17) 100%
-    );
+    radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.03), transparent 30%),
+    radial-gradient(circle at 92% 42%, rgba(255, 255, 255, 0.016), transparent 30%),
+    linear-gradient(145deg, #1a1e25 0%, #12161c 46%, #0b0d12 100%);
   --pp-home-overlay:
-    radial-gradient(circle at 18% 18%, rgba(var(--pp-accent-rgb), 0.18), transparent 26%),
-    radial-gradient(circle at 88% 54%, rgba(var(--pp-accent-rgb), 0.24), transparent 24%);
-  --pp-selection: rgba(var(--pp-accent-rgb), 0.32);
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.026), transparent 28%),
+    radial-gradient(circle at 88% 54%, rgba(255, 255, 255, 0.015), transparent 24%);
+  --pp-selection: rgba(var(--pp-accent-rgb), 0.24);
 }

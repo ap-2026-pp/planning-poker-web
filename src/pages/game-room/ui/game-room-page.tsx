@@ -81,6 +81,7 @@ export const GameRoomPage = () => {
           onlineParticipantsCount={room.onlineParticipantsCount}
           currentParticipantId={room.currentParticipantId}
           isCurrentParticipantMaster={room.isCurrentParticipantMaster}
+          canRevealCards={room.canRevealCards}
           selectedParticipantId={room.selectedParticipantId}
           pendingParticipantActionId={room.pendingParticipantActionId}
           votingSystemLabel={room.votingSystemLabel}

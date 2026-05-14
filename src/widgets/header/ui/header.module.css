@@ -122,6 +122,15 @@
   background: var(--pp-accent-soft) !important;
 }
 
+.themeButton {
+  gap: 8px !important;
+}
+
+.themeButton :global(.MuiButton-startIcon) {
+  margin-right: 6px !important;
+  color: var(--pp-accent-text);
+}
+
 .filledButton {
   color: #ffffff !important;
   background: var(--pp-gradient-purple) !important;
@@ -372,6 +381,9 @@
   flex-direction: column;
   padding: 22px;
   overflow-y: auto;
+  background:
+    radial-gradient(circle at 16% 12%, rgba(var(--pp-accent-rgb), 0.04), transparent 28%),
+    radial-gradient(circle at 88% 82%, rgba(var(--pp-companion-rgb), 0.035), transparent 30%);
 }
 
 .drawerHeader {
@@ -459,16 +471,19 @@
 .drawerPrimaryButton {
   color: #ffffff !important;
   background: var(--pp-gradient-purple) !important;
+  box-shadow: 0 18px 30px var(--pp-accent-shadow) !important;
 }
 
 .drawerSecondaryFilledButton {
   color: #ffffff !important;
   background: var(--pp-gradient-primary) !important;
+  box-shadow: 0 18px 30px var(--pp-accent-shadow) !important;
 }
 
 .drawerRegisterButton {
   color: #ffffff !important;
   background: var(--pp-gradient-purple) !important;
+  box-shadow: 0 18px 30px var(--pp-accent-shadow) !important;
 }
 
 .drawerOutlineButton {

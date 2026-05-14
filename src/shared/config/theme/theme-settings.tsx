@@ -60,10 +60,10 @@ export const ACCENT_COLORS = [
   },
   {
     value: 'green',
-    label: 'Зелений',
-    main: '#38B975',
-    light: '#58D996',
-    dark: '#188C55',
+    label: 'Бірюзовий',
+    main: '#62B8BC',
+    light: '#95D7DA',
+    dark: '#4A9397',
     contrastText: '#FFFFFF',
   },
   {

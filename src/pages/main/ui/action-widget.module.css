@@ -5,7 +5,7 @@
   border-radius: 28px;
   border: 1px solid var(--pp-surface-border);
   background: var(--pp-surface-panel);
-  box-shadow: var(--pp-surface-shadow);
+  box-shadow: var(--pp-card-lift-shadow);
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -13,33 +13,13 @@
 
 .widgetCardFeatured {
   min-height: 300px;
-  border-color: var(--pp-companion-border-strong);
-  background:
-    radial-gradient(circle at top right, rgba(var(--pp-companion-rgb), 0.18) 0%, transparent 42%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(var(--pp-companion-rgb), 0.12) 100%);
-  box-shadow:
-    var(--pp-surface-shadow),
-    0 0 0 1px var(--pp-companion-softer);
-}
-
-:root[data-theme='dark'] .widgetCardFeatured {
-  background:
-    radial-gradient(circle at top right, rgba(var(--pp-companion-rgb), 0.24) 0%, transparent 42%),
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--pp-companion-strong) 28%, #20213a) 0%,
-      color-mix(in srgb, var(--pp-companion-strong) 12%, #121426) 100%
-    );
+  border-color: var(--pp-surface-border-strong);
+  background: var(--pp-surface-panel-strong);
+  box-shadow: var(--pp-card-lift-shadow-strong);
 }
 
 .widgetCardFeatured::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 84% 18%, rgba(var(--pp-accent-rgb), 0.16) 0%, transparent 30%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 48%);
-  pointer-events: none;
+  display: none;
 }
 
 .featuredBadge {
@@ -79,8 +59,8 @@
 }
 
 .iconGreen {
-  background: var(--pp-gradient-primary-vertical);
-  box-shadow: 0 18px 28px var(--pp-accent-shadow);
+  background: var(--pp-gradient-green-vertical);
+  box-shadow: 0 18px 28px rgba(75, 149, 104, 0.2);
 }
 
 .iconBlue {
@@ -149,8 +129,8 @@
 }
 
 .widgetButtonGreen {
-  background: var(--pp-gradient-primary) !important;
-  box-shadow: 0 18px 30px var(--pp-accent-shadow) !important;
+  background: var(--pp-gradient-green) !important;
+  box-shadow: 0 18px 30px rgba(75, 149, 104, 0.22) !important;
 }
 
 .widgetButtonBlue {
@@ -169,6 +149,16 @@
 .widgetButtonGreen:hover,
 .widgetButtonBlue:hover {
   transform: translateY(-1px);
+}
+
+:global(:root[data-theme='dark']) .widgetCard {
+  background: rgba(26, 29, 37, 0.94);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:global(:root[data-theme='dark']) .widgetCardFeatured {
+  background: rgba(29, 32, 41, 0.97);
+  border-color: rgba(255, 255, 255, 0.14);
 }
 
 @media (min-width: 900px) {

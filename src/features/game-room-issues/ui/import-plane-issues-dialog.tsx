@@ -1,10 +1,10 @@
 import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded';
-import { Alert, Box, Button, Dialog, Stack, TextField, Typography } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 
 import type { ImportPlaneIssuesPayload } from '@entities/issue';
+import { FormCard, FormDialog } from '@shared/ui/form-layout';
 import formStyles from '@shared/ui/form-layout/form-layout.module.css';
-import styles from '@shared/ui/game-room-sidebar/game-room-issues.module.css';
 
 type ImportPlaneIssuesDialogProps = {
   open: boolean;
@@ -71,91 +71,61 @@ export const ImportPlaneIssuesDialog = ({
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      maxWidth={false}
-      PaperProps={{
-        className: styles.issueDialogPaper,
-      }}
-      BackdropProps={{
-        className: styles.issueDialogBackdrop,
-      }}
-    >
-      <Box className={styles.issueDialogRoot}>
-        <Box className={styles.issueDialogGlow}>
-          <Box className={styles.issueDialogBody}>
-            <Box
-              component="form"
-              onSubmit={handleSubmit}
-              className={[styles.issueFormCard, styles.issueFormCardDialog].join(' ')}
+    <FormDialog open={open} onClose={handleClose}>
+      <FormCard
+        badge="Plane import"
+        title="Імпорт issues з Plane"
+        subtitle="Введіть API key вашого акаунта Plane та посилання на проєкт, з якого потрібно імпортувати задачі."
+        icon={<CloudUploadRoundedIcon fontSize="inherit" />}
+        accent="blue"
+        submitError={localError || errorMessage}
+        onSubmit={handleSubmit}
+        onClose={handleClose}
+        actions={
+          <>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={isSubmitting}
+              className={[formStyles.primaryButton, formStyles.primaryBlue].join(' ')}
             >
-              <Stack className={styles.issueFormIntro}>
-                <Box className={styles.issueFormIconShellBlue}>
-                  <CloudUploadRoundedIcon fontSize="inherit" />
-                </Box>
+              {isSubmitting ? 'Імпортуємо...' : 'Імпортувати issues'}
+            </Button>
 
-                <Typography className={styles.issueFormTitle}>
-                  Імпорт issues з Plane
-                </Typography>
+            <Button
+              type="button"
+              variant="text"
+              onClick={handleClose}
+              disabled={isSubmitting}
+              className={formStyles.secondaryButton}
+            >
+              Скасувати
+            </Button>
+          </>
+        }
+      >
+        <TextField
+          fullWidth
+          label="Plane API key"
+          placeholder="Наприклад, plane_api_xxxxxxxxx"
+          value={values.apiKey}
+          onChange={handleChange('apiKey')}
+          variant="outlined"
+          type="password"
+          autoComplete="off"
+          className={formStyles.field}
+        />
 
-                <Typography className={styles.issueFormSubtitle}>
-                  Введіть API key вашого акаунта Plane та посилання на проєкт,
-                  з якого потрібно імпортувати задачі.
-                </Typography>
-              </Stack>
-
-              {localError || errorMessage ? (
-                <Alert severity="error" className={formStyles.alert}>
-                  {localError || errorMessage}
-                </Alert>
-              ) : null}
-
-              <TextField
-                fullWidth
-                label="Plane API key"
-                placeholder="Наприклад, plane_api_xxxxxxxxx"
-                value={values.apiKey}
-                onChange={handleChange('apiKey')}
-                variant="outlined"
-                type="password"
-                autoComplete="off"
-                className={[formStyles.field, styles.issueFieldBlue].join(' ')}
-              />
-
-              <TextField
-                fullWidth
-                label="Посилання на проєкт Plane"
-                placeholder="https://app.plane.so/workspace/projects/project-id"
-                value={values.projectUrl}
-                onChange={handleChange('projectUrl')}
-                variant="outlined"
-                className={[formStyles.field, styles.issueFieldBlue].join(' ')}
-              />
-
-              <Box className={styles.issueFormActions}>
-                <button
-                  type="button"
-                  className={styles.issueSecondaryButton}
-                  onClick={handleClose}
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </button>
-
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={isSubmitting}
-                  className={[formStyles.primaryButton, formStyles.primaryBlue].join(' ')}
-                >
-                  {isSubmitting ? 'Importing...' : 'Import issues'}
-                </Button>
-              </Box>
-            </Box>
-          </Box>
-        </Box>
-      </Box>
-    </Dialog>
+        <TextField
+          fullWidth
+          label="Посилання на проєкт Plane"
+          placeholder="https://app.plane.so/workspace/projects/project-id"
+          value={values.projectUrl}
+          onChange={handleChange('projectUrl')}
+          variant="outlined"
+          className={formStyles.field}
+        />
+      </FormCard>
+    </FormDialog>
   );
 };

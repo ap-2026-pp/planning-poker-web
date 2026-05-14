@@ -97,31 +97,31 @@
 }
 
 .roundDotTone0 {
-  --round-dot-start: var(--pp-accent-light);
-  --round-dot-end: var(--pp-accent-strong);
-  --round-dot-glow: var(--pp-accent-soft);
-  --round-dot-pulse: rgba(var(--pp-accent-rgb), 0.42);
+  --round-dot-start: #d1b9ff;
+  --round-dot-end: #a96fff;
+  --round-dot-glow: rgba(169, 111, 255, 0.18);
+  --round-dot-pulse: rgba(169, 111, 255, 0.42);
 }
 
 .roundDotTone1 {
-  --round-dot-start: var(--pp-accent-light);
-  --round-dot-end: var(--pp-accent-main);
-  --round-dot-glow: var(--pp-accent-soft);
-  --round-dot-pulse: rgba(var(--pp-accent-rgb), 0.42);
+  --round-dot-start: #8cc0ff;
+  --round-dot-end: #4391ff;
+  --round-dot-glow: rgba(67, 145, 255, 0.18);
+  --round-dot-pulse: rgba(67, 145, 255, 0.42);
 }
 
 .roundDotTone2 {
-  --round-dot-start: var(--pp-accent-light);
-  --round-dot-end: var(--pp-accent-main);
-  --round-dot-glow: var(--pp-accent-soft);
-  --round-dot-pulse: rgba(var(--pp-accent-rgb), 0.42);
+  --round-dot-start: #ffb48b;
+  --round-dot-end: #ff8a4c;
+  --round-dot-glow: rgba(255, 138, 76, 0.18);
+  --round-dot-pulse: rgba(255, 138, 76, 0.42);
 }
 
 .roundDotTone3 {
-  --round-dot-start: var(--pp-accent-light);
-  --round-dot-end: var(--pp-accent-main);
-  --round-dot-glow: var(--pp-accent-soft);
-  --round-dot-pulse: rgba(var(--pp-accent-rgb), 0.42);
+  --round-dot-start: #8be9d9;
+  --round-dot-end: #2bd4b6;
+  --round-dot-glow: rgba(43, 212, 182, 0.18);
+  --round-dot-pulse: rgba(43, 212, 182, 0.42);
 }
 
 .roundDotWaiting::before,
@@ -175,75 +175,90 @@
   left: 50%;
   top: 50%;
   z-index: 2;
+  width: min(360px, calc(100% - 40px));
+  max-width: calc(100% - 40px);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.centerPlatform {
   display: flex;
-  width: 300px;
-  max-width: 90%;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
+  padding: 16px 18px;
+  border-radius: 22px;
+  border: 1px solid var(--pp-surface-border-strong);
+  background: var(--pp-surface-panel-strong);
+  box-shadow: var(--pp-card-lift-shadow);
+  backdrop-filter: blur(16px);
   text-align: center;
-  transform: translate(-50%, -50%);
+  pointer-events: auto;
 }
 
-.centerVisual {
-  position: relative;
-  width: 150px;
-  height: 128px;
+.centerStatusRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  padding-inline: 10px;
+  border-radius: 999px;
+  background: var(--pp-accent-soft);
+  color: var(--pp-accent-text);
 }
 
-.centerCard {
-  position: absolute;
-  top: 16px;
-  left: 50%;
-  display: grid;
-  place-items: center;
-  width: 62px;
-  height: 88px;
-  border-radius: 16px;
-  overflow: hidden;
+.centerPulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--pp-accent-main);
+  box-shadow: 0 0 0 6px rgba(var(--pp-accent-rgb), 0.12);
 }
 
-.centerCardBack {
-  width: 58px;
-  height: 82px;
-  border: 2px solid var(--pp-accent-border);
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0 10%, transparent 10% 22%),
-    linear-gradient(180deg, rgba(var(--pp-accent-rgb), 0.28) 0%, rgba(var(--pp-accent-rgb), 0.12) 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 14px 28px var(--pp-accent-shadow);
-  transform: translateX(-72%) translateY(6px) rotate(-16deg);
-}
-
-.centerCardFront {
-  border: 2px solid var(--pp-accent-border-strong);
-  background:
-    radial-gradient(circle at 34% 24%, rgba(255, 255, 255, 0.16) 0%, transparent 34%),
-    linear-gradient(180deg, var(--pp-accent-main) 0%, var(--pp-accent-strong) 100%);
-  box-shadow:
-    0 18px 34px var(--pp-accent-shadow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transform: translateX(-30%) rotate(12deg);
-}
-
-.centerQuestion {
-  color: rgba(255, 255, 255, 0.82) !important;
-  font-size: 2.6rem !important;
-  filter: drop-shadow(0 5px 10px rgba(28, 15, 74, 0.35));
+.centerMeta {
+  color: inherit !important;
+  font-size: 0.76rem !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
 }
 
 .centerText {
-  color: var(--pp-accent-text) !important;
-  font-size: 1.05rem !important;
-  font-weight: 700 !important;
+  color: var(--pp-color-text-primary) !important;
+  font-size: 1rem !important;
+  font-weight: 800 !important;
+  line-height: 1.25 !important;
 }
 
 .centerIssue {
-  max-width: 280px;
+  max-width: 100%;
   color: var(--pp-color-text-secondary) !important;
-  font-size: 0.94rem !important;
-  line-height: 1.5 !important;
+  font-size: 0.88rem !important;
+  line-height: 1.45 !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.revealVotesButton {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--pp-gradient-purple);
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 16px 28px var(--pp-accent-shadow);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.revealVotesButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 30px var(--pp-accent-shadow);
 }
 
 .participantCard {
@@ -556,6 +571,41 @@
   color: var(--pp-accent-text);
 }
 
+.timerPillButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--pp-surface-border);
+  background: var(--pp-surface-soft);
+  color: var(--pp-color-text-primary);
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.timerPillButton:hover {
+  transform: translateY(-1px);
+  border-color: var(--pp-companion-border-strong);
+  background: var(--pp-companion-soft);
+  color: var(--pp-companion-strong);
+}
+
+.timerPillButtonActive {
+  border-color: var(--pp-companion-border-strong);
+  background: var(--pp-companion-soft);
+  color: var(--pp-companion-strong);
+  box-shadow: 0 12px 26px var(--pp-companion-shadow);
+}
+
 .settingsPillIcon {
   font-size: 1.15rem !important;
 }
@@ -727,6 +777,12 @@
     display: none;
   }
 
+  .timerPillButton {
+    min-height: 36px;
+    padding-inline: 12px;
+    font-size: 0.84rem;
+  }
+
   .settingsPillIcon {
     font-size: 1.2rem !important;
   }
@@ -747,37 +803,33 @@
   }
 
   .centerState {
-    width: min(220px, 64vw);
-    max-width: 64vw;
+    width: min(280px, calc(100% - 24px));
+    max-width: calc(100% - 24px);
+  }
+
+  .centerPlatform {
     gap: 8px;
+    padding: 14px 14px 12px;
   }
 
-  .centerVisual {
-    width: 84px;
-    height: 72px;
-  }
-
-  .centerCard {
-    top: 10px;
-    width: 38px;
-    height: 54px;
-    border-radius: 12px;
-  }
-
-  .centerQuestion {
-    top: 20px;
-    font-size: 2.1rem !important;
+  .centerMeta {
+    font-size: 0.72rem !important;
   }
 
   .centerText {
-    font-size: 0.92rem !important;
+    font-size: 0.9rem !important;
     line-height: 1.25 !important;
   }
 
   .centerIssue {
-    max-width: 200px;
     font-size: 0.82rem !important;
     line-height: 1.35 !important;
+  }
+
+  .revealVotesButton {
+    min-height: 36px;
+    padding-inline: 14px;
+    font-size: 0.82rem;
   }
 
   .participantCard {

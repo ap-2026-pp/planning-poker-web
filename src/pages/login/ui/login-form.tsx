@@ -1,5 +1,7 @@
 import LoginRoundedIcon from '@mui/icons-material/LoginRounded';
-import { Button, TextField } from '@mui/material';
+import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import { Button, IconButton, InputAdornment, TextField } from '@mui/material';
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link as RouterLink, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
@@ -53,6 +55,7 @@ export const LoginForm = () => {
     isSessionExpired ? 'Сесія в кімнаті закінчилась. Увійдіть знову, щоб продовжити.' : null,
   );
   const [submitting, setSubmitting] = useState(false);
+  const [isPasswordVisible, setPasswordVisible] = useState(false);
 
   const resolvePostLoginPath = (email: string | null | undefined) => {
     const normalizedEmail = email?.trim().toLowerCase();
@@ -159,13 +162,31 @@ export const LoginForm = () => {
       <TextField
         className={styles.field}
         label="Пароль"
-        type="password"
+        type={isPasswordVisible ? 'text' : 'password'}
         value={values.password}
         onChange={handleFieldChange('password')}
         error={Boolean(errors.password)}
         helperText={errors.password}
         autoComplete="current-password"
         placeholder="Ваш пароль"
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                type="button"
+                edge="end"
+                aria-label={isPasswordVisible ? 'Приховати пароль' : 'Показати пароль'}
+                onClick={() => setPasswordVisible((current) => !current)}
+              >
+                {isPasswordVisible ? (
+                  <VisibilityOffRoundedIcon fontSize="small" />
+                ) : (
+                  <VisibilityRoundedIcon fontSize="small" />
+                )}
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
       />
     </FormCard>
   );

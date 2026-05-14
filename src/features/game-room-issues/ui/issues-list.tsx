@@ -2,7 +2,9 @@ import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import {
     closestCenter,
     DndContext,
+    DragOverlay,
     type DragEndEvent,
+    type DragStartEvent,
     PointerSensor,
     useSensor,
     useSensors,
@@ -14,10 +16,11 @@ import {
 } from '@dnd-kit/sortable';
 import { Stack } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import type { Issue } from '@entities/issue';
 import styles from '@shared/ui/game-room-sidebar/game-room-issues.module.css';
-import { SortableIssueCard } from './sortable-issue-card';
+import { IssueDragOverlayCard, SortableIssueCard } from './sortable-issue-card';
 
 type IssuesListProps = {
     issues: Issue[];
@@ -51,10 +54,23 @@ export const IssuesList = ({
     );
 
     const [localIssues, setLocalIssues] = useState<Issue[]>(orderedIssues);
+    const [activeIssueId, setActiveIssueId] = useState<string | null>(null);
+    const canDragIssues = canManageIssues && Boolean(onReorderIssues);
 
     useEffect(() => {
         setLocalIssues(orderedIssues);
     }, [orderedIssues]);
+
+    useEffect(() => {
+        if (activeIssueId && !localIssues.some((issue) => issue.id === activeIssueId)) {
+            setActiveIssueId(null);
+        }
+    }, [activeIssueId, localIssues]);
+
+    const activeIssue = useMemo(
+        () => localIssues.find((issue) => issue.id === activeIssueId) ?? null,
+        [activeIssueId, localIssues],
+    );
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -64,8 +80,18 @@ export const IssuesList = ({
         }),
     );
 
+    const handleDragStart = (event: DragStartEvent) => {
+        if (!canDragIssues) {
+            return;
+        }
+
+        setActiveIssueId(String(event.active.id));
+    };
+
     const handleDragEnd = async (event: DragEndEvent) => {
-        if (!canManageIssues || !onReorderIssues) {
+        setActiveIssueId(null);
+
+        if (!canDragIssues || !onReorderIssues) {
             return;
         }
 
@@ -103,6 +129,10 @@ export const IssuesList = ({
             <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
+                onDragStart={handleDragStart}
+                onDragCancel={() => {
+                    setActiveIssueId(null);
+                }}
                 onDragEnd={(event) => {
                     void handleDragEnd(event);
                 }}
@@ -116,9 +146,9 @@ export const IssuesList = ({
                             <SortableIssueCard
                                 key={issue.id}
                                 issue={issue}
-                                index={index}
                                 canManageIssues={canManageIssues}
                                 canRevealCards={canRevealCards}
+                                isSortableEnabled={canDragIssues}
                                 isFirst={index === 0}
                                 isLast={index === localIssues.length - 1}
                                 onEditIssue={onEditIssue}
@@ -129,6 +159,20 @@ export const IssuesList = ({
                         ))}
                     </Stack>
                 </SortableContext>
+
+                {typeof document !== 'undefined'
+                    ? createPortal(
+                          <DragOverlay adjustScale={false} zIndex={1700}>
+                              {activeIssue ? (
+                                  <IssueDragOverlayCard
+                                      issue={activeIssue}
+                                      canRevealCards={canRevealCards}
+                                  />
+                              ) : null}
+                          </DragOverlay>,
+                          document.body,
+                      )
+                    : null}
             </DndContext>
 
             {canManageIssues ? (

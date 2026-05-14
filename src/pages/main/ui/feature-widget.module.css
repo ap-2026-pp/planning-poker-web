@@ -3,7 +3,7 @@
   border-radius: 28px;
   border: 1px solid var(--pp-surface-border);
   background: var(--pp-surface-panel);
-  box-shadow: var(--pp-surface-shadow);
+  box-shadow: var(--pp-card-lift-shadow);
   padding: 22px 20px;
   display: flex;
   flex-direction: column;
@@ -20,18 +20,18 @@
 }
 
 .iconPurple {
-  background: linear-gradient(180deg, #a66fff 0%, #8b56f6 100%);
-  box-shadow: 0 18px 28px rgba(147, 97, 255, 0.28);
+  background: linear-gradient(180deg, #a98cf0 0%, #8d72d8 100%);
+  box-shadow: 0 18px 28px rgba(141, 114, 216, 0.22);
 }
 
 .iconGreen {
-  background: linear-gradient(180deg, #3dae57 0%, #287e3b 100%);
-  box-shadow: 0 18px 28px rgba(50, 162, 77, 0.24);
+  background: linear-gradient(180deg, #62b883 0%, #4b9568 100%);
+  box-shadow: 0 18px 28px rgba(75, 149, 104, 0.2);
 }
 
 .iconBlue {
-  background: linear-gradient(180deg, #347be5 0%, #2564c3 100%);
-  box-shadow: 0 18px 28px rgba(56, 118, 230, 0.24);
+  background: linear-gradient(180deg, #78a8dd 0%, #5d8fca 100%);
+  box-shadow: 0 18px 28px rgba(93, 143, 202, 0.2);
 }
 
 .featureIconGlyph {
@@ -51,6 +51,11 @@
   color: var(--pp-color-text-secondary) !important;
   font-size: 0.98rem !important;
   line-height: 1.52 !important;
+}
+
+:global(:root[data-theme='dark']) .featureCard {
+  background: rgba(26, 29, 37, 0.94);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 @media (min-width: 900px) {

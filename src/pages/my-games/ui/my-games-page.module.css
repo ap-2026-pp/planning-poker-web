@@ -131,6 +131,11 @@
   padding: 24px;
 }
 
+:global(:root[data-theme='dark']) .listCard {
+  background: rgba(26, 29, 37, 0.94);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
 .alert {
   margin-bottom: 16px !important;
   border: 1px solid rgba(255, 126, 153, 0.22) !important;
@@ -159,6 +164,12 @@
   padding: 10px;
   border-radius: 22px;
   background: var(--pp-surface-soft);
+}
+
+:global(:root[data-theme='dark']) .gameCard {
+  background: rgba(31, 35, 45, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.16);
 }
 
 .gamePrimary {
@@ -209,6 +220,18 @@
 .badgeInactive {
   color: #7b4b10;
   background: rgba(232, 173, 82, 0.22);
+}
+
+:global(:root[data-theme='dark']) .badgeActive {
+  color: #c9f7da;
+  background: rgba(75, 149, 104, 0.26);
+  border: 1px solid rgba(98, 184, 131, 0.34);
+}
+
+:global(:root[data-theme='dark']) .badgeInactive {
+  color: #ffe1ba;
+  background: rgba(188, 127, 70, 0.24);
+  border: 1px solid rgba(217, 160, 95, 0.34);
 }
 
 .badgeOwner {
