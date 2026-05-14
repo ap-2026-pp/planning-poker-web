@@ -1,41 +1,25 @@
 import axios from 'axios';
 
 import { env } from '@shared/config/env';
-import { isApiEnvelope } from '@shared/model/api';
-
-import type { StoredSession } from './auth-contracts';
 import { clearCurrentRoomParticipantSession } from './current-room-participant';
 import {
+  clearAuthenticatedSessionHint,
   clearGuestAccessToken,
-  clearStoredSession,
-  getStoredSession,
-  setStoredSession,
+  clearLastAuthenticatedEmail,
+  notifyAuthStateChanged,
 } from './token-storage';
 
-type RefreshTokenPayload = {
-  accessToken: string;
-  refreshToken: string;
-};
-
 const SESSION_INVALIDATED_EVENT = 'planning-poker:session-invalidated';
-const TOKEN_REFRESH_LEEWAY_MS = 60_000;
 
 const refreshClient = axios.create({
   baseURL: env.apiUrl,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-let refreshSessionPromise: Promise<StoredSession | null> | null = null;
-
-const unwrap = <T>(payload: unknown): T => {
-  if (isApiEnvelope<T>(payload)) {
-    return payload.data;
-  }
-
-  return payload as T;
-};
+let refreshSessionPromise: Promise<boolean> | null = null;
 
 const notifySessionInvalidated = () => {
   if (typeof window === 'undefined') {
@@ -43,46 +27,20 @@ const notifySessionInvalidated = () => {
   }
 
   window.dispatchEvent(new Event(SESSION_INVALIDATED_EVENT));
+  notifyAuthStateChanged();
 };
 
-const isStoredSessionExpiring = (session: StoredSession) => {
-  const expirationTimestamp = Date.parse(session.expiration);
-
-  if (Number.isNaN(expirationTimestamp)) {
-    return true;
-  }
-
-  return expirationTimestamp - Date.now() <= TOKEN_REFRESH_LEEWAY_MS;
+const requestSessionRefresh = async () => {
+  await refreshClient.post('/auth/refresh', undefined);
+  return true;
 };
 
-const requestSessionRefresh = async (session: StoredSession) => {
-  const payload: RefreshTokenPayload = {
-    accessToken: session.accessToken,
-    refreshToken: session.refreshToken,
-  };
-
-  return unwrap<StoredSession>((await refreshClient.post('/auth/refresh', payload)).data);
-};
-
-export const refreshStoredSession = async (force = false): Promise<StoredSession | null> => {
-  const session = getStoredSession();
-
-  if (!session?.accessToken || !session.refreshToken) {
-    return null;
-  }
-
-  if (!force && !isStoredSessionExpiring(session)) {
-    return session;
-  }
-
+export const refreshAuthenticatedSession = async (): Promise<boolean> => {
   if (!refreshSessionPromise) {
     refreshSessionPromise = (async () => {
       try {
-        const refreshedSession = await requestSessionRefresh(session);
-        setStoredSession(refreshedSession);
-        return refreshedSession;
+        return await requestSessionRefresh();
       } catch (error) {
-        clearStoredSession();
         notifySessionInvalidated();
         throw error;
       } finally {
@@ -95,7 +53,8 @@ export const refreshStoredSession = async (force = false): Promise<StoredSession
 };
 
 export const invalidateStoredSession = () => {
-  clearStoredSession();
+  clearAuthenticatedSessionHint();
+  clearLastAuthenticatedEmail();
   notifySessionInvalidated();
 };
 
@@ -103,10 +62,6 @@ export const invalidateGuestSession = () => {
   clearGuestAccessToken();
   clearCurrentRoomParticipantSession();
   notifySessionInvalidated();
-};
-
-export const getValidAccessToken = async () => {
-  return (await refreshStoredSession())?.accessToken ?? null;
 };
 
 export const subscribeToSessionInvalidated = (listener: () => void) => {

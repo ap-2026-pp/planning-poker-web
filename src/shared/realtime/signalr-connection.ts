@@ -14,14 +14,22 @@ const signalRLogLevel = import.meta.env.DEV ? LogLevel.Information : LogLevel.Wa
 export const createSignalRConnection = (
   hubUrl: string,
   options: CreateSignalRConnectionOptions = {},
-) =>
-  new HubConnectionBuilder()
-    .withUrl(hubUrl, {
-      accessTokenFactory: async () => (await options.getAccessToken?.()) ?? '',
-    })
+) => {
+  const connectionOptions = {
+    withCredentials: true,
+    ...(options.getAccessToken
+      ? {
+          accessTokenFactory: async () => (await options.getAccessToken?.()) ?? '',
+        }
+      : {}),
+  };
+
+  return new HubConnectionBuilder()
+    .withUrl(hubUrl, connectionOptions)
     .withAutomaticReconnect()
     .configureLogging(signalRLogLevel)
     .build();
+};
 
 export const startSignalRConnection = async (connection: HubConnection) => {
   if (connection.state === HubConnectionState.Disconnected) {

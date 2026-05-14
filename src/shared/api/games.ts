@@ -4,6 +4,7 @@ import type {
   GameInvite,
   JoinGamePayload,
   JoinGameResponse,
+  RoomState,
   UpdateGamePayload,
   UserGame,
   UserGamesScope,
@@ -29,6 +30,12 @@ export const deleteGameRequest = (gameId: string) =>
 
 export const getGameInviteRequest = (gameId: string) =>
   apiClientService.get<GameInvite>(`/game/${gameId}/invite`);
+
+export const getRoomStateRequest = (gameId: string) =>
+  apiClientService.get<RoomState>(`/games/${gameId}/room/round`);
+
+export const revealCardsRequest = (gameId: string) =>
+  apiClientService.get<RoomState>(`/games/${gameId}/room/reveal`);
 
 export const getUserGamesRequest = (scope: UserGamesScope) =>
   apiClientService.get<UserGame[]>('/games/my', {
@@ -77,6 +84,19 @@ export const setSpectatorModeRequest = (gameId: string, isSpectator: boolean) =>
 
 export const getIssuesRequest = (gameId: string) =>
   apiClientService.get<Issue[]>(`/games/${gameId}/issues`);
+
+export const createVoteRequest = (
+  gameId: string,
+  issueId: string,
+  payload: { estimate: string },
+) =>
+  apiClientService.post<{ id: string }, { estimate: string }>(
+    `/games/${gameId}/issues/${issueId}/votes/me`,
+    payload,
+  );
+
+export const deleteVoteRequest = (gameId: string, issueId: string) =>
+  apiClientService.delete<void>(`/games/${gameId}/issues/${issueId}/votes/me`);
 
 export const getVotingHistoryRequest = (gameId: string) =>
   apiClientService.get<VotingHistoryList>(`/games/${gameId}/history`);

@@ -15,13 +15,16 @@ import {
   registerRequest,
 } from '@shared/api';
 import {
+  clearAuthenticatedSessionHint,
+  clearLastAuthenticatedEmail,
   clearCurrentRoomParticipantSession,
   clearGuestAccessToken,
-  clearStoredSession,
-  getStoredSession,
-  getStoredSessionEmail,
+  getLastAuthenticatedEmail,
+  hasAuthenticatedSessionHint,
   hasGuestTokenCookie,
-  setStoredSession,
+  notifyAuthStateChanged,
+  setAuthenticatedSessionHint,
+  setLastAuthenticatedEmail,
   subscribeToSessionInvalidated,
   type LoginPayload,
   type RegisterPayload,
@@ -34,28 +37,26 @@ type SessionProviderProps = {
   children: ReactNode;
 };
 
-const SESSION_STORAGE_SYNC_INTERVAL_MS = 500;
-
 export const SessionProvider = ({ children }: SessionProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [status, setStatus] = useState<AuthStatus>('loading');
   const [hasGuestAccess, setHasGuestAccess] = useState(() => hasGuestTokenCookie());
   const [expiredSessionEmail, setExpiredSessionEmail] = useState<string | null>(null);
-  const lastAuthenticatedEmailRef = useRef<string | null>(getStoredSessionEmail());
+  const lastAuthenticatedEmailRef = useRef<string | null>(getLastAuthenticatedEmail());
 
   const markGuest = useCallback(() => {
-    const nextExpiredSessionEmail = lastAuthenticatedEmailRef.current ?? getStoredSessionEmail();
-
-    clearStoredSession();
+    const nextExpiredSessionEmail = lastAuthenticatedEmailRef.current ?? getLastAuthenticatedEmail();
 
     setUser(null);
     setStatus('guest');
     setHasGuestAccess(hasGuestTokenCookie());
     setExpiredSessionEmail(nextExpiredSessionEmail);
+    notifyAuthStateChanged();
   }, []);
 
   const clearAllSessionState = useCallback(() => {
-    clearStoredSession();
+    clearAuthenticatedSessionHint();
+    clearLastAuthenticatedEmail();
     clearGuestAccessToken();
     clearCurrentRoomParticipantSession();
 
@@ -64,26 +65,40 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
     setHasGuestAccess(false);
     setExpiredSessionEmail(null);
     lastAuthenticatedEmailRef.current = null;
+    notifyAuthStateChanged();
   }, []);
 
   const refreshCurrentUser = useCallback(async () => {
-    if (!getStoredSession()) {
+    if (!hasAuthenticatedSessionHint()) {
       setUser(null);
       setStatus('guest');
       setHasGuestAccess(hasGuestTokenCookie());
+      setExpiredSessionEmail(null);
       return;
     }
 
     try {
       const currentUser = await getCurrentUserRequest();
 
+      setAuthenticatedSessionHint();
       lastAuthenticatedEmailRef.current = currentUser.email;
+      setLastAuthenticatedEmail(currentUser.email);
+      clearGuestAccessToken();
+
       setUser(currentUser);
       setStatus('authenticated');
-      setHasGuestAccess(hasGuestTokenCookie());
+      setHasGuestAccess(false);
       setExpiredSessionEmail(null);
     } catch {
-      markGuest();
+      if (lastAuthenticatedEmailRef.current ?? getLastAuthenticatedEmail()) {
+        markGuest();
+        return;
+      }
+
+      setUser(null);
+      setStatus('guest');
+      setHasGuestAccess(hasGuestTokenCookie());
+      setExpiredSessionEmail(null);
     }
   }, [markGuest]);
 
@@ -98,61 +113,63 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   }, [markGuest]);
 
   useEffect(() => {
-    const syncStoredSession = () => {
-      const storedSessionEmail = getStoredSessionEmail();
-      const hasStoredAuthSession = Boolean(getStoredSession());
-      const nextHasGuestAccess = hasGuestTokenCookie();
+    const syncSessionState = () => {
+      void refreshCurrentUser();
+    };
 
-      setHasGuestAccess(nextHasGuestAccess);
-
-      if (status === 'authenticated' && !hasStoredAuthSession) {
-        setExpiredSessionEmail(lastAuthenticatedEmailRef.current ?? storedSessionEmail);
-        setUser(null);
-        setStatus('guest');
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        syncSessionState();
       }
     };
 
-    syncStoredSession();
+    syncSessionState();
 
-    const intervalId = window.setInterval(
-      syncStoredSession,
-      SESSION_STORAGE_SYNC_INTERVAL_MS,
-    );
-
-    window.addEventListener('storage', syncStoredSession);
-    window.addEventListener('focus', syncStoredSession);
-    document.addEventListener('visibilitychange', syncStoredSession);
+    window.addEventListener('storage', syncSessionState);
+    window.addEventListener('focus', syncSessionState);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      window.clearInterval(intervalId);
-      window.removeEventListener('storage', syncStoredSession);
-      window.removeEventListener('focus', syncStoredSession);
-      document.removeEventListener('visibilitychange', syncStoredSession);
+      window.removeEventListener('storage', syncSessionState);
+      window.removeEventListener('focus', syncSessionState);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [status]);
+  }, [refreshCurrentUser]);
 
   const login = useCallback(
     async (payload: LoginPayload) => {
-      const session = await loginRequest(payload);
+      const currentUser = await loginRequest(payload);
 
-      setStoredSession(session);
-      lastAuthenticatedEmailRef.current = session.email;
-      setHasGuestAccess(hasGuestTokenCookie());
-      await refreshCurrentUser();
+      setAuthenticatedSessionHint();
+      lastAuthenticatedEmailRef.current = currentUser.email;
+      setLastAuthenticatedEmail(currentUser.email);
+      clearGuestAccessToken();
+
+      setUser(currentUser);
+      setStatus('authenticated');
+      setHasGuestAccess(false);
+      setExpiredSessionEmail(null);
+      notifyAuthStateChanged();
     },
-    [refreshCurrentUser],
+    [],
   );
 
   const register = useCallback(
     async (payload: RegisterPayload) => {
-      const session = await registerRequest(payload);
+      const currentUser = await registerRequest(payload);
 
-      setStoredSession(session);
-      lastAuthenticatedEmailRef.current = session.email;
-      setHasGuestAccess(hasGuestTokenCookie());
-      await refreshCurrentUser();
+      setAuthenticatedSessionHint();
+      lastAuthenticatedEmailRef.current = currentUser.email;
+      setLastAuthenticatedEmail(currentUser.email);
+      clearGuestAccessToken();
+
+      setUser(currentUser);
+      setStatus('authenticated');
+      setHasGuestAccess(false);
+      setExpiredSessionEmail(null);
+      notifyAuthStateChanged();
     },
-    [refreshCurrentUser],
+    [],
   );
 
   const logout = useCallback(async () => {
@@ -164,10 +181,12 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
   }, [clearAllSessionState]);
 
   const updateCurrentUser = useCallback((nextUser: User) => {
+    setAuthenticatedSessionHint();
     lastAuthenticatedEmailRef.current = nextUser.email;
+    setLastAuthenticatedEmail(nextUser.email);
     setUser(nextUser);
     setStatus('authenticated');
-    setHasGuestAccess(hasGuestTokenCookie());
+    setHasGuestAccess(false);
     setExpiredSessionEmail(null);
   }, []);
 

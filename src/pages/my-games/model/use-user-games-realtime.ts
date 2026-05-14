@@ -5,7 +5,6 @@ import type { UserGame } from '@entities/game';
 import { createSignalRConnection, startSignalRConnection, stopSignalRConnection } from '@shared/realtime';
 import {
   buildUserGamesHubUrl,
-  getUserGamesRealtimeAccessToken,
   userGamesRealtimeEventNames,
 } from './user-games-realtime';
 
@@ -23,9 +22,7 @@ export const useUserGamesRealtime = ({ onGameUpdated }: UseUserGamesRealtimePara
   }, [onGameUpdated]);
 
   useEffect(() => {
-    const connection = createSignalRConnection(buildUserGamesHubUrl(), {
-      getAccessToken: getUserGamesRealtimeAccessToken,
-    });
+    const connection = createSignalRConnection(buildUserGamesHubUrl());
 
     connectionRef.current = connection;
 

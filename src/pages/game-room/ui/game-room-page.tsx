@@ -76,21 +76,27 @@ export const GameRoomPage = () => {
 
       <Box className={styles.mainColumn}>
         <GameRoomSurface
-          inviteCode={room.inviteCode}
-          copiedItem={room.copiedItem}
           onlineParticipantsCount={room.onlineParticipantsCount}
           currentParticipantId={room.currentParticipantId}
           isCurrentParticipantMaster={room.isCurrentParticipantMaster}
-          canRevealCards={room.canRevealCards}
           selectedParticipantId={room.selectedParticipantId}
           pendingParticipantActionId={room.pendingParticipantActionId}
-          votingSystemLabel={room.votingSystemLabel}
           roundLabel={room.roundLabel}
           activeIssue={room.activeIssue}
           positionedParticipants={room.positionedParticipants}
           overflowParticipants={room.overflowParticipants}
           deckValues={room.deckValues}
-          onCopyCode={() => room.copyText(room.inviteCode, 'code')}
+          canRevealCurrentRound={room.canRevealCurrentRound}
+          canVoteInRound={room.canVoteInRound}
+          currentVoteValue={room.currentVoteValue}
+          votesCastCount={room.votesCastCount}
+          roundResult={room.roundResult}
+          isRoundRevealed={room.isRoundRevealed}
+          showAverage={room.showAverage}
+          isVoteSubmitting={room.voteSubmitting}
+          isRevealSubmitting={room.revealSubmitting}
+          onVoteSelect={room.submitVote}
+          onRevealVotes={room.revealVotes}
           onParticipantSelect={room.selectParticipant}
           onRemoveParticipant={room.removeParticipant}
           onTransferMaster={room.transferMaster}

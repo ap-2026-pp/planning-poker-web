@@ -24,7 +24,7 @@ export const votingSystemOptions = [
       { value: '55', label: '55' },
       { value: '89', label: '89' },
       { value: 'coffee', label: '☕', ariaLabel: 'Пауза' },
-      { value: 'unknown', label: '?', ariaLabel: 'Не знаю' },
+      { value: '?', label: '?', ariaLabel: 'Не знаю' },
     ],
   },
   {
@@ -39,7 +39,7 @@ export const votingSystemOptions = [
       { value: 'XL', label: 'XL' },
       { value: 'XXL', label: 'XXL' },
       { value: 'coffee', label: '☕', ariaLabel: 'Пауза' },
-      { value: 'unknown', label: '?', ariaLabel: 'Не знаю' },
+      { value: '?', label: '?', ariaLabel: 'Не знаю' },
     ],
   },
   {
@@ -57,7 +57,7 @@ export const votingSystemOptions = [
       { value: '64', label: '64' },
       { value: '128', label: '128' },
       { value: 'coffee', label: '☕', ariaLabel: 'Пауза' },
-      { value: 'unknown', label: '?', ariaLabel: 'Не знаю' },
+      { value: '?', label: '?', ariaLabel: 'Не знаю' },
     ],
   },
   {
@@ -65,7 +65,7 @@ export const votingSystemOptions = [
     label: 'Custom',
     hint: 'Власні значення карт',
     cards: [
-      { value: 'unknown', label: '?', ariaLabel: 'Не знаю' },
+      { value: '?', label: '?', ariaLabel: 'Не знаю' },
     ],
   },
 ] as const;
@@ -84,11 +84,26 @@ export const getVotingSystemDeck = (
         .filter(Boolean),
     )];
 
-    if (normalizedCards.length) {
-      return normalizedCards.map((card) => ({
-        value: card,
-        label: card,
-      }));
+    const deckCards = normalizedCards.map((card) => ({
+      value: card,
+      label: card === 'coffee' ? '☕' : card,
+      ...(card === 'coffee' ? { ariaLabel: 'Пауза' } : {}),
+      ...(card === '?' ? { ariaLabel: 'Не знаю' } : {}),
+    }));
+
+    const hasQuestionMark = normalizedCards.includes('?');
+    const hasCoffee = normalizedCards.includes('coffee');
+
+    if (!hasQuestionMark) {
+      deckCards.push({ value: '?', label: '?', ariaLabel: 'Не знаю' });
+    }
+
+    if (!hasCoffee) {
+      deckCards.push({ value: 'coffee', label: '☕', ariaLabel: 'Пауза' });
+    }
+
+    if (deckCards.length) {
+      return deckCards;
     }
   }
 

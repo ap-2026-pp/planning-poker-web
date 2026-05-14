@@ -1,75 +1,10 @@
-import type { StoredSession } from './auth-contracts';
-
-const SESSION_KEY = 'planning-poker.session';
 const GUEST_TOKEN_COOKIE_KEY = 'guestToken';
 const GUEST_TOKEN_COOKIE_NAMES = ['guestToken', 'guest_token', 'guest-token'];
+const LAST_AUTH_EMAIL_KEY = 'planning-poker.last-auth-email';
+const AUTH_SESSION_HINT_KEY = 'planning-poker.auth-session-hint';
+const AUTH_STATE_SYNC_KEY = 'planning-poker.auth-state-sync';
 
-const isStoredSession = (value: unknown): value is StoredSession => {
-  if (!value || typeof value !== 'object') {
-    return false;
-  }
-
-  const session = value as Partial<StoredSession>;
-
-  return Boolean(
-    session.accessToken &&
-      session.refreshToken &&
-      session.expiration &&
-      typeof session.accessToken === 'string' &&
-      typeof session.refreshToken === 'string' &&
-      typeof session.expiration === 'string',
-  );
-};
-
-export const getStoredSession = (): StoredSession | null => {
-  const rawValue = localStorage.getItem(SESSION_KEY);
-
-  if (!rawValue) {
-    return null;
-  }
-
-  try {
-    const session = JSON.parse(rawValue) as unknown;
-
-    if (!isStoredSession(session)) {
-      localStorage.removeItem(SESSION_KEY);
-      return null;
-    }
-
-    return session;
-  } catch {
-    localStorage.removeItem(SESSION_KEY);
-    return null;
-  }
-};
-
-export const getStoredSessionEmail = () => {
-  const rawValue = localStorage.getItem(SESSION_KEY);
-
-  if (!rawValue) {
-    return null;
-  }
-
-  try {
-    const value = JSON.parse(rawValue) as Partial<StoredSession>;
-
-    return typeof value.email === 'string' && value.email ? value.email : null;
-  } catch {
-    return null;
-  }
-};
-
-export const setStoredSession = (session: StoredSession) => {
-  localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-};
-
-export const clearStoredSession = () => {
-  localStorage.removeItem(SESSION_KEY);
-};
-
-export const getAccessToken = () => getStoredSession()?.accessToken ?? null;
-
-export const getGuestAccessToken = () => {
+const getCookieValue = (cookieNames: readonly string[]) => {
   if (typeof document === 'undefined') {
     return null;
   }
@@ -83,7 +18,7 @@ export const getGuestAccessToken = () => {
       return [key, valueParts.join('=')] as const;
     });
 
-  for (const cookieName of GUEST_TOKEN_COOKIE_NAMES) {
+  for (const cookieName of cookieNames) {
     const match = entries.find(([key]) => key === cookieName);
 
     if (match?.[1]) {
@@ -92,6 +27,10 @@ export const getGuestAccessToken = () => {
   }
 
   return null;
+};
+
+export const getGuestAccessToken = () => {
+  return getCookieValue(GUEST_TOKEN_COOKIE_NAMES);
 };
 
 export const setGuestAccessToken = (token: string) => {
@@ -114,4 +53,68 @@ export const clearGuestAccessToken = () => {
 
 export const hasGuestTokenCookie = () => {
   return Boolean(getGuestAccessToken());
+};
+
+export const getLastAuthenticatedEmail = () => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const value = window.localStorage.getItem(LAST_AUTH_EMAIL_KEY);
+
+  return value?.trim() || null;
+};
+
+export const hasAuthenticatedSessionHint = () => {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  return window.localStorage.getItem(AUTH_SESSION_HINT_KEY) === '1';
+};
+
+export const setAuthenticatedSessionHint = () => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.localStorage.setItem(AUTH_SESSION_HINT_KEY, '1');
+};
+
+export const clearAuthenticatedSessionHint = () => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.localStorage.removeItem(AUTH_SESSION_HINT_KEY);
+};
+
+export const setLastAuthenticatedEmail = (email: string) => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  const normalizedEmail = email.trim();
+
+  if (!normalizedEmail) {
+    return;
+  }
+
+  window.localStorage.setItem(LAST_AUTH_EMAIL_KEY, normalizedEmail);
+};
+
+export const clearLastAuthenticatedEmail = () => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.localStorage.removeItem(LAST_AUTH_EMAIL_KEY);
+};
+
+export const notifyAuthStateChanged = () => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.localStorage.setItem(AUTH_STATE_SYNC_KEY, String(Date.now()));
 };

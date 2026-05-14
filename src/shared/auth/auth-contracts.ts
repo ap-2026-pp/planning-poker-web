@@ -9,10 +9,3 @@ export type ChangePasswordPayload = {
   oldPassword: string;
   newPassword: string;
 };
-
-export type StoredSession = {
-  accessToken: string;
-  refreshToken: string;
-  expiration: string;
-  email: string;
-};

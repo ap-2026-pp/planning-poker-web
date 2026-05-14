@@ -25,6 +25,7 @@ export enum IssuesPolicy {
 export type Game = {
   id: string;
   name?: string | null;
+  customValues?: string | null;
   votingSystem: VotingSystem;
   inviteCode?: string | null;
   revealPolicy: RevealPolicy;
@@ -33,6 +34,8 @@ export type Game = {
   showAverage: boolean;
   showCountdownAnimation: boolean;
   enableFunFeatures: boolean;
+  defaultTimerMinutes: number;
+  autoResetTimer?: boolean;
   isActive: boolean;
   createdAt: string;
   createdBy?: string | null;
@@ -41,25 +44,29 @@ export type Game = {
 };
 
 export type CreateGamePayload = {
-  name: string;
-  hostDisplayName?: string;
+  displayName: string;
   votingSystem: VotingSystem;
+  customValues?: string;
   revealPolicy: RevealPolicy;
   issuesPolicy: IssuesPolicy;
   autoRevealCards: boolean;
   showAverage: boolean;
   showCountdownAnimation: boolean;
   enableFunFeatures: boolean;
+  defaultTimerMinutes: number;
 };
 
 export type UpdateGamePayload = {
   name: string;
   votingSystem: VotingSystem;
+  customValues?: string;
   revealPolicy: RevealPolicy;
   issuesPolicy: IssuesPolicy;
   autoRevealCards: boolean;
   showAverage: boolean;
   showCountdownAnimation: boolean;
+  defaultTimerMinutes: number;
+  autoResetTimer: boolean;
   enableFunFeatures: boolean;
   isActive?: boolean;
 

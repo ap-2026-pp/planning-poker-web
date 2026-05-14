@@ -2,16 +2,19 @@ import axios, { AxiosHeaders, type AxiosError, type AxiosRequestConfig, type Int
 
 import { env } from '@shared/config/env';
 import {
-  getValidAccessToken,
-  invalidateGuestSession,
   invalidateStoredSession,
-  refreshStoredSession,
+  invalidateGuestSession,
+  refreshAuthenticatedSession,
 } from '@shared/auth/session-refresh';
-import { getGuestAccessToken, getStoredSession } from '@shared/auth/token-storage';
+import {
+  getGuestAccessToken,
+  hasAuthenticatedSessionHint,
+} from '@shared/auth/token-storage';
 import { isApiEnvelope } from '@shared/model/api';
 
 const apiClient = axios.create({
   baseURL: env.apiUrl,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -36,29 +39,27 @@ const setAuthorizationHeader = (
   };
 };
 
-apiClient.interceptors.request.use(async (config) => {
-  let accessToken: string | null = null;
-
-  try {
-    accessToken = await getValidAccessToken();
-  } catch {
-    accessToken = null;
+const clearAuthorizationHeader = (config: AxiosRequestConfig | InternalAxiosRequestConfig) => {
+  if (config.headers instanceof AxiosHeaders) {
+    config.headers.delete('Authorization');
+    return;
   }
 
+  if (config.headers && 'Authorization' in config.headers) {
+    delete config.headers.Authorization;
+  }
+};
+
+apiClient.interceptors.request.use((config) => {
   const guestAccessToken = getGuestAccessToken();
 
-  if (accessToken) {
-
-    config.headers.Authorization = `Bearer ${accessToken}`;
-
-  } else if (guestAccessToken) {
-
-    config.headers.Authorization = `Bearer ${guestAccessToken}`;
-
+  if (guestAccessToken) {
+    setAuthorizationHeader(config, guestAccessToken);
+  } else {
+    clearAuthorizationHeader(config);
   }
 
   return config;
-
 });
 
 apiClient.interceptors.response.use(
@@ -99,49 +100,41 @@ apiClient.interceptors.response.use(
   async (error: AxiosError<unknown>) => {
     const originalRequest = error.config as RetriableRequestConfig | undefined;
     const isUnauthorized = error.response?.status === 401;
+    const requestUrl = originalRequest?.url ?? '';
+    const isLoginRequest = requestUrl.includes('/auth/login');
+    const isRegisterRequest = requestUrl.includes('/auth/register');
     const isRefreshRequest = originalRequest?.url?.includes('/auth/refresh');
+    const guestAccessToken = getGuestAccessToken();
+    const hasGuestSession = Boolean(guestAccessToken);
+    const hasAuthSessionHint = hasAuthenticatedSessionHint();
+    const shouldPreserveSession = isLoginRequest || isRegisterRequest;
 
     if (
       isUnauthorized &&
       originalRequest &&
       !originalRequest._retry &&
       !isRefreshRequest &&
-      getStoredSession()?.refreshToken
+      hasAuthSessionHint &&
+      !hasGuestSession &&
+      !shouldPreserveSession
     ) {
       originalRequest._retry = true;
 
       try {
-        const refreshedSession = await refreshStoredSession(true);
-
-        if (refreshedSession?.accessToken) {
-          setAuthorizationHeader(originalRequest, refreshedSession.accessToken);
+        const refreshed = await refreshAuthenticatedSession();
+        if (refreshed) {
+          clearAuthorizationHeader(originalRequest);
           return apiClient(originalRequest);
         }
       } catch {
-        // handled by session refresh manager
-      }
-
-      const guestAccessToken = getGuestAccessToken();
-
-      if (guestAccessToken) {
-        setAuthorizationHeader(originalRequest, guestAccessToken);
-        return apiClient(originalRequest);
+        // handled by refresh manager
       }
     }
 
-    if (isUnauthorized) {
-      const hasStoredSession = Boolean(getStoredSession());
-      const hasGuestSession = Boolean(getGuestAccessToken());
-
-      if (hasStoredSession) {
-        invalidateStoredSession();
-      }
-
+    if (isUnauthorized && !shouldPreserveSession) {
       if (hasGuestSession) {
         invalidateGuestSession();
-      }
-
-      if (!hasStoredSession && !hasGuestSession) {
+      } else if (hasAuthSessionHint) {
         invalidateStoredSession();
       }
     }

@@ -2,11 +2,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useGameRoomRealtime } from './use-game-room-realtime';
 
-import { IssuesPolicy, RevealPolicy, type Game, type GameInvite } from '@entities/game';
+import { IssuesPolicy, RevealPolicy, type Game, type GameInvite, type RoomState } from '@entities/game';
 import type { ImportPlaneIssuesPayload, Issue } from '@entities/issue';
 import { ParticipantRole, type GameParticipant } from '@entities/participant';
 import {
+  createVoteRequest,
   createIssueRequest,
+  deleteVoteRequest,
   deleteGameParticipantRequest,
   deleteIssueRequest,
   exportIssuesToCsvRequest,
@@ -14,8 +16,10 @@ import {
   getGameRequest,
   getIssuesRequest,
   getParticipantsRequest,
+  getRoomStateRequest,
   importPlaneIssuesRequest,
   leaveGameRequest,
+  revealCardsRequest,
   reorderIssuesRequest,
   setIssueActiveRequest,
   setSpectatorModeRequest,
@@ -57,6 +61,33 @@ type RoomNotification = {
   tone: 'info' | 'success' | 'warning';
 };
 
+const applyRoomStateToParticipants = (
+  currentParticipants: GameParticipant[],
+  roomState: RoomState | null,
+) => {
+  if (!roomState) {
+    return currentParticipants.map((participant) => ({
+      ...participant,
+      hasVoted: false,
+      voteValue: null,
+    }));
+  }
+
+  const voteStatusByParticipantId = new Map(
+    roomState.participants.map((participant) => [participant.participantId, participant]),
+  );
+
+  return currentParticipants.map((participant) => {
+    const voteStatus = voteStatusByParticipantId.get(participant.id);
+
+    return {
+      ...participant,
+      hasVoted: voteStatus?.hasVoted ?? false,
+      voteValue: voteStatus?.voteValue ?? null,
+    };
+  });
+};
+
 export const useGameRoomPage = () => {
   const { gameId = '' } = useParams();
   const navigate = useNavigate();
@@ -81,6 +112,7 @@ export const useGameRoomPage = () => {
   const [participants, setParticipants] = useState<GameParticipant[]>([]);
   const [issues, setIssues] = useState<Issue[]>([]);
   const [invite, setInvite] = useState<GameInvite | null>(null);
+  const [roomState, setRoomState] = useState<RoomState | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sidebarView, setSidebarView] = useState<SidebarView>('issues');
@@ -90,6 +122,9 @@ export const useGameRoomPage = () => {
   const [selectedParticipantId, setSelectedParticipantId] = useState<string | null>(null);
   const [pendingParticipantActionId, setPendingParticipantActionId] = useState<string | null>(null);
   const [notification, setNotification] = useState<RoomNotification | null>(null);
+  const [voteSubmitting, setVoteSubmitting] = useState(false);
+  const [revealSubmitting, setRevealSubmitting] = useState(false);
+  const [voteOverride, setVoteOverride] = useState<string | null | undefined>(undefined);
 
   const resetCopiedTimeoutRef = useRef<number | null>(null);
   const currentParticipantIdRef = useRef<string | null>(null);
@@ -97,6 +132,28 @@ export const useGameRoomPage = () => {
   const issuesRef = useRef<Issue[]>([]);
 
   const storedParticipantSession = getCurrentRoomParticipantSession();
+
+  const applyRoundState = useCallback(
+    (nextRoomState: RoomState | null, nextParticipants?: GameParticipant[]) => {
+      setRoomState(nextRoomState);
+
+      if (nextParticipants) {
+        setParticipants(applyRoomStateToParticipants(nextParticipants, nextRoomState));
+        return;
+      }
+
+      setParticipants((current) => applyRoomStateToParticipants(current, nextRoomState));
+    },
+    [],
+  );
+
+  const reloadRoundState = useCallback(async () => {
+    const nextRoomState = await getRoomStateRequest(gameId);
+
+    applyRoundState(nextRoomState);
+
+    return nextRoomState;
+  }, [applyRoundState, gameId]);
 
   const reloadRoom = useCallback(async () => {
     setLoading(true);
@@ -107,16 +164,22 @@ export const useGameRoomPage = () => {
       getParticipantsRequest(gameId),
       getIssuesRequest(gameId),
       getGameInviteRequest(gameId),
+      getRoomStateRequest(gameId),
     ]);
 
-    const [gameResult, participantsResult, issuesResult, inviteResult] = results;
+    const [gameResult, participantsResult, issuesResult, inviteResult, roomStateResult] = results;
 
     if (gameResult.status === 'fulfilled') {
       setGame(gameResult.value);
     }
 
     if (participantsResult.status === 'fulfilled') {
-      setParticipants(participantsResult.value);
+      applyRoundState(
+        roomStateResult.status === 'fulfilled' ? roomStateResult.value : null,
+        participantsResult.value,
+      );
+    } else if (roomStateResult.status === 'fulfilled') {
+      applyRoundState(roomStateResult.value);
     }
 
     if (issuesResult.status === 'fulfilled') {
@@ -138,7 +201,7 @@ export const useGameRoomPage = () => {
     }
 
     setLoading(false);
-  }, [gameId]);
+  }, [applyRoundState, gameId]);
 
   useEffect(() => {
     const syncLayout = () => {
@@ -156,6 +219,39 @@ export const useGameRoomPage = () => {
   useEffect(() => {
     void reloadRoom();
   }, [reloadRoom]);
+
+  useEffect(() => {
+    if (!gameId) {
+      return;
+    }
+
+    let isCancelled = false;
+
+    const syncRoundState = async () => {
+      if (document.visibilityState !== 'visible') {
+        return;
+      }
+
+      try {
+        const nextRoomState = await getRoomStateRequest(gameId);
+
+        if (!isCancelled) {
+          applyRoundState(nextRoomState);
+        }
+      } catch {
+        // Room state polling is best-effort and should not disrupt the page.
+      }
+    };
+
+    const intervalId = window.setInterval(() => {
+      void syncRoundState();
+    }, 2500);
+
+    return () => {
+      isCancelled = true;
+      window.clearInterval(intervalId);
+    };
+  }, [applyRoundState, gameId]);
 
   useEffect(() => {
     setRoomTitle(game?.name || 'Кімната гри');
@@ -283,14 +379,29 @@ export const useGameRoomPage = () => {
 
   const activeIssueIndex = sortedIssues.findIndex((issue) => issue.isCurrent);
   const activeIssue = activeIssueIndex >= 0 ? sortedIssues[activeIssueIndex] : null;
+  const resolvedActiveIssue = roomState?.activeIssue ?? activeIssue;
   const roundLabel = getRoundLabel(sortedIssues, activeIssueIndex);
 
   const votingSystemLabel = getGameRoomVotingLabel(game?.votingSystem);
 
   const deckValues = getGameRoomDeck(
     game?.votingSystem,
-    (game as typeof game & { customCards?: string[] | null })?.customCards ?? null,
+    game?.customValues
+      ?.split(',')
+      .map((card) => card.trim())
+      .filter(Boolean) ?? null,
   );
+  const canManageIssuesInRound = roomState?.canManage ?? canManageIssues;
+  const canRevealCurrentRound = roomState?.canReveal ?? canRevealCards;
+  const canVoteInRound = roomState?.canVote ?? Boolean(
+    currentParticipant &&
+    currentParticipant.role !== ParticipantRole.Spectator &&
+    resolvedActiveIssue,
+  );
+  const currentVoteValue = voteOverride !== undefined ? voteOverride : roomState?.myVote ?? null;
+  const votesCastCount = roomState?.votedCount ?? participants.filter((participant) => participant.hasVoted).length;
+  const roundResult = roomState?.result ?? null;
+  const isRoundRevealed = roomState?.isRevealed ?? false;
 
   useEffect(() => {
     participantsRef.current = participants;
@@ -299,6 +410,10 @@ export const useGameRoomPage = () => {
   useEffect(() => {
     issuesRef.current = issues;
   }, [issues]);
+
+  useEffect(() => {
+    setVoteOverride(undefined);
+  }, [roomState?.activeIssue?.id, roomState?.isRevealed]);
 
   useEffect(() => {
     if (
@@ -364,13 +479,18 @@ export const useGameRoomPage = () => {
   useEffect(() => {
     setToggleRoomParticipantSpectatorMode(async (isSpectator) => {
       await setSpectatorModeRequest(gameId, isSpectator);
-      setParticipants(await getParticipantsRequest(gameId));
+      const [nextParticipants, nextRoomState] = await Promise.all([
+        getParticipantsRequest(gameId),
+        getRoomStateRequest(gameId),
+      ]);
+
+      applyRoundState(nextRoomState, nextParticipants);
     });
 
     return () => {
       setToggleRoomParticipantSpectatorMode(null);
     };
-  }, [gameId, setToggleRoomParticipantSpectatorMode]);
+  }, [applyRoundState, gameId, setToggleRoomParticipantSpectatorMode]);
 
   const setCopiedState = (nextValue: CopiedItem) => {
     setCopiedItem(nextValue);
@@ -642,6 +762,74 @@ export const useGameRoomPage = () => {
     },
     [gameId],
   );
+
+  const submitVote = useCallback(
+    async (nextVoteValue: string | null) => {
+      const currentIssueId = roomState?.activeIssue?.id ?? resolvedActiveIssue?.id;
+
+      if (!currentIssueId) {
+        return;
+      }
+
+      setVoteSubmitting(true);
+      setVoteOverride(nextVoteValue);
+
+      try {
+        if (nextVoteValue) {
+          await createVoteRequest(gameId, currentIssueId, {
+            estimate: nextVoteValue,
+          });
+        } else {
+          await deleteVoteRequest(gameId, currentIssueId);
+        }
+
+        await reloadRoundState();
+        setVoteOverride(undefined);
+      } catch (requestError) {
+        setVoteOverride(undefined);
+        setError(
+          requestError instanceof Error
+            ? requestError.message
+            : 'Не вдалося оновити голос',
+        );
+
+        throw requestError;
+      } finally {
+        setVoteSubmitting(false);
+      }
+    },
+    [gameId, reloadRoundState, resolvedActiveIssue?.id, roomState?.activeIssue?.id],
+  );
+
+  const revealVotes = useCallback(async () => {
+    setRevealSubmitting(true);
+
+    try {
+      const nextRoomState = await revealCardsRequest(gameId);
+      const nextIssues = await getIssuesRequest(gameId).catch(() => null);
+
+      applyRoundState(nextRoomState);
+
+      if (nextIssues) {
+        setIssues(nextIssues);
+      }
+
+      setNotification({
+        message: 'Карти відкрито',
+        tone: 'success',
+      });
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : 'Не вдалося відкрити карти',
+      );
+
+      throw requestError;
+    } finally {
+      setRevealSubmitting(false);
+    }
+  }, [applyRoundState, gameId]);
 
   const addIssue = useCallback(
     async (payload: { title: string }) => {
@@ -978,6 +1166,7 @@ export const useGameRoomPage = () => {
 
       try {
         await setIssueActiveRequest(gameId, issueId);
+        await reloadRoundState();
 
         setNotification({
           message: isTurningOff ? 'Оцінювання зупинено' : 'Оцінювання розпочато',
@@ -994,7 +1183,7 @@ export const useGameRoomPage = () => {
         throw requestError;
       }
     },
-    [gameId],
+    [gameId, reloadRoundState],
   );
 
   const reorderIssue = useCallback(
@@ -1104,7 +1293,7 @@ export const useGameRoomPage = () => {
     currentParticipantId: currentParticipant?.id ?? null,
     isCurrentParticipantMaster,
     canRevealCards,
-    canManageIssues,
+    canManageIssues: canManageIssuesInRound,
     selectedParticipantId,
     pendingParticipantActionId,
     selectParticipant,
@@ -1124,10 +1313,21 @@ export const useGameRoomPage = () => {
     sortedIssues,
     positionedParticipants,
     overflowParticipants,
-    activeIssue,
+    activeIssue: resolvedActiveIssue,
     roundLabel,
     votingSystemLabel,
     deckValues,
+    canRevealCurrentRound,
+    canVoteInRound,
+    currentVoteValue,
+    votesCastCount,
+    roundResult,
+    isRoundRevealed,
+    showAverage: game?.showAverage ?? true,
+    voteSubmitting,
+    revealSubmitting,
+    submitVote,
+    revealVotes,
     notification,
     closeNotification: () => setNotification(null),
     connectionStatus: realtime.connectionStatus,

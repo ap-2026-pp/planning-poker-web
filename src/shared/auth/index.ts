@@ -2,7 +2,6 @@ export type {
   ChangePasswordPayload,
   LoginPayload,
   RegisterPayload,
-  StoredSession,
 } from './auth-contracts';
 export {
   buildAuthRedirectPath,
@@ -20,21 +19,22 @@ export { SessionContext } from './ui/session-context';
 export type { AuthStatus, SessionContextValue } from './ui/session-context';
 export { ProtectedRoute } from './ui/protected-route';
 export {
+  clearAuthenticatedSessionHint,
   clearGuestAccessToken,
-  clearStoredSession,
-  getAccessToken,
   getGuestAccessToken,
-  getStoredSessionEmail,
-  getStoredSession,
+  getLastAuthenticatedEmail,
+  hasAuthenticatedSessionHint,
   hasGuestTokenCookie,
+  notifyAuthStateChanged,
+  clearLastAuthenticatedEmail,
+  setAuthenticatedSessionHint,
+  setLastAuthenticatedEmail,
   setGuestAccessToken,
-  setStoredSession,
 } from './token-storage';
 export {
-  getValidAccessToken,
+  refreshAuthenticatedSession,
   invalidateGuestSession,
   invalidateStoredSession,
-  refreshStoredSession,
   subscribeToSessionInvalidated,
 } from './session-refresh';
 export { useSession } from './use-session';

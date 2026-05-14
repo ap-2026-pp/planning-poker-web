@@ -14,6 +14,7 @@ import {
     gameRoomRealtimeEventNames,
     getGameRoomRealtimeAccessToken,
 } from './game-room-realtime';
+import { hasGuestTokenCookie } from '@shared/auth';
 
 type ConnectionStatus = 'connected' | 'connecting' | 'reconnecting' | 'disconnected';
 
@@ -148,9 +149,14 @@ export const useGameRoomRealtime = ({
             return;
         }
 
-        const nextConnection = createSignalRConnection(buildGameRoomHubUrl(gameId), {
-            getAccessToken: getGameRoomRealtimeAccessToken,
-        });
+        const nextConnection = createSignalRConnection(
+            buildGameRoomHubUrl(gameId),
+            hasGuestTokenCookie()
+                ? {
+                    getAccessToken: getGameRoomRealtimeAccessToken,
+                }
+                : undefined,
+        );
 
         attachHandlers(nextConnection);
         connectionRef.current = nextConnection;

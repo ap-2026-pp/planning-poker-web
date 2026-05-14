@@ -1,5 +1,4 @@
 import { ParticipantRole, type GameParticipant } from '@entities/participant';
-import { getValidAccessToken } from '@shared/auth/session-refresh';
 import { getGuestAccessToken } from '@shared/auth/token-storage';
 import { env } from '@shared/config/env';
 
@@ -22,11 +21,7 @@ export const buildGameRoomHubUrl = (gameId: string) => {
 };
 
 export const getGameRoomRealtimeAccessToken = async () => {
-  try {
-    return (await getValidAccessToken()) ?? getGuestAccessToken();
-  } catch {
-    return getGuestAccessToken();
-  }
+  return getGuestAccessToken();
 };
 
 export const upsertGameRoomParticipant = (

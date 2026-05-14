@@ -26,7 +26,6 @@ import {
 } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import type { CreateGamePayload, UpdateGamePayload } from '@entities/game';
 import { IssuesPolicy, RevealPolicy, VotingSystem, votingSystemOptions } from '@entities/game';
 import type { GameParticipant } from '@entities/participant';
 import {
@@ -44,8 +43,19 @@ import styles from './game-form.module.css';
 
 export type GameFormMode = 'create' | 'edit';
 
-type GameFormValues = UpdateGamePayload & {
-  hostDisplayName: string;
+type GameFormValues = {
+  name: string;
+  votingSystem: VotingSystem;
+  customValues: string;
+  revealPolicy: RevealPolicy;
+  issuesPolicy: IssuesPolicy;
+  autoRevealCards: boolean;
+  showAverage: boolean;
+  showCountdownAnimation: boolean;
+  defaultTimerMinutes: string;
+  autoResetTimer: boolean;
+  enableFunFeatures: boolean;
+  isActive: boolean;
   revealAllowedParticipantIds: string[];
   issuesAllowedParticipantIds: string[];
 };
@@ -66,13 +76,15 @@ const EVERYONE_VALUE = '__everyone__';
 
 const initialValues: GameFormValues = {
   name: '',
-  hostDisplayName: '',
   votingSystem: VotingSystem.Fibonacci,
+  customValues: '',
   revealPolicy: RevealPolicy.MasterOnly,
   issuesPolicy: IssuesPolicy.MasterOnly,
   autoRevealCards: true,
   showAverage: true,
   showCountdownAnimation: true,
+  defaultTimerMinutes: '1',
+  autoResetTimer: false,
   isActive: true,
   enableFunFeatures: true,
   revealAllowedParticipantIds: [],
@@ -220,6 +232,15 @@ const getNextAccessState = <TPolicy extends RevealPolicy | IssuesPolicy>(
   };
 };
 
+const safeTrim = (value: string | null | undefined) => value?.trim() ?? '';
+
+const normalizeCustomValues = (value: string | null | undefined) =>
+  safeTrim(value)
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .join(', ');
+
 type AccessSelectFieldProps = {
   label: string;
   helperText: string;
@@ -325,7 +346,7 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
 
   const [values, setValues] = useState<GameFormValues>(initialValues);
   const [participants, setParticipants] = useState<GameParticipant[]>([]);
-  const [errors, setErrors] = useState<FormErrors<CreateGamePayload>>({});
+  const [errors, setErrors] = useState<FormErrors<GameFormValues>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [loadingInitial, setLoadingInitial] = useState(mode === 'edit');
@@ -361,13 +382,15 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
 
         setValues({
           name: game.name || '',
-          hostDisplayName: '',
           revealPolicy: game.revealPolicy,
           issuesPolicy: game.issuesPolicy,
           votingSystem: game.votingSystem,
+          customValues: game.customValues ?? '',
           autoRevealCards: game.autoRevealCards,
           showAverage: game.showAverage,
           showCountdownAnimation: game.showCountdownAnimation,
+          defaultTimerMinutes: String(game.defaultTimerMinutes ?? 1),
+          autoResetTimer: game.autoResetTimer ?? false,
           isActive: game.isActive,
           enableFunFeatures: game.enableFunFeatures,
           revealAllowedParticipantIds: gameParticipants
@@ -400,7 +423,7 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
   }, [gameId, mode]);
 
   const handleTextChange =
-    (field: 'name' | 'hostDisplayName') =>
+    (field: 'name' | 'customValues') =>
       (event: ChangeEvent<HTMLInputElement>) => {
         setValues((current) => ({ ...current, [field]: event.target.value }));
         setErrors((current) => ({ ...current, [field]: undefined }));
@@ -413,6 +436,7 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
         | 'autoRevealCards'
         | 'showAverage'
         | 'showCountdownAnimation'
+        | 'autoResetTimer'
         | 'enableFunFeatures',
     ) =>
       (_event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
@@ -476,7 +500,16 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
     setSubmitError(null);
 
     try {
-      const nextErrors = await validateSchema(createGameSchema, values);
+      const normalizedName = safeTrim(values.name);
+      const normalizedCustomValues = normalizeCustomValues(values.customValues);
+      const defaultTimerMinutes = Number(values.defaultTimerMinutes);
+
+      const nextErrors = await validateSchema(createGameSchema, {
+        ...values,
+        name: normalizedName,
+        customValues: normalizedCustomValues,
+        defaultTimerMinutes,
+      });
 
       if (Object.keys(nextErrors).length) {
         setErrors(nextErrors);
@@ -485,15 +518,17 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
 
       if (mode === 'create') {
         const createdGame = await createGameRequest({
-          name: values.name.trim(),
-          hostDisplayName: values.hostDisplayName.trim() || undefined,
+          displayName: normalizedName,
           revealPolicy: values.revealPolicy,
           issuesPolicy: values.issuesPolicy,
           votingSystem: values.votingSystem,
+          customValues:
+            values.votingSystem === VotingSystem.Custom ? normalizedCustomValues : undefined,
           autoRevealCards: values.autoRevealCards,
           showAverage: values.showAverage,
           showCountdownAnimation: values.showCountdownAnimation,
           enableFunFeatures: values.enableFunFeatures,
+          defaultTimerMinutes,
         });
 
         await navigate(appRoutes.gameRoom(createdGame.id), {
@@ -508,13 +543,17 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
       }
 
       await updateGameRequest(gameId, {
-        name: values.name.trim(),
+        name: normalizedName,
         votingSystem: values.votingSystem,
+        customValues:
+          values.votingSystem === VotingSystem.Custom ? normalizedCustomValues : undefined,
         revealPolicy: values.revealPolicy,
         issuesPolicy: values.issuesPolicy,
         autoRevealCards: values.autoRevealCards,
         showAverage: values.showAverage,
         showCountdownAnimation: values.showCountdownAnimation,
+        defaultTimerMinutes,
+        autoResetTimer: values.autoResetTimer,
         isActive: values.isActive,
         enableFunFeatures: values.enableFunFeatures,
 
@@ -585,11 +624,11 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
       >
         <Box className={styles.formContent}>
           <Grid container spacing={2}>
-            <Grid size={{ xs: 12, md: mode === 'create' ? 7 : 12 }}>
+            <Grid size={{ xs: 12 }}>
               <TextField
                 className={formStyles.field}
                 label="Назва гри"
-                value={values.name}
+                value={values.name ?? ''}
                 onChange={handleTextChange('name')}
                 error={Boolean(errors.name)}
                 helperText={errors.name}
@@ -597,21 +636,6 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
                 placeholder="Наприклад, Sprint 12 Planning"
               />
             </Grid>
-
-            {mode === 'create' ? (
-              <Grid size={{ xs: 12, md: 5 }}>
-                <TextField
-                  className={formStyles.field}
-                  label="Імʼя хоста (опціонально)"
-                  value={values.hostDisplayName}
-                  onChange={handleTextChange('hostDisplayName')}
-                  error={Boolean(errors.hostDisplayName)}
-                  helperText={errors.hostDisplayName}
-                  fullWidth
-                  placeholder="Як вас бачитиме команда"
-                />
-              </Grid>
-            ) : null}
 
             <Grid size={{ xs: 12 }}>
               <TextField
@@ -634,6 +658,21 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
                 ))}
               </TextField>
             </Grid>
+
+            {values.votingSystem === VotingSystem.Custom ? (
+              <Grid size={{ xs: 12 }}>
+                <TextField
+                  className={formStyles.field}
+                  label="Власні значення карток"
+                  value={values.customValues ?? ''}
+                  onChange={handleTextChange('customValues')}
+                  error={Boolean(errors.customValues)}
+                  helperText={errors.customValues || 'Наприклад: 1, 2, 3, 5, 8 або XS, S, M, L'}
+                  fullWidth
+                  placeholder="Введіть значення через кому"
+                />
+              </Grid>
+            ) : null}
           </Grid>
 
           <Box className={styles.advancedSection}>
@@ -646,7 +685,7 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
                   Додаткові налаштування
                 </Typography>
                 <Typography className={styles.advancedHint}>
-                  Права доступу, автовідкриття оцінок, середнє значення та countdown перед reveal.
+                  Права доступу, поведінка таймера, автовідкриття оцінок, середнє значення та countdown перед reveal.
                 </Typography>
               </Stack>
 
@@ -689,6 +728,23 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
                     participants={participants}
                     mode={mode}
                     onChange={handleIssuesAccessChange}
+                  />
+                </Box>
+
+                <Box className={styles.optionRow}>
+                  <Stack className={styles.optionCopy}>
+                    <Typography className={styles.optionTitle}>
+                      Автоскидання таймера
+                    </Typography>
+                    <Typography className={styles.optionHint}>
+                      Після завершення раунду таймер автоматично повернеться до стартового значення.
+                    </Typography>
+                  </Stack>
+
+                  <Switch
+                    checked={values.autoResetTimer}
+                    onChange={handleBooleanSwitchChange('autoResetTimer')}
+                    className={styles.optionSwitch}
                   />
                 </Box>
 

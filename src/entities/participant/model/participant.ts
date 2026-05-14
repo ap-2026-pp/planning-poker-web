@@ -12,7 +12,8 @@ export type GameParticipant = {
   joinedAt: string;
   isConnected: boolean;
   isActive?: boolean;
-  voteValue?: string;
+  hasVoted?: boolean;
+  voteValue?: string | null;
   removedAt?: string;
   canRevealCards: boolean;
   canManageIssues: boolean;

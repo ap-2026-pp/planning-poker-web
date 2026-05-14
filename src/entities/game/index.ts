@@ -17,3 +17,9 @@ export {
   votingSystemOptions,
   type VoteDeckCard,
 } from './model/voting';
+export type {
+  RoomParticipantVoteStatus,
+  RoomRoundResult,
+  RoomState,
+  RoomTimerState,
+} from './model/room-state';
