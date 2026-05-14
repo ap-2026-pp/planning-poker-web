@@ -1,7 +1,7 @@
 import { Box, Menu, MenuItem } from '@mui/material';
 import { useEffect, useState, type MouseEvent } from 'react';
 
-import type { RoomRoundResult, VoteDeckCard } from '@entities/game';
+import type { VoteDeckCard } from '@entities/game';
 import { getIssueToneIndex, type Issue } from '@entities/issue';
 import type { GameParticipant } from '@entities/participant';
 import type { PositionedParticipant } from '@widgets/game-room-surface';
@@ -27,13 +27,19 @@ type GameRoomSurfaceProps = {
   canVoteInRound: boolean;
   currentVoteValue: string | null;
   votesCastCount: number;
-  roundResult: RoomRoundResult | null;
   isRoundRevealed: boolean;
-  showAverage: boolean;
   isVoteSubmitting: boolean;
   isRevealSubmitting: boolean;
+  canOpenResult: boolean;
+  canResetCurrentRound: boolean;
+  canGoToNextIssue: boolean;
+  isResetRoundSubmitting: boolean;
+  isNextIssueSubmitting: boolean;
   onVoteSelect: (voteValue: string | null) => Promise<void>;
   onRevealVotes: () => Promise<void>;
+  onOpenResult: () => void;
+  onResetRound: () => Promise<void>;
+  onGoToNextIssue: () => Promise<void>;
   onParticipantSelect: (participantId: string) => void;
   onRemoveParticipant: (participantId: string) => Promise<void>;
   onTransferMaster: (participantId: string) => Promise<void>;
@@ -55,13 +61,19 @@ export const GameRoomSurface = ({
   canVoteInRound,
   currentVoteValue,
   votesCastCount,
-  roundResult,
   isRoundRevealed,
-  showAverage,
   isVoteSubmitting,
   isRevealSubmitting,
+  canOpenResult,
+  canResetCurrentRound,
+  canGoToNextIssue,
+  isResetRoundSubmitting,
+  isNextIssueSubmitting,
   onVoteSelect,
   onRevealVotes,
+  onOpenResult,
+  onResetRound,
+  onGoToNextIssue,
   onParticipantSelect,
   onRemoveParticipant,
   onTransferMaster,
@@ -171,9 +183,15 @@ export const GameRoomSurface = ({
           canRevealVotes={canRevealVotes}
           isRevealSubmitting={isRevealSubmitting}
           isRoundRevealed={isRoundRevealed}
-          roundResult={roundResult}
-          showAverage={showAverage}
+          canOpenResult={canOpenResult}
+          canResetCurrentRound={canResetCurrentRound}
+          canGoToNextIssue={canGoToNextIssue}
+          isResetRoundSubmitting={isResetRoundSubmitting}
+          isNextIssueSubmitting={isNextIssueSubmitting}
           onRevealVotes={onRevealVotes}
+          onOpenResult={onOpenResult}
+          onResetRound={onResetRound}
+          onGoToNextIssue={onGoToNextIssue}
         />
       </Box>
 

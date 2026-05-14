@@ -27,7 +27,7 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { IssuesPolicy, RevealPolicy, VotingSystem, votingSystemOptions } from '@entities/game';
-import type { GameParticipant } from '@entities/participant';
+import { ParticipantRole, type GameParticipant } from '@entities/participant';
 import {
   createGameRequest,
   getGameRequest,
@@ -258,6 +258,10 @@ const AccessSelectField = ({
   mode,
   onChange,
 }: AccessSelectFieldProps) => {
+  const selectableParticipants = participants.filter(
+    (participant) => participant.role !== ParticipantRole.Master,
+  );
+
   return (
     <Box className={styles.accessFieldWrap}>
       <TextField
@@ -268,7 +272,7 @@ const AccessSelectField = ({
         onChange={(event) => onChange(event.target.value)}
         SelectProps={{
           multiple: true,
-          renderValue: (selected) => renderAccessValue(selected, participants),
+          renderValue: (selected) => renderAccessValue(selected, selectableParticipants),
           MenuProps: {
             PaperProps: {
               className: styles.accessMenuPaper,
@@ -299,7 +303,7 @@ const AccessSelectField = ({
         </MenuItem>
 
         {mode === 'edit' ? (
-          participants.map((participant) => (
+          selectableParticipants.map((participant) => (
             <MenuItem
               key={participant.id}
               value={participant.id}
@@ -394,10 +398,16 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
           isActive: game.isActive,
           enableFunFeatures: game.enableFunFeatures,
           revealAllowedParticipantIds: gameParticipants
-            .filter((participant) => participant.canRevealCards)
+            .filter(
+              (participant) =>
+                participant.role !== ParticipantRole.Master && participant.canRevealCards,
+            )
             .map((participant) => participant.id),
           issuesAllowedParticipantIds: gameParticipants
-            .filter((participant) => participant.canManageIssues)
+            .filter(
+              (participant) =>
+                participant.role !== ParticipantRole.Master && participant.canManageIssues,
+            )
             .map((participant) => participant.id),
         });
       } catch (error) {
@@ -503,6 +513,17 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
       const normalizedName = safeTrim(values.name);
       const normalizedCustomValues = normalizeCustomValues(values.customValues);
       const defaultTimerMinutes = Number(values.defaultTimerMinutes);
+      const allowedParticipantIds = new Set(
+        participants
+          .filter((participant) => participant.role !== ParticipantRole.Master)
+          .map((participant) => participant.id),
+      );
+      const revealAllowedParticipantIds = values.revealAllowedParticipantIds.filter((participantId) =>
+        allowedParticipantIds.has(participantId),
+      );
+      const issuesAllowedParticipantIds = values.issuesAllowedParticipantIds.filter((participantId) =>
+        allowedParticipantIds.has(participantId),
+      );
 
       const nextErrors = await validateSchema(createGameSchema, {
         ...values,
@@ -559,12 +580,12 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
 
         revealAllowedParticipantIds:
           values.revealPolicy === RevealPolicy.SpecificParticipants
-            ? values.revealAllowedParticipantIds
+            ? revealAllowedParticipantIds
             : [],
 
         issuesAllowedParticipantIds:
           values.issuesPolicy === IssuesPolicy.SpecificParticipants
-            ? values.issuesAllowedParticipantIds
+            ? issuesAllowedParticipantIds
             : [],
       });
 

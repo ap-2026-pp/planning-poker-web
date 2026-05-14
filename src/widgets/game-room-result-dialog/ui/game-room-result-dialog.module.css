@@ -1,0 +1,99 @@
+.paper {
+  width: min(980px, calc(100vw - 24px));
+  max-width: min(980px, calc(100vw - 24px));
+  border-radius: 28px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at top left, rgba(var(--pp-accent-rgb), 0.14) 0%, transparent 28%),
+    linear-gradient(180deg, rgba(19, 30, 45, 0.98) 0%, rgba(14, 24, 37, 0.98) 100%);
+  box-shadow:
+    0 26px 68px rgba(3, 7, 18, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  color: var(--pp-color-text-primary);
+  overflow: hidden;
+}
+
+.backdrop {
+  backdrop-filter: blur(8px);
+  background: rgba(4, 8, 17, 0.58);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 22px 0;
+}
+
+.titleBlock {
+  min-width: 0;
+}
+
+.eyebrow {
+  color: var(--pp-color-text-secondary) !important;
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase;
+}
+
+.title {
+  margin-top: 6px !important;
+  color: var(--pp-color-text-primary) !important;
+  font-size: 1.55rem !important;
+  font-weight: 900 !important;
+  line-height: 1.1 !important;
+  word-break: break-word;
+}
+
+.subtitle {
+  margin-top: 8px !important;
+  color: var(--pp-color-text-secondary) !important;
+  font-size: 0.92rem !important;
+}
+
+.closeButton {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  color: var(--pp-color-text-secondary) !important;
+}
+
+.content {
+  padding: 16px 22px 22px !important;
+}
+
+.loaderWrap {
+  display: flex;
+  min-height: 280px;
+  align-items: center;
+  justify-content: center;
+}
+
+.errorAlert {
+  margin-top: 8px;
+}
+
+@media (max-width: 640px) {
+  .paper {
+    width: min(calc(100vw - 16px), 980px);
+    max-width: min(calc(100vw - 16px), 980px);
+    border-radius: 22px !important;
+  }
+
+  .header {
+    padding: 18px 18px 0;
+  }
+
+  .content {
+    padding: 14px 18px 18px !important;
+  }
+
+  .title {
+    font-size: 1.3rem !important;
+  }
+
+  .subtitle {
+    font-size: 0.86rem !important;
+  }
+}

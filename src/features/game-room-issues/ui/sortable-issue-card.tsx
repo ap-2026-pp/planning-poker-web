@@ -1,4 +1,5 @@
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import {
     defaultAnimateLayoutChanges,
     useSortable,
@@ -8,7 +9,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Box, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import { useState, type MouseEvent } from 'react';
 
-import { getIssueToneIndex, type Issue } from '@entities/issue';
+import { getIssueToneIndex, IssueStatus, type Issue } from '@entities/issue';
 import styles from '@shared/ui/game-room-sidebar/game-room-issues.module.css';
 
 type SortableIssueCardProps = {
@@ -21,6 +22,9 @@ type SortableIssueCardProps = {
     onEditIssue: (issue: Issue) => void;
     onDeleteIssue?: (issueId: string) => Promise<void>;
     onSetIssueActive?: (issueId: string) => Promise<void>;
+    canViewResult?: boolean;
+    onViewResult?: (issueId: string) => Promise<void> | void;
+    onResetIssueRound?: (issueId: string) => Promise<void>;
     onMoveIssue?: (issueId: string, direction: 'up' | 'down') => Promise<void>;
 };
 
@@ -30,6 +34,27 @@ const animateLayoutChanges: AnimateLayoutChanges = (args) => {
     }
 
     return defaultAnimateLayoutChanges(args);
+};
+
+const isIssueCompleted = (issue: Issue) =>
+    issue.status === IssueStatus.Completed || Boolean(issue.finalEstimate);
+
+/**
+ * Для UI кнопки важливо дивитися саме на isCurrent.
+ * status може бути несинхронним після optimistic update або після partial realtime update.
+ */
+const isIssueVoting = (issue: Issue) => issue.isCurrent;
+
+const getIssueVoteButtonLabel = (issue: Issue) => {
+    if (isIssueVoting(issue)) {
+        return 'Зупинити оцінювання';
+    }
+
+    if (isIssueCompleted(issue)) {
+        return 'Оцінити заново';
+    }
+
+    return 'Почати оцінювати';
 };
 
 export const SortableIssueCard = ({
@@ -42,6 +67,9 @@ export const SortableIssueCard = ({
     onEditIssue,
     onDeleteIssue,
     onSetIssueActive,
+    canViewResult = false,
+    onViewResult,
+    onResetIssueRound,
     onMoveIssue,
 }: SortableIssueCardProps) => {
     const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
@@ -88,6 +116,7 @@ export const SortableIssueCard = ({
                     canManageIssues={canManageIssues}
                     canRevealCards={canRevealCards}
                     showMenuButton={canManageIssues}
+                    canViewResult={canViewResult}
                     dragHandleProps={
                         isSortableEnabled
                             ? { ...attributes, ...listeners }
@@ -99,6 +128,12 @@ export const SortableIssueCard = ({
                     }}
                     onSetIssueActive={() => {
                         void onSetIssueActive?.(issue.id);
+                    }}
+                    onViewResult={() => {
+                        void onViewResult?.(issue.id);
+                    }}
+                    onResetIssueRound={() => {
+                        void onResetIssueRound?.(issue.id);
                     }}
                 />
             </Box>
@@ -123,10 +158,7 @@ export const SortableIssueCard = ({
                     className={styles.issuesMenuItem}
                     disabled={isFirst}
                     onClick={() => {
-                        if (onMoveIssue) {
-                            void onMoveIssue(issue.id, 'up');
-                        }
-
+                        void onMoveIssue?.(issue.id, 'up');
                         setMenuAnchor(null);
                     }}
                 >
@@ -137,10 +169,7 @@ export const SortableIssueCard = ({
                     className={styles.issuesMenuItem}
                     disabled={isLast}
                     onClick={() => {
-                        if (onMoveIssue) {
-                            void onMoveIssue(issue.id, 'down');
-                        }
-
+                        void onMoveIssue?.(issue.id, 'down');
                         setMenuAnchor(null);
                     }}
                 >
@@ -150,10 +179,7 @@ export const SortableIssueCard = ({
                 <MenuItem
                     className={[styles.issuesMenuItem, styles.issuesMenuItemDanger].join(' ')}
                     onClick={() => {
-                        if (onDeleteIssue) {
-                            void onDeleteIssue(issue.id);
-                        }
-
+                        void onDeleteIssue?.(issue.id);
                         setMenuAnchor(null);
                     }}
                 >
@@ -169,9 +195,12 @@ type IssueCardContentProps = {
     canManageIssues: boolean;
     canRevealCards: boolean;
     showMenuButton?: boolean;
+    canViewResult?: boolean;
     dragHandleProps?: Record<string, unknown>;
     onOpenMenu?: (event: MouseEvent<HTMLButtonElement>) => void;
     onSetIssueActive?: () => void;
+    onViewResult?: () => void;
+    onResetIssueRound?: () => void;
 };
 
 const IssueCardContent = ({
@@ -179,11 +208,33 @@ const IssueCardContent = ({
     canManageIssues,
     canRevealCards,
     showMenuButton = false,
+    canViewResult = false,
     dragHandleProps,
     onOpenMenu,
     onSetIssueActive,
+    onViewResult,
+    onResetIssueRound,
 }: IssueCardContentProps) => {
     const toneIndex = getIssueToneIndex(issue);
+    const isVoting = isIssueVoting(issue);
+    const isCompleted = isIssueCompleted(issue);
+    const voteButtonLabel = getIssueVoteButtonLabel(issue);
+
+    const handleVoteButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
+        event.stopPropagation();
+
+        if (isVoting) {
+            onSetIssueActive?.();
+            return;
+        }
+
+        if (isCompleted) {
+            onResetIssueRound?.();
+            return;
+        }
+
+        onSetIssueActive?.();
+    };
 
     return (
         <>
@@ -219,34 +270,45 @@ const IssueCardContent = ({
                             type="button"
                             className={[
                                 styles.issueVoteButton,
-                                issue.isCurrent ? styles.issueVoteButtonActive : '',
+                                isVoting ? styles.issueVoteButtonActive : '',
+                                !isVoting && isCompleted ? styles.issueVoteButtonCompleted : '',
                             ]
                                 .join(' ')
                                 .trim()}
+                            onClick={handleVoteButtonClick}
+                        >
+                            {voteButtonLabel}
+                        </button>
+                    ) : null}
+
+                    {canViewResult ? (
+                        <IconButton
+                            className={styles.issueResultButton}
                             onClick={(event) => {
                                 event.stopPropagation();
-                                onSetIssueActive?.();
+                                onViewResult?.();
                             }}
+                            aria-label={`Переглянути результат ${issue.title}`}
                         >
-                            {issue.isCurrent ? 'Зупинити оцінювання' : 'Почати оцінювати'}
-                        </button>
+                            <VisibilityRoundedIcon fontSize="small" />
+                        </IconButton>
                     ) : null}
 
                     {issue.code ? <Box className={styles.issueCodeBadge}>{issue.code}</Box> : null}
                 </Box>
             </Box>
 
-            {(issue.isCurrent || issue.finalEstimate) && (
+            {isVoting || isCompleted ? (
                 <Box className={styles.issueEstimatePanel}>
                     <Typography className={styles.issueEstimateLabel}>
-                        {issue.isCurrent ? 'Поточна оцінка' : 'Фінальна оцінка'}
+                        {isVoting ? 'Поточна оцінка' : 'Фінальна оцінка'}
                     </Typography>
 
                     <Typography className={styles.issueEstimateValue}>
                         {issue.finalEstimate ?? '—'}
                     </Typography>
                 </Box>
-            )}
+            ) : null}
         </>
     );
 };
@@ -254,17 +316,25 @@ const IssueCardContent = ({
 type IssueDragOverlayCardProps = {
     issue: Issue;
     canRevealCards: boolean;
+    canViewResult?: boolean;
+    onViewResult?: (issueId: string) => Promise<void> | void;
 };
 
 export const IssueDragOverlayCard = ({
     issue,
     canRevealCards,
+    canViewResult = false,
+    onViewResult,
 }: IssueDragOverlayCardProps) => (
     <Box className={[styles.issueCard, styles.issueCardOverlay].join(' ')}>
         <IssueCardContent
             issue={issue}
             canManageIssues={false}
             canRevealCards={canRevealCards}
+            canViewResult={canViewResult}
+            onViewResult={() => {
+                void onViewResult?.(issue.id);
+            }}
         />
     </Box>
 );

@@ -31,6 +31,9 @@ type GameRoomSidebarProps = {
   onDeleteAllIssues?: () => Promise<void>;
   onExportIssuesAsCsv?: () => Promise<void>;
   onSetIssueActive?: (issueId: string) => Promise<void>;
+  viewableResultIssueIds?: string[];
+  onOpenIssueResult?: (issueId: string) => Promise<void> | void;
+  onResetIssueRound?: (issueId: string) => Promise<void>;
   onMoveIssue?: (issueId: string, direction: 'up' | 'down') => Promise<void>;
   onReorderIssues?: (issueIds: string[]) => Promise<void>;
   onImportIssuesFromPlane?: (payload: ImportPlaneIssuesPayload) => Promise<void>;
@@ -54,6 +57,9 @@ export const GameRoomSidebar = ({
   onUpdateIssue,
   onDeleteIssue,
   onSetIssueActive,
+  viewableResultIssueIds,
+  onOpenIssueResult,
+  onResetIssueRound,
   onMoveIssue,
   onReorderIssues,
   onImportIssuesFromPlane,
@@ -78,6 +84,9 @@ export const GameRoomSidebar = ({
           onDeleteAllIssues={onDeleteAllIssues}
           onExportIssuesAsCsv={onExportIssuesAsCsv}
           onSetIssueActive={onSetIssueActive}
+          viewableResultIssueIds={viewableResultIssueIds}
+          onOpenIssueResult={onOpenIssueResult}
+          onResetIssueRound={onResetIssueRound}
           onMoveIssue={onMoveIssue}
           onReorderIssues={onReorderIssues}
           onImportIssuesFromPlane={onImportIssuesFromPlane}

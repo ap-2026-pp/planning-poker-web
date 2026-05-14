@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, type MouseEvent } from 'react';
 import { ConnectionStatus } from '@features/connection-status';
 import { GameForm } from '@features/game-settings';
 import { GameRoomInviteDialog, GameRoomQrDialog } from '@widgets/game-room-invite';
+import { GameRoomResultDialog } from '@widgets/game-room-result-dialog';
 import { GameRoomSidebar } from '@widgets/game-room-sidebar';
 import { GameRoomSurface } from '@widgets/game-room-surface';
 import { useGameRoomPage } from '../model/use-game-room-page';
@@ -90,13 +91,19 @@ export const GameRoomPage = () => {
           canVoteInRound={room.canVoteInRound}
           currentVoteValue={room.currentVoteValue}
           votesCastCount={room.votesCastCount}
-          roundResult={room.roundResult}
           isRoundRevealed={room.isRoundRevealed}
-          showAverage={room.showAverage}
           isVoteSubmitting={room.voteSubmitting}
           isRevealSubmitting={room.revealSubmitting}
+          canOpenResult={room.canOpenCurrentResult}
+          canResetCurrentRound={room.canResetCurrentRound}
+          canGoToNextIssue={room.canGoToNextIssue}
+          isResetRoundSubmitting={room.resetRoundSubmitting}
+          isNextIssueSubmitting={room.nextIssueSubmitting}
           onVoteSelect={room.submitVote}
           onRevealVotes={room.revealVotes}
+          onOpenResult={room.openCurrentRoundResult}
+          onResetRound={room.resetCurrentRound}
+          onGoToNextIssue={room.goToNextIssue}
           onParticipantSelect={room.selectParticipant}
           onRemoveParticipant={room.removeParticipant}
           onTransferMaster={room.transferMaster}
@@ -141,6 +148,9 @@ export const GameRoomPage = () => {
             onExportIssuesAsCsv={room.exportIssuesAsCsv}
             onImportIssuesFromPlane={room.importIssuesFromPlane}
             onSetIssueActive={room.setIssueActive}
+            onResetIssueRound={room.resetIssueRoundFromSidebar}
+            viewableResultIssueIds={room.viewableIssueResultIds}
+            onOpenIssueResult={room.openIssueResult}
             onMoveIssue={room.reorderIssue}
             onReorderIssues={room.reorderIssues}
           />
@@ -165,6 +175,16 @@ export const GameRoomPage = () => {
         copiedItem={room.copiedItem}
         onClose={room.closeQrDialog}
         onCopyInviteLink={() => room.copyText(room.inviteUrl, 'invite-link')}
+      />
+
+      <GameRoomResultDialog
+        open={room.resultDialog.open}
+        loading={room.resultDialog.loading}
+        error={room.resultDialog.error}
+        data={room.resultDialog.data}
+        deckValues={room.deckValues}
+        showAverage={room.showAverage}
+        onClose={room.closeResultDialog}
       />
 
       <Dialog

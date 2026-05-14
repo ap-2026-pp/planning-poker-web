@@ -16,6 +16,7 @@ export {
   getGameRequest,
   getRoomStateRequest,
   revealCardsRequest,
+  resetRoundRequest,
   getIssuesRequest,
   getParticipantsRequest,
   getVotingHistoryRequest,

@@ -17,7 +17,7 @@ export type VotingHistoryItem = {
   completedAt: string;
   totalPlayers: number;
   votedCount: number;
-  playerResults: VoteResult[];
+  votingResults: VoteResult[];
 };
 
 export type VotingHistoryList = {

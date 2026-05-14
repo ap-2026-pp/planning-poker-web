@@ -3,7 +3,8 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useGameRoomRealtime } from './use-game-room-realtime';
 
 import { IssuesPolicy, RevealPolicy, type Game, type GameInvite, type RoomState } from '@entities/game';
-import type { ImportPlaneIssuesPayload, Issue } from '@entities/issue';
+import type { VoteResult, VotingHistoryItem } from '@entities/history';
+import { IssueStatus, type ImportPlaneIssuesPayload, type Issue } from '@entities/issue';
 import { ParticipantRole, type GameParticipant } from '@entities/participant';
 import {
   createVoteRequest,
@@ -17,9 +18,11 @@ import {
   getIssuesRequest,
   getParticipantsRequest,
   getRoomStateRequest,
+  getVotingHistoryRequest,
   importPlaneIssuesRequest,
   leaveGameRequest,
   revealCardsRequest,
+  resetRoundRequest,
   reorderIssuesRequest,
   setIssueActiveRequest,
   setSpectatorModeRequest,
@@ -61,6 +64,21 @@ type RoomNotification = {
   tone: 'info' | 'success' | 'warning';
 };
 
+type ResultDialogData = {
+  issueId: string;
+  issueName: string;
+  issueCode?: string | null;
+  roundResult: NonNullable<RoomState['result']>;
+  playerResults: VoteResult[];
+};
+
+type ResultDialogState = {
+  open: boolean;
+  loading: boolean;
+  error: string | null;
+  data: ResultDialogData | null;
+};
+
 const applyRoomStateToParticipants = (
   currentParticipants: GameParticipant[],
   roomState: RoomState | null,
@@ -87,6 +105,113 @@ const applyRoomStateToParticipants = (
     };
   });
 };
+
+const applyRoomStateToIssues = (
+  currentIssues: Issue[],
+  roomState: RoomState | null,
+) => {
+  if (!roomState) {
+    return currentIssues;
+  }
+
+  const activeIssue = roomState.activeIssue;
+
+  return currentIssues.map((issue) => {
+    const isCurrent = activeIssue ? issue.id === activeIssue.id : false;
+    const previousFinalEstimate = issue.finalEstimate ?? null;
+    const nextFinalEstimate = isCurrent
+      ? roomState.result?.finalEstimate ?? activeIssue?.finalEstimate ?? previousFinalEstimate
+      : previousFinalEstimate;
+
+    const isCompleted = Boolean(nextFinalEstimate);
+
+    if (!isCurrent) {
+      return {
+        ...issue,
+        isCurrent: false,
+        finalEstimate: nextFinalEstimate,
+        status: isCompleted ? IssueStatus.Completed : IssueStatus.Pending,
+      };
+    }
+
+    return {
+      ...issue,
+      ...activeIssue,
+      isCurrent: true,
+      finalEstimate: nextFinalEstimate,
+      status: isCompleted ? IssueStatus.Completed : IssueStatus.Voting,
+    };
+  });
+};
+
+const applyOptimisticIssueActivation = (
+  currentIssues: Issue[],
+  issueId: string,
+  shouldActivate: boolean,
+) => {
+  return currentIssues.map((issue) => {
+    const isTargetIssue = issue.id === issueId;
+    const isCompleted = Boolean(issue.finalEstimate);
+
+    if (isTargetIssue) {
+      return {
+        ...issue,
+        isCurrent: shouldActivate,
+        status: shouldActivate
+          ? IssueStatus.Voting
+          : isCompleted
+            ? IssueStatus.Completed
+            : IssueStatus.Pending,
+      };
+    }
+
+    return {
+      ...issue,
+      isCurrent: false,
+      status: isCompleted ? IssueStatus.Completed : IssueStatus.Pending,
+    };
+  });
+};
+
+const buildCurrentRoundResultData = (
+  issue: Issue,
+  roomState: RoomState,
+): ResultDialogData | null => {
+  if (!roomState.result) {
+    return null;
+  }
+
+  const playerResults = roomState.participants
+    .filter((participant) => Boolean(participant.voteValue))
+    .map((participant) => ({
+      participantId: participant.participantId,
+      displayName: participant.displayName,
+      voteValue: participant.voteValue ?? '',
+    }));
+
+  return {
+    issueId: issue.id,
+    issueName: issue.title,
+    issueCode: issue.code,
+    roundResult: roomState.result,
+    playerResults,
+  };
+};
+
+const buildHistoryResultData = (
+  issue: Issue,
+  historyItem: VotingHistoryItem,
+): ResultDialogData => ({
+  issueId: issue.id,
+  issueName: issue.title,
+  issueCode: issue.code,
+  roundResult: {
+    finalEstimate: historyItem.result ?? issue.finalEstimate ?? '—',
+    average: historyItem.average ?? null,
+    agreement: historyItem.agreementPercent,
+  },
+  playerResults: historyItem.votingResults ?? [],
+});
 
 export const useGameRoomPage = () => {
   const { gameId = '' } = useParams();
@@ -124,18 +249,32 @@ export const useGameRoomPage = () => {
   const [notification, setNotification] = useState<RoomNotification | null>(null);
   const [voteSubmitting, setVoteSubmitting] = useState(false);
   const [revealSubmitting, setRevealSubmitting] = useState(false);
+  const [resetRoundSubmitting, setResetRoundSubmitting] = useState(false);
+  const [nextIssueSubmitting, setNextIssueSubmitting] = useState(false);
   const [voteOverride, setVoteOverride] = useState<string | null | undefined>(undefined);
+  const [historyResults, setHistoryResults] = useState<VotingHistoryItem[] | null>(null);
+  const [cachedIssueResults, setCachedIssueResults] = useState<Record<string, ResultDialogData>>({});
+  const [resultDialog, setResultDialog] = useState<ResultDialogState>({
+    open: false,
+    loading: false,
+    error: null,
+    data: null,
+  });
 
   const resetCopiedTimeoutRef = useRef<number | null>(null);
   const currentParticipantIdRef = useRef<string | null>(null);
   const participantsRef = useRef<GameParticipant[]>([]);
   const issuesRef = useRef<Issue[]>([]);
+  const previousRevealedIssueIdRef = useRef<string | null>(null);
+  const suppressResultDialogRef = useRef(false);
 
   const storedParticipantSession = getCurrentRoomParticipantSession();
 
   const applyRoundState = useCallback(
     (nextRoomState: RoomState | null, nextParticipants?: GameParticipant[]) => {
       setRoomState(nextRoomState);
+
+      setIssues((current) => applyRoomStateToIssues(current, nextRoomState));
 
       if (nextParticipants) {
         setParticipants(applyRoomStateToParticipants(nextParticipants, nextRoomState));
@@ -183,7 +322,12 @@ export const useGameRoomPage = () => {
     }
 
     if (issuesResult.status === 'fulfilled') {
-      setIssues(issuesResult.value);
+      setIssues(
+        applyRoomStateToIssues(
+          issuesResult.value,
+          roomStateResult.status === 'fulfilled' ? roomStateResult.value : null,
+        ),
+      );
     }
 
     if (inviteResult.status === 'fulfilled') {
@@ -380,6 +524,19 @@ export const useGameRoomPage = () => {
   const activeIssueIndex = sortedIssues.findIndex((issue) => issue.isCurrent);
   const activeIssue = activeIssueIndex >= 0 ? sortedIssues[activeIssueIndex] : null;
   const resolvedActiveIssue = roomState?.activeIssue ?? activeIssue;
+  const nextIssue = useMemo(() => {
+    if (!resolvedActiveIssue) {
+      return null;
+    }
+
+    const currentIssueIndex = sortedIssues.findIndex((issue) => issue.id === resolvedActiveIssue.id);
+
+    if (currentIssueIndex < 0) {
+      return null;
+    }
+
+    return sortedIssues[currentIssueIndex + 1] ?? null;
+  }, [resolvedActiveIssue, sortedIssues]);
   const roundLabel = getRoundLabel(sortedIssues, activeIssueIndex);
 
   const votingSystemLabel = getGameRoomVotingLabel(game?.votingSystem);
@@ -402,6 +559,31 @@ export const useGameRoomPage = () => {
   const votesCastCount = roomState?.votedCount ?? participants.filter((participant) => participant.hasVoted).length;
   const roundResult = roomState?.result ?? null;
   const isRoundRevealed = roomState?.isRevealed ?? false;
+  const canResetCurrentRound = isRoundRevealed && Boolean(isCurrentParticipantMaster && resolvedActiveIssue);
+  const canGoToNextIssue = isRoundRevealed && canManageIssuesInRound && Boolean(nextIssue);
+  const currentRoundResultData = useMemo(
+    () => (
+      resolvedActiveIssue && roomState
+        ? buildCurrentRoundResultData(resolvedActiveIssue, roomState)
+        : null
+    ),
+    [resolvedActiveIssue, roomState],
+  );
+  const viewableIssueResultIds = useMemo(() => {
+    const ids = new Set(Object.keys(cachedIssueResults));
+
+    if (currentRoundResultData) {
+      ids.add(currentRoundResultData.issueId);
+    }
+
+    if (isCurrentParticipantMaster) {
+      sortedIssues
+        .filter((issue) => Boolean(issue.finalEstimate))
+        .forEach((issue) => ids.add(issue.id));
+    }
+
+    return [...ids];
+  }, [cachedIssueResults, currentRoundResultData, isCurrentParticipantMaster, sortedIssues]);
 
   useEffect(() => {
     participantsRef.current = participants;
@@ -414,6 +596,31 @@ export const useGameRoomPage = () => {
   useEffect(() => {
     setVoteOverride(undefined);
   }, [roomState?.activeIssue?.id, roomState?.isRevealed]);
+
+  useEffect(() => {
+    if (!currentRoundResultData) {
+      previousRevealedIssueIdRef.current = null;
+      return;
+    }
+
+    setCachedIssueResults((current) => ({
+      ...current,
+      [currentRoundResultData.issueId]: currentRoundResultData,
+    }));
+
+    if (previousRevealedIssueIdRef.current !== currentRoundResultData.issueId) {
+      previousRevealedIssueIdRef.current = currentRoundResultData.issueId;
+
+      if (!suppressResultDialogRef.current) {
+        setResultDialog({
+          open: true,
+          loading: false,
+          error: null,
+          data: currentRoundResultData,
+        });
+      }
+    }
+  }, [currentRoundResultData]);
 
   useEffect(() => {
     if (
@@ -670,14 +877,13 @@ export const useGameRoomPage = () => {
   const handleIssueCreated = useCallback((issue: Issue) => {
     setIssues((current) => {
       const exists = current.some((entry) => entry.id === issue.id);
+      const nextIssues = exists
+        ? current.map((entry) => (entry.id === issue.id ? issue : entry))
+        : [...current, issue];
 
-      if (exists) {
-        return current.map((entry) => (entry.id === issue.id ? issue : entry));
-      }
-
-      return [...current, issue];
+      return applyRoomStateToIssues(nextIssues, roomState);
     });
-  }, []);
+  }, [roomState]);
 
   const handleIssueUpdated = useCallback((issue: Issue) => {
     setIssues((current) => {
@@ -688,25 +894,31 @@ export const useGameRoomPage = () => {
       const exists = current.some((entry) => entry.id === issue.id);
 
       if (!exists) {
-        return [...current, issue];
+        return applyRoomStateToIssues([...current, issue], roomState);
       }
 
-      return current.map((entry) => (entry.id === issue.id ? { ...entry, ...issue } : entry));
+      return applyRoomStateToIssues(
+        current.map((entry) => (entry.id === issue.id ? { ...entry, ...issue } : entry)),
+        roomState,
+      );
     });
-  }, []);
+  }, [roomState]);
 
   const handleIssuesImported = useCallback((importedIssues: Issue[]) => {
     setIssues(
-      [...importedIssues]
-        .filter((issue) => !issue.isRemoved)
-        .sort((left, right) => left.order - right.order),
+      applyRoomStateToIssues(
+        [...importedIssues]
+          .filter((issue) => !issue.isRemoved)
+          .sort((left, right) => left.order - right.order),
+        roomState,
+      ),
     );
 
     setNotification({
       message: 'Issues з Plane імпортовано',
       tone: 'success',
     });
-  }, []);
+  }, [roomState]);
 
   const realtime = useGameRoomRealtime({
     gameId,
@@ -811,7 +1023,7 @@ export const useGameRoomPage = () => {
       applyRoundState(nextRoomState);
 
       if (nextIssues) {
-        setIssues(nextIssues);
+        setIssues(applyRoomStateToIssues(nextIssues, nextRoomState));
       }
 
       setNotification({
@@ -830,6 +1042,160 @@ export const useGameRoomPage = () => {
       setRevealSubmitting(false);
     }
   }, [applyRoundState, gameId]);
+
+  const ensureHistoryResultsLoaded = useCallback(async () => {
+    if (historyResults) {
+      return historyResults;
+    }
+
+    const history = await getVotingHistoryRequest(gameId, {
+      page: 1,
+      pageSize: 500,
+      sortBy: 'time',
+      sortDirection: 'desc',
+    });
+
+    setHistoryResults(history.items);
+
+    return history.items;
+  }, [gameId, historyResults]);
+
+  const openCurrentRoundResult = useCallback(() => {
+    if (!currentRoundResultData) {
+      return;
+    }
+
+    setResultDialog({
+      open: true,
+      loading: false,
+      error: null,
+      data: currentRoundResultData,
+    });
+  }, [currentRoundResultData]);
+
+  const openIssueResult = useCallback(
+    async (issueId: string) => {
+      const issue = issuesRef.current.find((entry) => entry.id === issueId);
+
+      if (!issue) {
+        return;
+      }
+
+      if (cachedIssueResults[issueId]) {
+        setResultDialog({
+          open: true,
+          loading: false,
+          error: null,
+          data: {
+            ...cachedIssueResults[issueId],
+            issueName: issue.title,
+            issueCode: issue.code,
+          },
+        });
+        return;
+      }
+
+      if (!isCurrentParticipantMaster) {
+        setError('Детальний результат для цієї issue недоступний.');
+        return;
+      }
+
+      setResultDialog({
+        open: true,
+        loading: true,
+        error: null,
+        data: null,
+      });
+
+      try {
+        const historyItems = await ensureHistoryResultsLoaded();
+        const historyItem = historyItems.find((item) => item.issueId === issueId);
+
+        if (!historyItem) {
+          throw new Error('Результат для цієї issue ще недоступний.');
+        }
+
+        const nextResultData = buildHistoryResultData(issue, historyItem);
+
+        setCachedIssueResults((current) => ({
+          ...current,
+          [issueId]: nextResultData,
+        }));
+        setResultDialog({
+          open: true,
+          loading: false,
+          error: null,
+          data: nextResultData,
+        });
+      } catch (requestError) {
+        setResultDialog({
+          open: true,
+          loading: false,
+          error:
+            requestError instanceof Error
+              ? requestError.message
+              : 'Не вдалося завантажити результат issue',
+          data: null,
+        });
+      }
+    },
+    [cachedIssueResults, ensureHistoryResultsLoaded, isCurrentParticipantMaster],
+  );
+
+ const resetIssueRoundFromSidebar = useCallback(
+  async (issueId: string) => {
+    if (!isCurrentParticipantMaster) {
+      return;
+    }
+
+    suppressResultDialogRef.current = true;
+    setResetRoundSubmitting(true);
+
+    try {
+      const nextRoomState = await resetRoundRequest(gameId, issueId);
+      const nextIssues = await getIssuesRequest(gameId);
+
+      applyRoundState(nextRoomState);
+      setIssues(applyRoomStateToIssues(nextIssues, nextRoomState));
+
+      setCachedIssueResults((current) => {
+        const next = { ...current };
+        delete next[issueId];
+        return next;
+      });
+
+      setResultDialog((current) =>
+        current.data?.issueId === issueId
+          ? {
+              open: false,
+              loading: false,
+              error: null,
+              data: null,
+            }
+          : current,
+      );
+
+      previousRevealedIssueIdRef.current = null;
+
+      setNotification({
+        message: 'Оцінювання розпочато заново',
+        tone: 'success',
+      });
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : 'Не вдалося почати оцінювання заново',
+      );
+
+      throw requestError;
+    } finally {
+      setResetRoundSubmitting(false);
+      suppressResultDialogRef.current = false;
+    }
+  },
+  [applyRoundState, gameId, isCurrentParticipantMaster],
+);
 
   const addIssue = useCallback(
     async (payload: { title: string }) => {
@@ -933,9 +1299,12 @@ export const useGameRoomPage = () => {
         const importedIssues = await importPlaneIssuesRequest(gameId, payload);
 
         setIssues(
-          [...importedIssues]
-            .filter((issue) => !issue.isRemoved)
-            .sort((left, right) => left.order - right.order),
+          applyRoomStateToIssues(
+            [...importedIssues]
+              .filter((issue) => !issue.isRemoved)
+              .sort((left, right) => left.order - right.order),
+            roomState,
+          ),
         );
 
         setNotification({
@@ -952,7 +1321,7 @@ export const useGameRoomPage = () => {
         throw requestError;
       }
     },
-    [gameId],
+    [gameId, roomState],
   );
 
   const htmlToPlainText = (value: string) => {
@@ -1137,54 +1506,164 @@ export const useGameRoomPage = () => {
     }
   }, [gameId]);
 
-  const setIssueActive = useCallback(
-    async (issueId: string) => {
-      const previousIssues = issuesRef.current;
-      const clickedIssue = previousIssues.find((issue) => issue.id === issueId);
+ const setIssueActive = useCallback(
+  async (issueId: string) => {
+    const previousIssues = issuesRef.current;
+    const previousRoomState = roomState;
+    const clickedIssue = previousIssues.find((issue) => issue.id === issueId);
 
-      if (!clickedIssue) {
-        return;
+    if (!clickedIssue) {
+      return;
+    }
+
+    const isTurningOff = clickedIssue.isCurrent;
+    const shouldActivate = !isTurningOff;
+
+    setIssues((current) =>
+      applyOptimisticIssueActivation(current, issueId, shouldActivate),
+    );
+
+    setRoomState((current) => {
+      if (!current) {
+        return current;
       }
 
-      const isTurningOff = clickedIssue.isCurrent;
+      if (isTurningOff) {
+        return {
+          ...current,
+          activeIssue: null,
+          isRevealed: false,
+          result: null,
+          myVote: null,
+          votedCount: 0,
+          canVote: false,
+          participants: current.participants.map((participant) => ({
+            ...participant,
+            hasVoted: false,
+            voteValue: null,
+          })),
+        };
+      }
 
-      setIssues((current) =>
-        current.map((issue) => {
-          if (issue.id === issueId) {
-            return {
-              ...issue,
-              isCurrent: !issue.isCurrent,
-            };
-          }
+      return {
+        ...current,
+        activeIssue: {
+          ...clickedIssue,
+          isCurrent: true,
+          finalEstimate: null,
+          status: IssueStatus.Voting,
+        },
+        isRevealed: false,
+        result: null,
+        myVote: null,
+        votedCount: 0,
+        canVote: true,
+        participants: current.participants.map((participant) => ({
+          ...participant,
+          hasVoted: false,
+          voteValue: null,
+        })),
+      };
+    });
 
-          return {
-            ...issue,
-            isCurrent: false,
-          };
-        }),
+    try {
+      await setIssueActiveRequest(gameId, issueId);
+
+      const [nextRoomState, nextIssues] = await Promise.all([
+        getRoomStateRequest(gameId),
+        getIssuesRequest(gameId),
+      ]);
+
+      applyRoundState(nextRoomState);
+      setIssues(applyRoomStateToIssues(nextIssues, nextRoomState));
+
+      setNotification({
+        message: isTurningOff ? 'Оцінювання зупинено' : 'Оцінювання розпочато',
+        tone: 'success',
+      });
+    } catch (requestError) {
+      setIssues(previousIssues);
+      setRoomState(previousRoomState);
+
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : 'Не вдалося оновити статус оцінювання',
       );
 
-      try {
-        await setIssueActiveRequest(gameId, issueId);
-        await reloadRoundState();
+      throw requestError;
+    }
+  },
+  [applyRoundState, gameId, roomState],
+);
 
-        setNotification({
-          message: isTurningOff ? 'Оцінювання зупинено' : 'Оцінювання розпочато',
-          tone: 'success',
-        });
-      } catch (requestError) {
-        setIssues(previousIssues);
+const resetCurrentRound = useCallback(async () => {
+  if (!resolvedActiveIssue || !isCurrentParticipantMaster) {
+    return;
+  }
 
-        setError(
-          requestError instanceof Error
-            ? requestError.message
-            : 'Не вдалося оновити статус оцінювання',
-        );
-        throw requestError;
-      }
-    },
-    [gameId, reloadRoundState],
-  );
+  const resettingIssueId = resolvedActiveIssue.id;
+
+  suppressResultDialogRef.current = true;
+  setResetRoundSubmitting(true);
+
+  try {
+    const nextRoomState = await resetRoundRequest(gameId, resettingIssueId);
+    const nextIssues = await getIssuesRequest(gameId);
+
+    applyRoundState(nextRoomState);
+    setIssues(applyRoomStateToIssues(nextIssues, nextRoomState));
+
+    setCachedIssueResults((current) => {
+      const next = { ...current };
+      delete next[resettingIssueId];
+      return next;
+    });
+
+    setResultDialog((current) =>
+      current.data?.issueId === resettingIssueId
+        ? {
+            open: false,
+            loading: false,
+            error: null,
+            data: null,
+          }
+        : current,
+    );
+
+    previousRevealedIssueIdRef.current = null;
+
+    setNotification({
+      message: 'Оцінювання скинуто',
+      tone: 'success',
+    });
+  } catch (requestError) {
+    setError(
+      requestError instanceof Error
+        ? requestError.message
+        : 'Не вдалося почати оцінювання заново',
+    );
+
+    throw requestError;
+  } finally {
+    setResetRoundSubmitting(false);
+    suppressResultDialogRef.current = false;
+  }
+}, [applyRoundState, gameId, isCurrentParticipantMaster, resolvedActiveIssue]);
+
+  const goToNextIssue = useCallback(async () => {
+    if (!nextIssue) {
+      return;
+    }
+
+    setNextIssueSubmitting(true);
+
+    try {
+      await setIssueActive(nextIssue.id);
+    } finally {
+      setNextIssueSubmitting(false);
+    }
+  }, [nextIssue, setIssueActive]);
 
   const reorderIssue = useCallback(
     async (issueId: string, direction: 'up' | 'down') => {
@@ -1317,17 +1796,34 @@ export const useGameRoomPage = () => {
     roundLabel,
     votingSystemLabel,
     deckValues,
+    viewableIssueResultIds,
     canRevealCurrentRound,
     canVoteInRound,
     currentVoteValue,
     votesCastCount,
     roundResult,
     isRoundRevealed,
+    canOpenCurrentResult: Boolean(currentRoundResultData),
+    canResetCurrentRound,
+    canGoToNextIssue,
     showAverage: game?.showAverage ?? true,
     voteSubmitting,
     revealSubmitting,
+    resetRoundSubmitting,
+    nextIssueSubmitting,
     submitVote,
     revealVotes,
+    resultDialog,
+    closeResultDialog: () =>
+      setResultDialog((current) => ({
+        ...current,
+        open: false,
+      })),
+    openCurrentRoundResult,
+    openIssueResult,
+    resetCurrentRound,
+    resetIssueRoundFromSidebar,
+    goToNextIssue,
     notification,
     closeNotification: () => setNotification(null),
     connectionStatus: realtime.connectionStatus,

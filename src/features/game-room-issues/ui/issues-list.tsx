@@ -30,6 +30,9 @@ type IssuesListProps = {
     onAddAnotherIssue: () => void;
     onDeleteIssue?: (issueId: string) => Promise<void>;
     onSetIssueActive?: (issueId: string) => Promise<void>;
+    viewableResultIssueIds?: string[];
+    onOpenIssueResult?: (issueId: string) => Promise<void> | void;
+    onResetIssueRound?: (issueId: string) => Promise<void>;
     onMoveIssue?: (issueId: string, direction: 'up' | 'down') => Promise<void>;
     onReorderIssues?: (issueIds: string[]) => Promise<void>;
 };
@@ -42,6 +45,9 @@ export const IssuesList = ({
     onAddAnotherIssue,
     onDeleteIssue,
     onSetIssueActive,
+    viewableResultIssueIds,
+    onOpenIssueResult,
+    onResetIssueRound,
     onMoveIssue,
     onReorderIssues,
 }: IssuesListProps) => {
@@ -154,6 +160,9 @@ export const IssuesList = ({
                                 onEditIssue={onEditIssue}
                                 onDeleteIssue={onDeleteIssue}
                                 onSetIssueActive={onSetIssueActive}
+                                onResetIssueRound={onResetIssueRound}
+                                canViewResult={Boolean(viewableResultIssueIds?.includes(issue.id))}
+                                onViewResult={onOpenIssueResult}
                                 onMoveIssue={onMoveIssue}
                             />
                         ))}
@@ -162,16 +171,18 @@ export const IssuesList = ({
 
                 {typeof document !== 'undefined'
                     ? createPortal(
-                          <DragOverlay adjustScale={false} zIndex={1700}>
-                              {activeIssue ? (
-                                  <IssueDragOverlayCard
-                                      issue={activeIssue}
-                                      canRevealCards={canRevealCards}
-                                  />
-                              ) : null}
-                          </DragOverlay>,
-                          document.body,
-                      )
+                        <DragOverlay adjustScale={false} zIndex={1700}>
+                            {activeIssue ? (
+                                <IssueDragOverlayCard
+                                    issue={activeIssue}
+                                    canRevealCards={canRevealCards}
+                                    canViewResult={Boolean(viewableResultIssueIds?.includes(activeIssue.id))}
+                                    onViewResult={onOpenIssueResult}
+                                />
+                            ) : null}
+                        </DragOverlay>,
+                        document.body,
+                    )
                     : null}
             </DndContext>
 

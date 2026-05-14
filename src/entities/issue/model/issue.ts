@@ -1,16 +1,21 @@
+export enum IssueStatus {
+  Pending = 0,
+  Voting = 1,
+  Completed = 2,
+}
+
 export type Issue = {
   id: string;
-  gameId: string;
-  code: string;
+  gameId?: string;
+  code?: string | null;
   url?: string | null;
   title: string;
-  description: string;
+  description?: string | null;
   order: number;
   isCurrent: boolean;
   isRemoved: boolean;
-  createdAt: string;
   finalEstimate?: string | null;
-  status?: string | null;
+  status: IssueStatus;
 };
 
 export type IssueDetails = {

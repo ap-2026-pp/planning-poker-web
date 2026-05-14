@@ -37,6 +37,9 @@ export const getRoomStateRequest = (gameId: string) =>
 export const revealCardsRequest = (gameId: string) =>
   apiClientService.get<RoomState>(`/games/${gameId}/room/reveal`);
 
+export const resetRoundRequest = (gameId: string, issueId: string) =>
+  apiClientService.post<RoomState, undefined>(`/games/${gameId}/room/issues/${issueId}/reset-round`, undefined);
+
 export const getUserGamesRequest = (scope: UserGamesScope) =>
   apiClientService.get<UserGame[]>('/games/my', {
     params: {
@@ -98,8 +101,16 @@ export const createVoteRequest = (
 export const deleteVoteRequest = (gameId: string, issueId: string) =>
   apiClientService.delete<void>(`/games/${gameId}/issues/${issueId}/votes/me`);
 
-export const getVotingHistoryRequest = (gameId: string) =>
-  apiClientService.get<VotingHistoryList>(`/games/${gameId}/history`);
+export const getVotingHistoryRequest = (
+  gameId: string,
+  params?: {
+    page?: number;
+    pageSize?: number;
+    sortBy?: string;
+    sortDirection?: 'asc' | 'desc';
+  },
+) =>
+  apiClientService.get<VotingHistoryList>(`/games/${gameId}/history`, params ? { params } : undefined);
 
 export const createIssueRequest = (gameId: string, payload: { title: string },) =>
   apiClientService.post<Issue, { title: string }>(

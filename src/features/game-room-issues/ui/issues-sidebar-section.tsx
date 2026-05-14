@@ -27,6 +27,9 @@ type IssuesSidebarSectionProps = {
     onExportIssuesAsCsv?: () => Promise<void>;
     onImportIssuesFromPlane?: (payload: ImportPlaneIssuesPayload) => Promise<void>;
     onSetIssueActive?: (issueId: string) => Promise<void>;
+    viewableResultIssueIds?: string[];
+    onOpenIssueResult?: (issueId: string) => Promise<void> | void;
+    onResetIssueRound?: (issueId: string) => Promise<void>;
     onMoveIssue?: (issueId: string, direction: 'up' | 'down') => Promise<void>;
     onReorderIssues?: (issueIds: string[]) => Promise<void>;
 };
@@ -49,6 +52,9 @@ export const IssuesSidebarSection = ({
     onExportIssuesAsCsv,
     onImportIssuesFromPlane,
     onSetIssueActive,
+    viewableResultIssueIds,
+    onOpenIssueResult,
+    onResetIssueRound,
     onMoveIssue,
     onReorderIssues,
 }: IssuesSidebarSectionProps) => {
@@ -226,6 +232,9 @@ export const IssuesSidebarSection = ({
                                 onAddAnotherIssue={openCreateIssue}
                                 onDeleteIssue={onDeleteIssue}
                                 onSetIssueActive={onSetIssueActive}
+                                onResetIssueRound={onResetIssueRound}
+                                viewableResultIssueIds={viewableResultIssueIds}
+                                onOpenIssueResult={onOpenIssueResult}
                                 onMoveIssue={onMoveIssue}
                                 onReorderIssues={onReorderIssues}
                             />

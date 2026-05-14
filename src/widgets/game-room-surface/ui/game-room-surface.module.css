@@ -139,6 +139,66 @@
   animation-delay: 720ms;
 }
 
+.centerActions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.centerTooltipWrap {
+  display: inline-flex;
+}
+
+.centerIconButton {
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(134, 185, 255, 0.24);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #d9ecff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    opacity 160ms ease;
+}
+
+.centerIconButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(52, 123, 229, 0.1);
+  border-color: rgba(134, 185, 255, 0.38);
+}
+
+.centerIconButtonPrimary {
+  border: none;
+  color: #ffffff;
+  background: var(--pp-gradient-primary);
+  box-shadow: 0 14px 24px rgba(56, 118, 230, 0.22);
+}
+
+.centerIconButtonPrimary:hover:not(:disabled) {
+  background: var(--pp-gradient-primary);
+  box-shadow: 0 18px 30px rgba(56, 118, 230, 0.3);
+}
+
+.centerIconButton:disabled {
+  opacity: 0.58;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.centerActionIcon {
+  font-size: 1.45rem !important;
+}
+
 @keyframes roundSignalPulse {
   0% {
     opacity: 0.58;
@@ -240,6 +300,13 @@
   overflow: hidden;
 }
 
+.centerActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
 .centerResult {
   display: flex;
   flex-direction: column;
@@ -282,11 +349,39 @@
   box-shadow: 0 18px 30px var(--pp-accent-shadow);
 }
 
+.centerSecondaryButton {
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--pp-surface-border-strong);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--pp-color-text-primary);
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.centerSecondaryButton:hover {
+  transform: translateY(-1px);
+  border-color: var(--pp-accent-border-strong);
+  background: rgba(var(--pp-accent-rgb), 0.12);
+}
+
 .revealVotesButton:disabled {
   cursor: not-allowed;
   opacity: 0.68;
   transform: none;
   box-shadow: none;
+}
+
+.centerSecondaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
+  transform: none;
 }
 
 .participantCard {
@@ -638,6 +733,216 @@
   font-size: 1.15rem !important;
 }
 
+.roundSummary {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(240px, 0.85fr);
+  gap: 18px;
+  width: 100%;
+  padding: 18px 20px;
+  border-radius: 24px;
+  border: 1px solid var(--pp-surface-border-strong);
+  background: var(--pp-surface-panel);
+  box-shadow:
+    var(--pp-surface-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.roundSummaryDistribution {
+  display: flex;
+  min-height: 220px;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 18px;
+  overflow-x: auto;
+  padding: 6px 6px 2px;
+}
+
+.roundSummaryBarItem {
+  display: flex;
+  min-width: 88px;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.roundSummaryBarTrack {
+  position: relative;
+  display: flex;
+  width: 18px;
+  height: 136px;
+  align-items: flex-end;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(134, 148, 164, 0.38);
+}
+
+.roundSummaryBarFill {
+  width: 100%;
+  min-height: 16px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.84) 100%);
+  box-shadow: 0 8px 18px rgba(255, 255, 255, 0.18);
+}
+
+.roundSummaryVoteCard {
+  display: grid;
+  width: 74px;
+  height: 92px;
+  place-items: center;
+  border-radius: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  background: rgba(16, 31, 47, 0.78);
+  box-shadow: 0 18px 36px rgba(4, 12, 24, 0.2);
+}
+
+.roundSummaryVoteValue {
+  color: #ffffff !important;
+  font-size: 1.55rem !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+.roundSummaryVoteCount {
+  color: var(--pp-color-text-primary) !important;
+  font-size: 0.92rem !important;
+  font-weight: 700 !important;
+  text-align: center;
+}
+
+.roundSummaryStats {
+  display: grid;
+  gap: 14px;
+  align-content: center;
+}
+
+.roundSummaryStatCard,
+.roundSummaryAgreementCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.roundSummaryStatLabel {
+  color: var(--pp-color-text-secondary) !important;
+  font-size: 0.92rem !important;
+  font-weight: 700 !important;
+}
+
+.roundSummaryStatValue {
+  color: var(--pp-color-text-primary) !important;
+  font-size: 2.35rem !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+.roundSummaryAgreementCard {
+  align-items: center;
+  text-align: center;
+}
+
+.roundSummaryAgreementGauge {
+  --agreement-progress: 0%;
+
+  position: relative;
+  display: grid;
+  width: 116px;
+  height: 116px;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, rgba(15, 27, 40, 0.98) 0 60%, transparent 61%),
+    conic-gradient(
+      rgba(56, 223, 163, 0.92) 0 var(--agreement-progress),
+      rgba(108, 123, 139, 0.34) var(--agreement-progress) 100%
+    );
+}
+
+.roundSummaryAgreementInner {
+  display: grid;
+  width: 76px;
+  height: 76px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(16, 31, 47, 0.94);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.roundSummaryAgreementValue {
+  color: var(--pp-color-text-primary) !important;
+  font-size: 1rem !important;
+  font-weight: 900 !important;
+}
+
+.roundSummaryAgreementLabel {
+  color: var(--pp-color-text-secondary) !important;
+  font-size: 0.84rem !important;
+  font-weight: 700 !important;
+}
+
+.roundSummaryVotes {
+  display: grid;
+  gap: 12px;
+  grid-column: 1 / -1;
+}
+
+.roundSummaryVotesTitle {
+  color: var(--pp-color-text-primary) !important;
+  font-size: 1rem !important;
+  font-weight: 800 !important;
+}
+
+.roundSummaryVotesList {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.roundSummaryVoteRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.roundSummaryVoteName {
+  min-width: 0;
+  color: var(--pp-color-text-primary) !important;
+  font-size: 0.92rem !important;
+  font-weight: 700 !important;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.roundSummaryVoteBadge {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--pp-accent-border-strong);
+  background: rgba(var(--pp-accent-rgb), 0.14);
+}
+
+.roundSummaryVoteBadgeValue {
+  color: var(--pp-color-text-primary) !important;
+  font-size: 1rem !important;
+  font-weight: 900 !important;
+}
+
 .voteDeck {
   align-self: center;
   margin-top: auto;
@@ -876,7 +1181,18 @@
     line-height: 1.35 !important;
   }
 
+  .centerActions {
+    width: 100%;
+    gap: 8px;
+  }
+
   .revealVotesButton {
+    min-height: 36px;
+    padding-inline: 14px;
+    font-size: 0.82rem;
+  }
+
+  .centerSecondaryButton {
     min-height: 36px;
     padding-inline: 14px;
     font-size: 0.82rem;
@@ -899,6 +1215,60 @@
 
   .voteDeck {
     padding-inline: 10px;
+  }
+
+  .roundSummary {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 14px;
+  }
+
+  .roundSummaryDistribution {
+    min-height: 0;
+    justify-content: flex-start;
+    gap: 12px;
+    padding-inline: 2px;
+  }
+
+  .roundSummaryBarItem {
+    min-width: 76px;
+  }
+
+  .roundSummaryBarTrack {
+    height: 112px;
+  }
+
+  .roundSummaryVoteCard {
+    width: 62px;
+    height: 82px;
+    border-radius: 16px;
+  }
+
+  .roundSummaryVoteValue {
+    font-size: 1.3rem !important;
+  }
+
+  .roundSummaryVoteCount {
+    font-size: 0.82rem !important;
+  }
+
+  .roundSummaryStatCard,
+  .roundSummaryAgreementCard {
+    padding: 14px 16px;
+  }
+
+  .roundSummaryStatValue {
+    font-size: 2rem !important;
+  }
+
+  .roundSummaryAgreementGauge {
+    width: 98px;
+    height: 98px;
+  }
+
+  .roundSummaryAgreementInner {
+    width: 64px;
+    height: 64px;
   }
 
   .voteDeckGrid {
