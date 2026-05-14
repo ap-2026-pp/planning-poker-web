@@ -24,8 +24,10 @@ import {
   revealCardsRequest,
   resetRoundRequest,
   reorderIssuesRequest,
+  startTimerRequest,
   setIssueActiveRequest,
   setSpectatorModeRequest,
+  stopTimerRequest,
   transferMasterRequest,
   updateDisplayNameRequest,
   updateIssueRequest,
@@ -77,6 +79,11 @@ type ResultDialogState = {
   loading: boolean;
   error: string | null;
   data: ResultDialogData | null;
+};
+
+type PendingRevealState = {
+  roomState: RoomState;
+  participants?: GameParticipant[];
 };
 
 const applyRoomStateToParticipants = (
@@ -213,6 +220,23 @@ const buildHistoryResultData = (
   playerResults: historyItem.votingResults ?? [],
 });
 
+const formatTimerLabel = (seconds: number) => {
+  const safeSeconds = Math.max(0, seconds);
+  const minutes = Math.floor(safeSeconds / 60)
+    .toString()
+    .padStart(2, '0');
+  const remainingSeconds = (safeSeconds % 60).toString().padStart(2, '0');
+
+  return `${minutes}:${remainingSeconds}`;
+};
+
+const minTimerSeconds = 1;
+const maxTimerSeconds = 3600;
+const timerDurationPresets = [30, 60, 120, 300] as const;
+
+const clampTimerSeconds = (seconds: number) =>
+  Math.min(maxTimerSeconds, Math.max(minTimerSeconds, Math.round(seconds)));
+
 export const useGameRoomPage = () => {
   const { gameId = '' } = useParams();
   const navigate = useNavigate();
@@ -249,9 +273,13 @@ export const useGameRoomPage = () => {
   const [notification, setNotification] = useState<RoomNotification | null>(null);
   const [voteSubmitting, setVoteSubmitting] = useState(false);
   const [revealSubmitting, setRevealSubmitting] = useState(false);
+  const [timerSubmitting, setTimerSubmitting] = useState(false);
   const [resetRoundSubmitting, setResetRoundSubmitting] = useState(false);
   const [nextIssueSubmitting, setNextIssueSubmitting] = useState(false);
   const [voteOverride, setVoteOverride] = useState<string | null | undefined>(undefined);
+  const [selectedTimerSeconds, setSelectedTimerSeconds] = useState<number | null>(null);
+  const [revealCountdown, setRevealCountdown] = useState<number | null>(null);
+  const [nowMs, setNowMs] = useState(() => Date.now());
   const [historyResults, setHistoryResults] = useState<VotingHistoryItem[] | null>(null);
   const [cachedIssueResults, setCachedIssueResults] = useState<Record<string, ResultDialogData>>({});
   const [resultDialog, setResultDialog] = useState<ResultDialogState>({
@@ -265,13 +293,20 @@ export const useGameRoomPage = () => {
   const currentParticipantIdRef = useRef<string | null>(null);
   const participantsRef = useRef<GameParticipant[]>([]);
   const issuesRef = useRef<Issue[]>([]);
+  const roomStateRef = useRef<RoomState | null>(null);
+  const gameRef = useRef<Game | null>(null);
+  const pendingRevealStateRef = useRef<PendingRevealState | null>(null);
   const previousRevealedIssueIdRef = useRef<string | null>(null);
+  const roundStateReloadPromiseRef = useRef<Promise<RoomState> | null>(null);
+  const autoRevealTriggerRef = useRef<string | null>(null);
   const suppressResultDialogRef = useRef(false);
+  const timerExpiredAnnouncementRef = useRef<string | null>(null);
 
   const storedParticipantSession = getCurrentRoomParticipantSession();
 
-  const applyRoundState = useCallback(
+  const commitRoundState = useCallback(
     (nextRoomState: RoomState | null, nextParticipants?: GameParticipant[]) => {
+      roomStateRef.current = nextRoomState;
       setRoomState(nextRoomState);
 
       setIssues((current) => applyRoomStateToIssues(current, nextRoomState));
@@ -286,6 +321,57 @@ export const useGameRoomPage = () => {
     [],
   );
 
+  const clearPendingReveal = useCallback(() => {
+    pendingRevealStateRef.current = null;
+    setRevealCountdown(null);
+  }, []);
+
+  const finalizePendingReveal = useCallback(() => {
+    const pendingReveal = pendingRevealStateRef.current;
+
+    pendingRevealStateRef.current = null;
+    setRevealCountdown(null);
+
+    if (!pendingReveal) {
+      return;
+    }
+
+    commitRoundState(pendingReveal.roomState, pendingReveal.participants);
+  }, [commitRoundState]);
+
+  const applyRoundState = useCallback(
+    (nextRoomState: RoomState | null, nextParticipants?: GameParticipant[]) => {
+      if (!nextRoomState) {
+        clearPendingReveal();
+        commitRoundState(null, nextParticipants);
+        return;
+      }
+
+      const currentVisibleRoomState = roomStateRef.current;
+      const shouldAnimateReveal = Boolean(
+        gameRef.current?.showCountdownAnimation &&
+        nextRoomState.isRevealed &&
+        nextRoomState.result &&
+        nextRoomState.activeIssue?.id &&
+        currentVisibleRoomState?.activeIssue?.id === nextRoomState.activeIssue.id &&
+        !currentVisibleRoomState?.isRevealed,
+      );
+
+      if (shouldAnimateReveal) {
+        pendingRevealStateRef.current = {
+          roomState: nextRoomState,
+          participants: nextParticipants,
+        };
+        setRevealCountdown((current) => current ?? 3);
+        return;
+      }
+
+      clearPendingReveal();
+      commitRoundState(nextRoomState, nextParticipants);
+    },
+    [clearPendingReveal, commitRoundState],
+  );
+
   const reloadRoundState = useCallback(async () => {
     const nextRoomState = await getRoomStateRequest(gameId);
 
@@ -293,6 +379,20 @@ export const useGameRoomPage = () => {
 
     return nextRoomState;
   }, [applyRoundState, gameId]);
+
+  const syncRoundState = useCallback(async () => {
+    if (roundStateReloadPromiseRef.current) {
+      return roundStateReloadPromiseRef.current;
+    }
+
+    const nextPromise = reloadRoundState().finally(() => {
+      roundStateReloadPromiseRef.current = null;
+    });
+
+    roundStateReloadPromiseRef.current = nextPromise;
+
+    return nextPromise;
+  }, [reloadRoundState]);
 
   const reloadRoom = useCallback(async () => {
     setLoading(true);
@@ -309,6 +409,7 @@ export const useGameRoomPage = () => {
     const [gameResult, participantsResult, issuesResult, inviteResult, roomStateResult] = results;
 
     if (gameResult.status === 'fulfilled') {
+      gameRef.current = gameResult.value;
       setGame(gameResult.value);
     }
 
@@ -348,6 +449,10 @@ export const useGameRoomPage = () => {
   }, [applyRoundState, gameId]);
 
   useEffect(() => {
+    gameRef.current = game;
+  }, [game]);
+
+  useEffect(() => {
     const syncLayout = () => {
       setIsMobileLayout(window.innerWidth <= 640);
     };
@@ -365,37 +470,59 @@ export const useGameRoomPage = () => {
   }, [reloadRoom]);
 
   useEffect(() => {
-    if (!gameId) {
+    const timerEndsAt = roomState?.timer?.endsAt;
+
+    if (!timerEndsAt) {
       return;
     }
 
-    let isCancelled = false;
+    setNowMs(Date.now());
 
-    const syncRoundState = async () => {
+    const intervalId = window.setInterval(() => {
+      setNowMs(Date.now());
+    }, 250);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [roomState?.timer?.endsAt]);
+
+  useEffect(() => {
+    if (revealCountdown === null) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      if (revealCountdown <= 1) {
+        finalizePendingReveal();
+        return;
+      }
+
+      setRevealCountdown(revealCountdown - 1);
+    }, 1000);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [finalizePendingReveal, revealCountdown]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
       if (document.visibilityState !== 'visible') {
         return;
       }
 
-      try {
-        const nextRoomState = await getRoomStateRequest(gameId);
-
-        if (!isCancelled) {
-          applyRoundState(nextRoomState);
-        }
-      } catch {
-        // Room state polling is best-effort and should not disrupt the page.
-      }
+      void syncRoundState().catch(() => {
+        // Visibility sync is best-effort and should not disrupt the room.
+      });
     };
 
-    const intervalId = window.setInterval(() => {
-      void syncRoundState();
-    }, 2500);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      isCancelled = true;
-      window.clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [applyRoundState, gameId]);
+  }, [syncRoundState]);
 
   useEffect(() => {
     setRoomTitle(game?.name || 'Кімната гри');
@@ -540,6 +667,17 @@ export const useGameRoomPage = () => {
   const roundLabel = getRoundLabel(sortedIssues, activeIssueIndex);
 
   const votingSystemLabel = getGameRoomVotingLabel(game?.votingSystem);
+  const defaultTimerSeconds = Math.max(30, (game?.defaultTimerMinutes ?? 1) * 60);
+  const timerOptions = useMemo(() => {
+    return [
+      ...new Set([
+        ...timerDurationPresets,
+        defaultTimerSeconds,
+        ...(selectedTimerSeconds !== null ? [selectedTimerSeconds] : []),
+      ]),
+    ].sort((left, right) => left - right);
+  }, [defaultTimerSeconds, selectedTimerSeconds]);
+  const preferredTimerSeconds = selectedTimerSeconds ?? defaultTimerSeconds;
 
   const deckValues = getGameRoomDeck(
     game?.votingSystem,
@@ -547,18 +685,59 @@ export const useGameRoomPage = () => {
       ?.split(',')
       .map((card) => card.trim())
       .filter(Boolean) ?? null,
+    roomState?.availableCards ?? null,
+  );
+  const timerEndsAtMs = roomState?.timer?.endsAt
+    ? new Date(roomState.timer.endsAt).getTime()
+    : null;
+  const timerRemainingSeconds = timerEndsAtMs !== null
+    ? Math.max(0, Math.ceil((timerEndsAtMs - nowMs) / 1000))
+    : null;
+  const isTimerExpiredLocally = Boolean(
+    roomState?.timer &&
+    (roomState.timer.isExpired || timerRemainingSeconds === 0),
+  );
+  const isTimerActive = Boolean(roomState?.timer && !isTimerExpiredLocally);
+  const timerLabel = roomState?.timer
+    ? formatTimerLabel(timerRemainingSeconds ?? 0)
+    : resolvedActiveIssue && preferredTimerSeconds > 0
+      ? formatTimerLabel(preferredTimerSeconds)
+      : 'Таймер';
+  const autoRevealEnabled = roomState?.autoRevealEnabled ?? game?.autoRevealCards ?? false;
+  const isRevealPending = revealCountdown !== null;
+  const everyoneVoted = Boolean(
+    roomState &&
+    roomState.totalPlayers > 0 &&
+    roomState.votedCount > 0 &&
+    roomState.votedCount >= roomState.totalPlayers,
   );
   const canManageIssuesInRound = roomState?.canManage ?? canManageIssues;
-  const canRevealCurrentRound = roomState?.canReveal ?? canRevealCards;
-  const canVoteInRound = roomState?.canVote ?? Boolean(
+  const roundResult = roomState?.result ?? null;
+  const isRoundRevealed = roomState?.isRevealed ?? false;
+  const canRevealCurrentRound = Boolean(
+    resolvedActiveIssue &&
+    canRevealCards &&
+    !isRoundRevealed &&
+    !isRevealPending,
+  );
+  const timerExpiredWithoutAutoReveal = Boolean(
+    resolvedActiveIssue &&
+    roomState?.timer &&
+    isTimerExpiredLocally &&
+    !isRoundRevealed &&
+    !autoRevealEnabled,
+  );
+  const canVoteInRound = Boolean(
     currentParticipant &&
     currentParticipant.role !== ParticipantRole.Spectator &&
-    resolvedActiveIssue,
+    resolvedActiveIssue &&
+    !isRoundRevealed &&
+    !isRevealPending &&
+    !revealSubmitting &&
+    !isTimerExpiredLocally,
   );
   const currentVoteValue = voteOverride !== undefined ? voteOverride : roomState?.myVote ?? null;
   const votesCastCount = roomState?.votedCount ?? participants.filter((participant) => participant.hasVoted).length;
-  const roundResult = roomState?.result ?? null;
-  const isRoundRevealed = roomState?.isRevealed ?? false;
   const canResetCurrentRound = isRoundRevealed && Boolean(isCurrentParticipantMaster && resolvedActiveIssue);
   const canGoToNextIssue = isRoundRevealed && canManageIssuesInRound && Boolean(nextIssue);
   const currentRoundResultData = useMemo(
@@ -594,8 +773,66 @@ export const useGameRoomPage = () => {
   }, [issues]);
 
   useEffect(() => {
+    if (selectedTimerSeconds !== null) {
+      return;
+    }
+
+    setSelectedTimerSeconds(defaultTimerSeconds);
+  }, [defaultTimerSeconds, selectedTimerSeconds]);
+
+  useEffect(() => {
+    if (voteOverride === undefined) {
+      return;
+    }
+
+    if ((roomState?.myVote ?? null) === (voteOverride ?? null)) {
+      setVoteOverride(undefined);
+    }
+  }, [roomState?.myVote, voteOverride]);
+
+  useEffect(() => {
     setVoteOverride(undefined);
   }, [roomState?.activeIssue?.id, roomState?.isRevealed]);
+
+  useEffect(() => {
+    if (isRoundRevealed || !resolvedActiveIssue) {
+      autoRevealTriggerRef.current = null;
+    }
+  }, [isRoundRevealed, resolvedActiveIssue?.id]);
+
+  useEffect(() => {
+    const timerEndsAt = roomState?.timer?.endsAt;
+
+    if (!timerExpiredWithoutAutoReveal || !resolvedActiveIssue || !timerEndsAt) {
+      timerExpiredAnnouncementRef.current = null;
+      return;
+    }
+
+    const announcementKey = `${resolvedActiveIssue.id}:${timerEndsAt}`;
+
+    if (timerExpiredAnnouncementRef.current === announcementKey) {
+      return;
+    }
+
+    timerExpiredAnnouncementRef.current = announcementKey;
+    setNotification({
+      message: 'Час вийшов. Можна відкрити карти або запустити таймер знову.',
+      tone: 'warning',
+    });
+
+    if (!('speechSynthesis' in window)) {
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(
+      'Час вийшов. Можна відкривати карти або запустити таймер знову.',
+    );
+
+    utterance.lang = 'uk-UA';
+    window.speechSynthesis.speak(utterance);
+  }, [resolvedActiveIssue?.id, roomState?.timer?.endsAt, timerExpiredWithoutAutoReveal]);
 
   useEffect(() => {
     if (!currentRoundResultData) {
@@ -837,19 +1074,17 @@ export const useGameRoomPage = () => {
   );
 
   const handleGameUpdated = useCallback(
-    (updatedGame: Game | string) => {
-      if (typeof updatedGame === 'string') {
-        setNotification({
-          message: 'Налаштування гри оновлено',
-          tone: 'success',
-        });
+    async (updatedGame: Game | string) => {
+      const nextGame = typeof updatedGame === 'string'
+        ? await getGameRequest(gameId).catch(() => null)
+        : updatedGame;
 
-        return;
+      if (nextGame) {
+        gameRef.current = nextGame;
+        setGame(nextGame);
       }
 
-      setGame(updatedGame);
-
-      if (!updatedGame.isActive) {
+      if (nextGame && !nextGame.isActive) {
         clearCurrentRoomParticipantSession();
         clearGuestAccessToken();
 
@@ -866,12 +1101,16 @@ export const useGameRoomPage = () => {
         return;
       }
 
+      await syncRoundState().catch(() => {
+        // Game settings changed but room sync can safely fail without blocking the UI.
+      });
+
       setNotification({
         message: 'Налаштування гри оновлено',
         tone: 'success',
       });
     },
-    [closeInviteDialog, closeSidebar, navigate],
+    [closeInviteDialog, closeSidebar, gameId, navigate, syncRoundState],
   );
 
   const handleIssueCreated = useCallback((issue: Issue) => {
@@ -886,6 +1125,13 @@ export const useGameRoomPage = () => {
   }, [roomState]);
 
   const handleIssueUpdated = useCallback((issue: Issue) => {
+    const previousIssue = issuesRef.current.find((entry) => entry.id === issue.id);
+    const shouldReloadRoundState = Boolean(
+      issue.isCurrent ||
+      previousIssue?.isCurrent ||
+      roomStateRef.current?.activeIssue?.id === issue.id,
+    );
+
     setIssues((current) => {
       if (issue.isRemoved) {
         return current.filter((entry) => entry.id !== issue.id);
@@ -894,15 +1140,21 @@ export const useGameRoomPage = () => {
       const exists = current.some((entry) => entry.id === issue.id);
 
       if (!exists) {
-        return applyRoomStateToIssues([...current, issue], roomState);
+        return applyRoomStateToIssues([...current, issue], roomStateRef.current);
       }
 
       return applyRoomStateToIssues(
         current.map((entry) => (entry.id === issue.id ? { ...entry, ...issue } : entry)),
-        roomState,
+        roomStateRef.current,
       );
     });
-  }, [roomState]);
+
+    if (shouldReloadRoundState) {
+      void syncRoundState().catch(() => {
+        // Issue updates may change the active round and should resync when possible.
+      });
+    }
+  }, [applyRoundState, syncRoundState]);
 
   const handleIssuesImported = useCallback((importedIssues: Issue[]) => {
     setIssues(
@@ -920,6 +1172,10 @@ export const useGameRoomPage = () => {
     });
   }, [roomState]);
 
+  const handleRealtimeRoundStateUpdated = useCallback(async () => {
+    await syncRoundState();
+  }, [syncRoundState]);
+
   const realtime = useGameRoomRealtime({
     gameId,
     onParticipantJoined: handleParticipantJoined,
@@ -930,6 +1186,7 @@ export const useGameRoomPage = () => {
     onIssueCreated: handleIssueCreated,
     onIssueUpdated: handleIssueUpdated,
     onIssuesImported: handleIssuesImported,
+    onRoundStateUpdated: handleRealtimeRoundStateUpdated,
     onReconnected: reloadRoom,
   });
 
@@ -994,9 +1251,6 @@ export const useGameRoomPage = () => {
         } else {
           await deleteVoteRequest(gameId, currentIssueId);
         }
-
-        await reloadRoundState();
-        setVoteOverride(undefined);
       } catch (requestError) {
         setVoteOverride(undefined);
         setError(
@@ -1010,7 +1264,7 @@ export const useGameRoomPage = () => {
         setVoteSubmitting(false);
       }
     },
-    [gameId, reloadRoundState, resolvedActiveIssue?.id, roomState?.activeIssue?.id],
+    [gameId, resolvedActiveIssue?.id, roomState?.activeIssue?.id],
   );
 
   const revealVotes = useCallback(async () => {
@@ -1018,13 +1272,8 @@ export const useGameRoomPage = () => {
 
     try {
       const nextRoomState = await revealCardsRequest(gameId);
-      const nextIssues = await getIssuesRequest(gameId).catch(() => null);
 
       applyRoundState(nextRoomState);
-
-      if (nextIssues) {
-        setIssues(applyRoomStateToIssues(nextIssues, nextRoomState));
-      }
 
       setNotification({
         message: 'Карти відкрито',
@@ -1042,6 +1291,148 @@ export const useGameRoomPage = () => {
       setRevealSubmitting(false);
     }
   }, [applyRoundState, gameId]);
+
+  const updateTimerDurationSelection = useCallback((durationSeconds: number) => {
+    setSelectedTimerSeconds(clampTimerSeconds(durationSeconds));
+  }, []);
+
+  const startRoundTimer = useCallback(async (durationSeconds: number) => {
+    if (!isCurrentParticipantMaster || !resolvedActiveIssue || isRoundRevealed) {
+      return;
+    }
+
+    setTimerSubmitting(true);
+
+    try {
+      const nextDurationSeconds = clampTimerSeconds(durationSeconds);
+      const nextTimer = await startTimerRequest(gameId, {
+        durationSeconds: nextDurationSeconds,
+      });
+      const currentRoomState = roomStateRef.current;
+
+      setSelectedTimerSeconds(nextDurationSeconds);
+      setNowMs(Date.now());
+
+      if (currentRoomState) {
+        const nextRoomState = {
+          ...currentRoomState,
+          timer: nextTimer,
+        };
+
+        roomStateRef.current = nextRoomState;
+        setRoomState(nextRoomState);
+      } else {
+        await syncRoundState().catch(() => {
+          // Timer state can be refetched later if the local room snapshot is missing.
+        });
+      }
+
+      setNotification({
+        message: 'Таймер запущено',
+        tone: 'success',
+      });
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : 'Не вдалося запустити таймер',
+      );
+
+      throw requestError;
+    } finally {
+      setTimerSubmitting(false);
+    }
+  }, [gameId, isCurrentParticipantMaster, isRoundRevealed, resolvedActiveIssue, syncRoundState]);
+
+  const restartRoundTimer = useCallback(async () => {
+    await startRoundTimer(preferredTimerSeconds);
+  }, [preferredTimerSeconds, startRoundTimer]);
+
+  const stopRoundTimer = useCallback(async () => {
+    if (!isCurrentParticipantMaster || !roomStateRef.current?.timer) {
+      return;
+    }
+
+    setTimerSubmitting(true);
+
+    try {
+      await stopTimerRequest(gameId);
+
+      const currentRoomState = roomStateRef.current;
+
+      if (currentRoomState) {
+        const nextRoomState = {
+          ...currentRoomState,
+          timer: null,
+        };
+
+        roomStateRef.current = nextRoomState;
+        setRoomState(nextRoomState);
+      }
+
+      setNotification({
+        message: 'Таймер зупинено',
+        tone: 'info',
+      });
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : 'Не вдалося зупинити таймер',
+      );
+
+      throw requestError;
+    } finally {
+      setTimerSubmitting(false);
+    }
+  }, [gameId, isCurrentParticipantMaster]);
+
+  useEffect(() => {
+    const hasVotes = votesCastCount > 0;
+    const timerExpiredWithVotes = Boolean(roomState?.timer && isTimerExpiredLocally && hasVotes);
+    const shouldAutoReveal = autoRevealEnabled && (everyoneVoted || timerExpiredWithVotes);
+
+    if (!resolvedActiveIssue || isRoundRevealed || isRevealPending || revealSubmitting || !shouldAutoReveal) {
+      if (!shouldAutoReveal || isRoundRevealed || !resolvedActiveIssue) {
+        autoRevealTriggerRef.current = null;
+      }
+
+      return;
+    }
+
+    if (!canRevealCards) {
+      return;
+    }
+
+    const triggerReason = everyoneVoted ? 'all-voted' : 'timer-expired';
+    const triggerKey = `${resolvedActiveIssue.id}:${triggerReason}`;
+
+    if (autoRevealTriggerRef.current === triggerKey) {
+      return;
+    }
+
+    autoRevealTriggerRef.current = triggerKey;
+
+    void (async () => {
+      try {
+        await revealVotes();
+      } catch {
+        autoRevealTriggerRef.current = null;
+      }
+    })();
+  }, [
+    autoRevealEnabled,
+    canRevealCards,
+    everyoneVoted,
+    isRevealPending,
+    isRoundRevealed,
+    isTimerExpiredLocally,
+    revealSubmitting,
+    revealVotes,
+    resolvedActiveIssue,
+    roomState?.timer,
+    votesCastCount,
+  ]);
 
   const ensureHistoryResultsLoaded = useCallback(async () => {
     if (historyResults) {
@@ -1143,11 +1534,12 @@ export const useGameRoomPage = () => {
   );
 
  const resetIssueRoundFromSidebar = useCallback(
-  async (issueId: string) => {
+ async (issueId: string) => {
     if (!isCurrentParticipantMaster) {
       return;
     }
 
+    clearPendingReveal();
     suppressResultDialogRef.current = true;
     setResetRoundSubmitting(true);
 
@@ -1509,7 +1901,7 @@ export const useGameRoomPage = () => {
  const setIssueActive = useCallback(
   async (issueId: string) => {
     const previousIssues = issuesRef.current;
-    const previousRoomState = roomState;
+    const previousRoomState = roomStateRef.current;
     const clickedIssue = previousIssues.find((issue) => issue.id === issueId);
 
     if (!clickedIssue) {
@@ -1519,6 +1911,7 @@ export const useGameRoomPage = () => {
     const isTurningOff = clickedIssue.isCurrent;
     const shouldActivate = !isTurningOff;
 
+    clearPendingReveal();
     setIssues((current) =>
       applyOptimisticIssueActivation(current, issueId, shouldActivate),
     );
@@ -1529,13 +1922,14 @@ export const useGameRoomPage = () => {
       }
 
       if (isTurningOff) {
-        return {
+        const nextRoomState = {
           ...current,
           activeIssue: null,
           isRevealed: false,
           result: null,
           myVote: null,
           votedCount: 0,
+          timer: game?.autoResetTimer ? null : current.timer,
           canVote: false,
           participants: current.participants.map((participant) => ({
             ...participant,
@@ -1543,9 +1937,12 @@ export const useGameRoomPage = () => {
             voteValue: null,
           })),
         };
+
+        roomStateRef.current = nextRoomState;
+        return nextRoomState;
       }
 
-      return {
+      const nextRoomState = {
         ...current,
         activeIssue: {
           ...clickedIssue,
@@ -1557,6 +1954,7 @@ export const useGameRoomPage = () => {
         result: null,
         myVote: null,
         votedCount: 0,
+        timer: game?.autoResetTimer ? null : current.timer,
         canVote: true,
         participants: current.participants.map((participant) => ({
           ...participant,
@@ -1564,10 +1962,17 @@ export const useGameRoomPage = () => {
           voteValue: null,
         })),
       };
+
+      roomStateRef.current = nextRoomState;
+      return nextRoomState;
     });
 
     try {
       await setIssueActiveRequest(gameId, issueId);
+
+      if (game?.autoResetTimer && isCurrentParticipantMaster) {
+        await stopTimerRequest(gameId).catch(() => undefined);
+      }
 
       const [nextRoomState, nextIssues] = await Promise.all([
         getRoomStateRequest(gameId),
@@ -1583,6 +1988,7 @@ export const useGameRoomPage = () => {
       });
     } catch (requestError) {
       setIssues(previousIssues);
+      roomStateRef.current = previousRoomState;
       setRoomState(previousRoomState);
 
       setError(
@@ -1594,7 +2000,7 @@ export const useGameRoomPage = () => {
       throw requestError;
     }
   },
-  [applyRoundState, gameId, roomState],
+  [applyRoundState, clearPendingReveal, game?.autoResetTimer, gameId, isCurrentParticipantMaster],
 );
 
 const resetCurrentRound = useCallback(async () => {
@@ -1604,6 +2010,7 @@ const resetCurrentRound = useCallback(async () => {
 
   const resettingIssueId = resolvedActiveIssue.id;
 
+  clearPendingReveal();
   suppressResultDialogRef.current = true;
   setResetRoundSubmitting(true);
 
@@ -1796,7 +2203,15 @@ const resetCurrentRound = useCallback(async () => {
     roundLabel,
     votingSystemLabel,
     deckValues,
+    timerOptions,
+    selectedTimerSeconds: preferredTimerSeconds,
     viewableIssueResultIds,
+    timerLabel,
+    isTimerActive,
+    hasTimerState: Boolean(roomState?.timer),
+    timerExpiredWithoutAutoReveal,
+    timerSubmitting,
+    revealCountdown,
     canRevealCurrentRound,
     canVoteInRound,
     currentVoteValue,
@@ -1811,6 +2226,10 @@ const resetCurrentRound = useCallback(async () => {
     revealSubmitting,
     resetRoundSubmitting,
     nextIssueSubmitting,
+    updateTimerDurationSelection,
+    startRoundTimer,
+    restartRoundTimer,
+    stopRoundTimer,
     submitVote,
     revealVotes,
     resultDialog,

@@ -9,9 +9,13 @@ type BoardCenterStateProps = {
     onlineParticipantsCount: number;
     activeIssue: Issue | null;
     votesCastCount: number;
+    revealCountdown: number | null;
+    isTimerExpiredWithoutAutoReveal: boolean;
     showRevealButton: boolean;
     canRevealVotes: boolean;
+    canRestartTimer: boolean;
     isRevealSubmitting: boolean;
+    isTimerPending: boolean;
     isRoundRevealed: boolean;
     canOpenResult: boolean;
     canResetCurrentRound: boolean;
@@ -19,6 +23,7 @@ type BoardCenterStateProps = {
     isResetRoundSubmitting: boolean;
     isNextIssueSubmitting: boolean;
     onRevealVotes: () => Promise<void>;
+    onRestartTimer: () => Promise<void>;
     onOpenResult: () => void;
     onResetRound: () => Promise<void>;
     onGoToNextIssue: () => Promise<void>;
@@ -27,9 +32,13 @@ type BoardCenterStateProps = {
 export const BoardCenterState = ({
     onlineParticipantsCount,
     activeIssue,
+    revealCountdown,
+    isTimerExpiredWithoutAutoReveal,
     showRevealButton,
     canRevealVotes,
+    canRestartTimer,
     isRevealSubmitting,
+    isTimerPending,
     isRoundRevealed,
     canOpenResult,
     canResetCurrentRound,
@@ -37,6 +46,7 @@ export const BoardCenterState = ({
     isResetRoundSubmitting,
     isNextIssueSubmitting,
     onRevealVotes,
+    onRestartTimer,
     onOpenResult,
     onResetRound,
     onGoToNextIssue,
@@ -46,15 +56,36 @@ export const BoardCenterState = ({
     return (
         <Box className={styles.centerState}>
             <Box className={styles.centerPlatform}>
-                <Typography className={styles.centerText}>
-                    {showRevealButton
-                        ? activeIssue
-                            ? 'Очікуємо оцінки гравців...'
-                            : onlineParticipantsCount
-                                ? 'Оберіть активну задачу, щоб почати новий раунд'
-                                : 'Очікуємо підключення гравців...'
-                        : null}
-                </Typography>
+                {revealCountdown !== null ? (
+                    <Typography className={styles.centerCountdownValue}>
+                        {revealCountdown}
+                    </Typography>
+                ) : (
+                    <>
+                        <Typography
+                            className={[
+                                styles.centerText,
+                                isTimerExpiredWithoutAutoReveal ? styles.centerTextWarning : '',
+                            ].join(' ').trim()}
+                        >
+                            {isTimerExpiredWithoutAutoReveal
+                                ? 'Час вийшов'
+                                : showRevealButton
+                                    ? activeIssue
+                                        ? 'Очікуємо оцінки гравців...'
+                                        : onlineParticipantsCount
+                                            ? 'Оберіть активну задачу, щоб почати новий раунд'
+                                            : 'Очікуємо підключення гравців...'
+                                    : null}
+                        </Typography>
+
+                        {isTimerExpiredWithoutAutoReveal ? (
+                            <Typography className={styles.centerExpiredBadge}>
+                                Відкрийте карти або запустіть таймер знову
+                            </Typography>
+                        ) : null}
+                    </>
+                )}
 
                 <Typography className={styles.centerIssue}>
                     {activeIssue
@@ -63,16 +94,31 @@ export const BoardCenterState = ({
                 </Typography>
 
                 {showRevealButton ? (
-                    <button
-                        type="button"
-                        className={styles.revealVotesButton}
-                        onClick={() => {
-                            void onRevealVotes();
-                        }}
-                        disabled={!canRevealVotes || isRevealSubmitting}
-                    >
-                        {isRevealSubmitting ? 'Відкриваємо...' : 'Відкрити карти'}
-                    </button>
+                    <Box className={styles.centerActions}>
+                        <button
+                            type="button"
+                            className={styles.revealVotesButton}
+                            onClick={() => {
+                                void onRevealVotes();
+                            }}
+                            disabled={!canRevealVotes || isRevealSubmitting}
+                        >
+                            {isRevealSubmitting ? 'Відкриваємо...' : 'Відкрити карти'}
+                        </button>
+
+                        {isTimerExpiredWithoutAutoReveal && canRestartTimer ? (
+                            <button
+                                type="button"
+                                className={styles.centerSecondaryButton}
+                                onClick={() => {
+                                    void onRestartTimer();
+                                }}
+                                disabled={isTimerPending}
+                            >
+                                Почати знову
+                            </button>
+                        ) : null}
+                    </Box>
                 ) : null}
 
                 {isRoundRevealed && (canOpenResult || canResetCurrentRound || canGoToNextIssue) ? (

@@ -87,6 +87,14 @@ export const GameRoomPage = () => {
           positionedParticipants={room.positionedParticipants}
           overflowParticipants={room.overflowParticipants}
           deckValues={room.deckValues}
+          timerOptions={room.timerOptions}
+          selectedTimerSeconds={room.selectedTimerSeconds}
+          timerLabel={room.timerLabel}
+          isTimerActive={room.isTimerActive}
+          hasTimerState={room.hasTimerState}
+          isTimerExpiredWithoutAutoReveal={room.timerExpiredWithoutAutoReveal}
+          isTimerPending={room.timerSubmitting}
+          revealCountdown={room.revealCountdown}
           canRevealCurrentRound={room.canRevealCurrentRound}
           canVoteInRound={room.canVoteInRound}
           currentVoteValue={room.currentVoteValue}
@@ -99,6 +107,10 @@ export const GameRoomPage = () => {
           canGoToNextIssue={room.canGoToNextIssue}
           isResetRoundSubmitting={room.resetRoundSubmitting}
           isNextIssueSubmitting={room.nextIssueSubmitting}
+          onTimerDurationChange={room.updateTimerDurationSelection}
+          onStartTimer={room.startRoundTimer}
+          onRestartTimer={room.restartRoundTimer}
+          onStopTimer={room.stopRoundTimer}
           onVoteSelect={room.submitVote}
           onRevealVotes={room.revealVotes}
           onOpenResult={room.openCurrentRoundResult}

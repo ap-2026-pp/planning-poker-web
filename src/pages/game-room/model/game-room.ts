@@ -2,7 +2,7 @@ import { VotingSystem } from '@entities/game';
 import type { Issue } from '@entities/issue';
 import type { GameParticipant } from '@entities/participant';
 import { ParticipantRole } from '@entities/participant';
-import { getVotingSystemDeck, getVotingSystemLabel } from '@entities/game';
+import { getVotingSystemDeck, getVotingSystemLabel, type VoteDeckCard } from '@entities/game';
 
 export type SidebarView = 'players' | 'issues';
 export type CopiedItem = 'code' | 'invite-link' | null;
@@ -130,7 +130,35 @@ export const getRoundLabel = (issues: Issue[], activeIssueIndex: number) => {
 export const getGameRoomDeck = (
   votingSystem?: VotingSystem | null,
   customCards?: readonly string[] | null,
-) => getVotingSystemDeck(votingSystem ?? VotingSystem.Fibonacci, customCards);
+  availableCards?: readonly string[] | null,
+) => {
+  if (availableCards?.length) {
+    const normalizedCards = [...new Set(
+      availableCards
+        .map((card) => card.trim())
+        .filter(Boolean),
+    )];
+
+    const deckCards: VoteDeckCard[] = normalizedCards.map((card) => ({
+      value: card,
+      label: card === 'coffee' ? '☕' : card,
+      ...(card === 'coffee' ? { ariaLabel: 'Пауза' } : {}),
+      ...(card === '?' ? { ariaLabel: 'Не знаю' } : {}),
+    }));
+
+    if (!normalizedCards.includes('?')) {
+      deckCards.push({ value: '?', label: '?', ariaLabel: 'Не знаю' });
+    }
+
+    if (!normalizedCards.includes('coffee')) {
+      deckCards.push({ value: 'coffee', label: '☕', ariaLabel: 'Пауза' });
+    }
+
+    return deckCards;
+  }
+
+  return getVotingSystemDeck(votingSystem ?? VotingSystem.Fibonacci, customCards);
+};
 
 export const getGameRoomVotingLabel = (votingSystem?: VotingSystem | null) =>
   getVotingSystemLabel(votingSystem ?? VotingSystem.Fibonacci);

@@ -8,7 +8,7 @@ import styles from './game-room-surface.module.css';
 type SurfaceMetaBarProps = {
   onlineParticipantsCount: number;
   showSettings: boolean;
-  showTimerControl: boolean;
+  canManageTimer: boolean;
   timerLabel: string;
   isTimerActive: boolean;
   onOpenTimerMenu: (event: MouseEvent<HTMLButtonElement>) => void;
@@ -18,7 +18,7 @@ type SurfaceMetaBarProps = {
 export const SurfaceMetaBar = ({
   onlineParticipantsCount,
   showSettings,
-  showTimerControl,
+  canManageTimer,
   timerLabel,
   isTimerActive,
   onOpenTimerMenu,
@@ -42,7 +42,7 @@ export const SurfaceMetaBar = ({
         </button>
       ) : null}
 
-      {showTimerControl ? (
+      {canManageTimer ? (
         <button
           type="button"
           className={[
@@ -55,7 +55,17 @@ export const SurfaceMetaBar = ({
           <AccessTimeRoundedIcon className={styles.settingsPillIcon} />
           <span>{timerLabel}</span>
         </button>
-      ) : null}
+      ) : (
+        <Box
+          className={[
+            styles.timerPillButton,
+            isTimerActive ? styles.timerPillButtonActive : '',
+          ].join(' ').trim()}
+        >
+          <AccessTimeRoundedIcon className={styles.settingsPillIcon} />
+          <span>{timerLabel}</span>
+        </Box>
+      )}
     </Box>
   </Box>
 );

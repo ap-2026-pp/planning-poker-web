@@ -235,8 +235,11 @@
   left: 50%;
   top: 50%;
   z-index: 2;
-  width: min(360px, calc(100% - 40px));
-  max-width: calc(100% - 40px);
+
+  width: fit-content;
+  min-width: 260px;
+  max-width: min(520px, calc(100% - 40px));
+
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
@@ -246,7 +249,7 @@
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  padding: 16px 18px;
+  padding: 16px;
   border-radius: 22px;
   border: 1px solid var(--pp-surface-border-strong);
   background: var(--pp-surface-panel-strong);
@@ -287,6 +290,32 @@
   font-size: 1rem !important;
   font-weight: 800 !important;
   line-height: 1.25 !important;
+}
+
+.centerTextWarning {
+  color: #ffd27a !important;
+}
+
+.centerExpiredBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 210, 122, 0.12);
+  border: 1px solid rgba(255, 210, 122, 0.28);
+  color: #ffe7b4 !important;
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+  line-height: 1.35 !important;
+}
+
+.centerCountdownValue {
+  color: var(--pp-color-text-primary) !important;
+  font-size: clamp(3rem, 7vw, 4.75rem) !important;
+  font-weight: 900 !important;
+  line-height: 0.92 !important;
 }
 
 .centerIssue {

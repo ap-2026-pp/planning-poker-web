@@ -49,6 +49,7 @@ export type CreateGamePayload = {
   customValues?: string;
   revealPolicy: RevealPolicy;
   issuesPolicy: IssuesPolicy;
+  autoResetTimer: boolean;
   autoRevealCards: boolean;
   showAverage: boolean;
   showCountdownAnimation: boolean;

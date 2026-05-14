@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { HubConnection } from '@microsoft/signalr';
 
-import type { Game } from '@entities/game';
+import type { Game, RoomState } from '@entities/game';
 import type { Issue } from '@entities/issue';
 import type { GameParticipant } from '@entities/participant';
 import {
@@ -14,7 +14,7 @@ import {
     gameRoomRealtimeEventNames,
     getGameRoomRealtimeAccessToken,
 } from './game-room-realtime';
-import { hasGuestTokenCookie } from '@shared/auth';
+import { hasGuestTokenCookie, subscribeToSessionInvalidated } from '@shared/auth';
 
 type ConnectionStatus = 'connected' | 'connecting' | 'reconnecting' | 'disconnected';
 
@@ -28,6 +28,7 @@ type UseGameRoomRealtimeParams = {
     onIssueCreated?: (issue: Issue) => void | Promise<void>;
     onIssueUpdated?: (issue: Issue) => void | Promise<void>;
     onIssuesImported?: (importedIssues: Issue[]) => void | Promise<void>;
+    onRoundStateUpdated?: (roomState: RoomState) => void | Promise<void>;
     onReconnected?: () => void | Promise<void>;
 };
 
@@ -41,6 +42,7 @@ export const useGameRoomRealtime = ({
     onIssueCreated,
     onIssueUpdated,
     onIssuesImported,
+    onRoundStateUpdated,
     onReconnected,
 }: UseGameRoomRealtimeParams) => {
     const connectionRef = useRef<HubConnection | null>(null);
@@ -54,6 +56,7 @@ export const useGameRoomRealtime = ({
         onIssueCreated,
         onIssueUpdated,
         onIssuesImported,
+        onRoundStateUpdated,
         onReconnected,
     });
 
@@ -67,6 +70,7 @@ export const useGameRoomRealtime = ({
             onIssueCreated,
             onIssueUpdated,
             onIssuesImported,
+            onRoundStateUpdated,
             onReconnected,
         };
     }, [
@@ -78,6 +82,7 @@ export const useGameRoomRealtime = ({
         onIssueCreated,
         onIssueUpdated,
         onIssuesImported,
+        onRoundStateUpdated,
         onReconnected,
     ]);
 
@@ -118,6 +123,10 @@ export const useGameRoomRealtime = ({
             void handlersRef.current.onIssuesImported?.(importedIssues);
         });
 
+        connection.on(gameRoomRealtimeEventNames.roundStateUpdated, (roomState: RoomState) => {
+            void handlersRef.current.onRoundStateUpdated?.(roomState);
+        });
+
         connection.onreconnecting(() => {
             setConnectionStatus('reconnecting');
         });
@@ -142,6 +151,7 @@ export const useGameRoomRealtime = ({
         connection.off(gameRoomRealtimeEventNames.issueCreated);
         connection.off(gameRoomRealtimeEventNames.issueUpdated);
         connection.off(gameRoomRealtimeEventNames.issuesImported);
+        connection.off(gameRoomRealtimeEventNames.roundStateUpdated);
     }, []);
 
     const createAndConnect = useCallback(async () => {
@@ -198,6 +208,21 @@ export const useGameRoomRealtime = ({
             }
         };
     }, [createAndConnect, detachHandlers, gameId]);
+
+    useEffect(() => {
+        return subscribeToSessionInvalidated(() => {
+            const current = connectionRef.current;
+
+            if (!current) {
+                return;
+            }
+
+            connectionRef.current = null;
+            detachHandlers(current);
+            void stopSignalRConnection(current);
+            setConnectionStatus('disconnected');
+        });
+    }, [detachHandlers]);
 
     const retryConnection = useCallback(async () => {
         const current = connectionRef.current;

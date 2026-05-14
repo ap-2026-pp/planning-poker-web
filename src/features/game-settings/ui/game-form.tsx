@@ -393,7 +393,7 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
           autoRevealCards: game.autoRevealCards,
           showAverage: game.showAverage,
           showCountdownAnimation: game.showCountdownAnimation,
-          defaultTimerMinutes: String(game.defaultTimerMinutes ?? 1),
+          defaultTimerMinutes: String(Math.max(1, game.defaultTimerMinutes ?? 1)),
           autoResetTimer: game.autoResetTimer ?? false,
           isActive: game.isActive,
           enableFunFeatures: game.enableFunFeatures,
@@ -512,7 +512,7 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
     try {
       const normalizedName = safeTrim(values.name);
       const normalizedCustomValues = normalizeCustomValues(values.customValues);
-      const defaultTimerMinutes = Number(values.defaultTimerMinutes);
+      const defaultTimerMinutes = Math.max(1, Number(values.defaultTimerMinutes) || 1);
       const allowedParticipantIds = new Set(
         participants
           .filter((participant) => participant.role !== ParticipantRole.Master)
@@ -545,6 +545,7 @@ export const GameForm = ({ mode, gameId, onClose, onSaved }: GameFormProps) => {
           votingSystem: values.votingSystem,
           customValues:
             values.votingSystem === VotingSystem.Custom ? normalizedCustomValues : undefined,
+          autoResetTimer: values.autoResetTimer,
           autoRevealCards: values.autoRevealCards,
           showAverage: values.showAverage,
           showCountdownAnimation: values.showCountdownAnimation,

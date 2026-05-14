@@ -5,6 +5,7 @@ import type {
   JoinGamePayload,
   JoinGameResponse,
   RoomState,
+  RoomTimerState,
   UpdateGamePayload,
   UserGame,
   UserGamesScope,
@@ -39,6 +40,18 @@ export const revealCardsRequest = (gameId: string) =>
 
 export const resetRoundRequest = (gameId: string, issueId: string) =>
   apiClientService.post<RoomState, undefined>(`/games/${gameId}/room/issues/${issueId}/reset-round`, undefined);
+
+export const startTimerRequest = (
+  gameId: string,
+  payload: { durationSeconds: number },
+) =>
+  apiClientService.post<RoomTimerState, { durationSeconds: number }>(
+    `/games/${gameId}/timer/timer-start`,
+    payload,
+  );
+
+export const stopTimerRequest = (gameId: string) =>
+  apiClientService.post<void, undefined>(`/games/${gameId}/timer/timer-stop`, undefined);
 
 export const getUserGamesRequest = (scope: UserGamesScope) =>
   apiClientService.get<UserGame[]>('/games/my', {

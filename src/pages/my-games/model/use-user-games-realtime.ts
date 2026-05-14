@@ -34,7 +34,12 @@ export const useUserGamesRealtime = ({ onGameUpdated }: UseUserGamesRealtimePara
       try {
         await startSignalRConnection(connection);
       } catch (error) {
-        console.error('Failed to start user games SignalR connection', error);
+        const isExpectedAbort = error instanceof Error
+          && (error.name === 'AbortError' || error.message.includes('stopped during negotiation'));
+
+        if (!isExpectedAbort) {
+          console.error('Failed to start user games SignalR connection', error);
+        }
       }
     };
 

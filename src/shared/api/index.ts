@@ -17,6 +17,8 @@ export {
   getRoomStateRequest,
   revealCardsRequest,
   resetRoundRequest,
+  startTimerRequest,
+  stopTimerRequest,
   getIssuesRequest,
   getParticipantsRequest,
   getVotingHistoryRequest,
