@@ -32,9 +32,15 @@ export const ConnectionStatus = ({ status, onRetry }: ConnectionStatusProps) => 
         action: null,
     });
 
-    const previousStatusRef = useRef<ConnectionStatus>('connecting');
+    const lastHandledStatusRef = useRef<ConnectionStatus | null>(null);
     const hadSuccessfulConnectionRef = useRef(false);
+    const pendingRecoveryRef = useRef(false);
+    const onRetryRef = useRef(onRetry);
     const retryTimerRef = useRef<number | null>(null);
+
+    useEffect(() => {
+        onRetryRef.current = onRetry;
+    }, [onRetry]);
 
     useEffect(() => {
         return () => {
@@ -45,7 +51,11 @@ export const ConnectionStatus = ({ status, onRetry }: ConnectionStatusProps) => 
     }, []);
 
     useEffect(() => {
-        const previousStatus = previousStatusRef.current;
+        if (lastHandledStatusRef.current === status) {
+            return;
+        }
+
+        lastHandledStatusRef.current = status;
 
         if (retryTimerRef.current !== null) {
             window.clearTimeout(retryTimerRef.current);
@@ -55,9 +65,10 @@ export const ConnectionStatus = ({ status, onRetry }: ConnectionStatusProps) => 
         if (status === 'connected') {
             const shouldShowRestored =
                 hadSuccessfulConnectionRef.current &&
-                (previousStatus === 'reconnecting' || previousStatus === 'disconnected');
+                pendingRecoveryRef.current;
 
             hadSuccessfulConnectionRef.current = true;
+            pendingRecoveryRef.current = false;
 
             if (shouldShowRestored) {
                 setSnackbarState({
@@ -79,6 +90,7 @@ export const ConnectionStatus = ({ status, onRetry }: ConnectionStatusProps) => 
 
         if (status === 'reconnecting') {
             if (hadSuccessfulConnectionRef.current) {
+                pendingRecoveryRef.current = true;
                 setSnackbarState({
                     open: true,
                     severity: 'warning',
@@ -90,6 +102,7 @@ export const ConnectionStatus = ({ status, onRetry }: ConnectionStatusProps) => 
 
         if (status === 'disconnected') {
             if (hadSuccessfulConnectionRef.current) {
+                pendingRecoveryRef.current = true;
                 setSnackbarState({
                     open: true,
                     severity: 'error',
@@ -102,8 +115,8 @@ export const ConnectionStatus = ({ status, onRetry }: ConnectionStatusProps) => 
                         open: true,
                         severity: 'error',
                         message: "Не вдалося відновити з'єднання",
-                        action: onRetry ? (
-                            <Button color="inherit" size="small" onClick={onRetry}>
+                        action: onRetryRef.current ? (
+                            <Button color="inherit" size="small" onClick={onRetryRef.current}>
                                 Спробувати ще
                             </Button>
                         ) : null,
@@ -111,9 +124,7 @@ export const ConnectionStatus = ({ status, onRetry }: ConnectionStatusProps) => 
                 }, 3000);
             }
         }
-
-        previousStatusRef.current = status;
-    }, [status, onRetry]);
+    }, [status]);
 
     const handleClose = (_?: unknown, reason?: string) => {
         if (reason === 'clickaway') {
