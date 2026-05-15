@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { HubConnection } from '@microsoft/signalr';
+import { HubConnectionState, type HubConnection } from '@microsoft/signalr';
 
 import type { Game, RoomState } from '@entities/game';
 import type { Issue } from '@entities/issue';
 import type { GameParticipant } from '@entities/participant';
+import type { EmojiReaction, SendEmojiReactionPayload } from '@entities/reaction';
 import {
     createSignalRConnection,
     startSignalRConnection,
@@ -11,6 +12,7 @@ import {
 } from '@shared/realtime';
 import {
     buildGameRoomHubUrl,
+    gameRoomRealtimeHubMethodNames,
     gameRoomRealtimeEventNames,
     getGameRoomRealtimeAccessToken,
 } from './game-room-realtime';
@@ -29,6 +31,7 @@ type UseGameRoomRealtimeParams = {
     onIssueUpdated?: (issue: Issue) => void | Promise<void>;
     onIssuesImported?: (importedIssues: Issue[]) => void | Promise<void>;
     onRoundStateUpdated?: (roomState: RoomState) => void | Promise<void>;
+    onEmojiReactionReceived?: (reaction: EmojiReaction) => void | Promise<void>;
     onReconnected?: () => void | Promise<void>;
 };
 
@@ -43,6 +46,7 @@ export const useGameRoomRealtime = ({
     onIssueUpdated,
     onIssuesImported,
     onRoundStateUpdated,
+    onEmojiReactionReceived,
     onReconnected,
 }: UseGameRoomRealtimeParams) => {
     const connectionRef = useRef<HubConnection | null>(null);
@@ -57,6 +61,7 @@ export const useGameRoomRealtime = ({
         onIssueUpdated,
         onIssuesImported,
         onRoundStateUpdated,
+        onEmojiReactionReceived,
         onReconnected,
     });
 
@@ -71,6 +76,7 @@ export const useGameRoomRealtime = ({
             onIssueUpdated,
             onIssuesImported,
             onRoundStateUpdated,
+            onEmojiReactionReceived,
             onReconnected,
         };
     }, [
@@ -83,6 +89,7 @@ export const useGameRoomRealtime = ({
         onIssueUpdated,
         onIssuesImported,
         onRoundStateUpdated,
+        onEmojiReactionReceived,
         onReconnected,
     ]);
 
@@ -127,6 +134,10 @@ export const useGameRoomRealtime = ({
             void handlersRef.current.onRoundStateUpdated?.(roomState);
         });
 
+        connection.on(gameRoomRealtimeEventNames.emojiReactionReceived, (reaction: EmojiReaction) => {
+            void handlersRef.current.onEmojiReactionReceived?.(reaction);
+        });
+
         connection.onreconnecting(() => {
             setConnectionStatus('reconnecting');
         });
@@ -152,6 +163,7 @@ export const useGameRoomRealtime = ({
         connection.off(gameRoomRealtimeEventNames.issueUpdated);
         connection.off(gameRoomRealtimeEventNames.issuesImported);
         connection.off(gameRoomRealtimeEventNames.roundStateUpdated);
+        connection.off(gameRoomRealtimeEventNames.emojiReactionReceived);
     }, []);
 
     const createAndConnect = useCallback(async () => {
@@ -243,5 +255,15 @@ export const useGameRoomRealtime = ({
         }
     }, [createAndConnect, detachHandlers]);
 
-    return { connectionStatus, retryConnection };
+    const sendEmojiReaction = useCallback(async (payload: SendEmojiReactionPayload) => {
+        const current = connectionRef.current;
+
+        if (!current || current.state !== HubConnectionState.Connected) {
+            throw new Error('Зʼєднання з кімнатою ще не готове. Спробуйте ще раз за мить.');
+        }
+
+        await current.invoke(gameRoomRealtimeHubMethodNames.sendEmojiReaction, payload);
+    }, []);
+
+    return { connectionStatus, retryConnection, sendEmojiReaction };
 };

@@ -115,7 +115,7 @@
 }
 
 .optionHint {
-  color: rgba(226, 220, 245, 0.64) !important;
+  color: var(--pp-color-text-inverse-muted) !important;
   font-size: 0.86rem !important;
   line-height: 1.4 !important;
 }

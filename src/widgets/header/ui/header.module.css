@@ -975,8 +975,9 @@
   gap: 6px;
   padding: 6px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--drawer-profile-background);
+  border: 1px solid var(--drawer-profile-border);
+  box-shadow: 0 12px 22px rgba(33, 43, 58, 0.08);
 }
 
 .drawerProfileSubmenuItem {
@@ -1004,23 +1005,29 @@
 }
 
 .drawerProfileSubmenuItem:hover {
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--pp-drawer-hover-background);
 }
 
 .drawerProfileSubmenuItem svg {
-  color: #cde0ff;
+  color: currentColor;
+  opacity: 0.8;
 }
 
 .drawerProfileSubmenuItemDanger {
-  color: #ff9bb3;
+  color: var(--pp-color-danger);
 }
 
 .drawerProfileSubmenuItemDanger:hover {
-  background: rgba(255, 96, 129, 0.12);
+  background: color-mix(in srgb, var(--pp-color-danger) 12%, transparent);
 }
 
 .drawerProfileSubmenuItemDanger svg {
-  color: #ff9bb3;
+  color: currentColor;
+}
+
+:global(:root[data-theme='light']) .drawerProfileSubmenu {
+  background: rgba(17, 24, 39, 0.05);
+  border-color: rgba(17, 24, 39, 0.09);
 }
 
 @media (min-width: 900px) {

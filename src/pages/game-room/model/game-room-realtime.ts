@@ -13,6 +13,11 @@ export const gameRoomRealtimeEventNames = {
   issueUpdated: 'IssueUpdated',
   issuesImported: 'IssuesImported',
   roundStateUpdated: 'RoundStateUpdated',
+  emojiReactionReceived: 'EmojiReactionReceived',
+} as const;
+
+export const gameRoomRealtimeHubMethodNames = {
+  sendEmojiReaction: 'SendEmojiReaction',
 } as const;
 
 export const buildGameRoomHubUrl = (gameId: string) => {

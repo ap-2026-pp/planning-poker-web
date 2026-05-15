@@ -1,5 +1,5 @@
-import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
-import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
+import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
 import {
     defaultAnimateLayoutChanges,
     useSortable,
@@ -239,18 +239,23 @@ const IssueCardContent = ({
     return (
         <>
             <Stack direction="row" className={styles.issueHeader}>
-                <span
-                    className={[
-                        styles.issueDot,
-                        styles[`issueTone${toneIndex}`],
-                    ]
-                        .join(' ')
-                        .trim()}
-                />
+                <Box className={styles.issueHeaderMain} {...(dragHandleProps ?? {})}>
+                    <span
+                        className={[
+                            styles.issueDot,
+                            styles[`issueTone${toneIndex}`],
+                        ]
+                            .join(' ')
+                            .trim()}
+                    />
 
-                <Stack className={styles.issueText} {...(dragHandleProps ?? {})}>
-                    <Typography className={styles.issueTitle}>{issue.title}</Typography>
-                </Stack>
+                    <Stack className={styles.issueText}>
+                        <Box className={styles.issueTitleRow}>
+                            <Typography className={styles.issueTitle}>{issue.title}</Typography>
+                            {issue.code ? <Box className={styles.issueCodeBadge}>{issue.code}</Box> : null}
+                        </Box>
+                    </Stack>
+                </Box>
 
                 {showMenuButton && canManageIssues ? (
                     <IconButton
@@ -258,57 +263,55 @@ const IssueCardContent = ({
                         onClick={onOpenMenu}
                         aria-label={`Дії для ${issue.title}`}
                     >
-                        <MoreVertRoundedIcon fontSize="small" />
+                        <MoreHorizRoundedIcon fontSize="small" />
                     </IconButton>
                 ) : null}
             </Stack>
 
             <Box className={styles.issueFooter}>
-                <Box className={styles.issueFooterActions}>
-                    {canRevealCards ? (
-                        <button
-                            type="button"
-                            className={[
-                                styles.issueVoteButton,
-                                isVoting ? styles.issueVoteButtonActive : '',
-                                !isVoting && isCompleted ? styles.issueVoteButtonCompleted : '',
-                            ]
-                                .join(' ')
-                                .trim()}
-                            onClick={handleVoteButtonClick}
-                        >
-                            {voteButtonLabel}
-                        </button>
-                    ) : null}
+                {canRevealCards ? (
+                    <button
+                        type="button"
+                        className={[
+                            styles.issueVoteButton,
+                            isVoting ? styles.issueVoteButtonActive : '',
+                            !isVoting && isCompleted ? styles.issueVoteButtonCompleted : '',
+                        ]
+                            .join(' ')
+                            .trim()}
+                        onClick={handleVoteButtonClick}
+                    >
+                        {voteButtonLabel}
+                    </button>
+                ) : (
+                    <Box />
+                )}
 
-                    {canViewResult ? (
-                        <IconButton
-                            className={styles.issueResultButton}
-                            onClick={(event) => {
-                                event.stopPropagation();
-                                onViewResult?.();
-                            }}
-                            aria-label={`Переглянути результат ${issue.title}`}
-                        >
-                            <VisibilityRoundedIcon fontSize="small" />
-                        </IconButton>
-                    ) : null}
+                {isVoting || isCompleted ? (
+                    <Box
+                        className={styles.issueSummaryDock}
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <Box className={styles.issueEstimatePanel}>
+                            <Typography className={styles.issueEstimateValue}>
+                                {issue.finalEstimate ?? '—'}
+                            </Typography>
+                        </Box>
 
-                    {issue.code ? <Box className={styles.issueCodeBadge}>{issue.code}</Box> : null}
-                </Box>
+                        {canViewResult ? (
+                            <IconButton
+                                className={styles.issueResultButton}
+                                onClick={() => {
+                                    onViewResult?.();
+                                }}
+                                aria-label={`Переглянути історію оцінки ${issue.title}`}
+                            >
+                                <HistoryRoundedIcon fontSize="small" />
+                            </IconButton>
+                        ) : null}
+                    </Box>
+                ) : null}
             </Box>
-
-            {isVoting || isCompleted ? (
-                <Box className={styles.issueEstimatePanel}>
-                    <Typography className={styles.issueEstimateLabel}>
-                        {isVoting ? 'Поточна оцінка' : 'Фінальна оцінка'}
-                    </Typography>
-
-                    <Typography className={styles.issueEstimateValue}>
-                        {issue.finalEstimate ?? '—'}
-                    </Typography>
-                </Box>
-            ) : null}
         </>
     );
 };

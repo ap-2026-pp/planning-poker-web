@@ -2,20 +2,19 @@
   width: min(980px, calc(100vw - 24px));
   max-width: min(980px, calc(100vw - 24px));
   border-radius: 28px !important;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--pp-surface-border) !important;
   background:
-    radial-gradient(circle at top left, rgba(var(--pp-accent-rgb), 0.14) 0%, transparent 28%),
-    linear-gradient(180deg, rgba(19, 30, 45, 0.98) 0%, rgba(14, 24, 37, 0.98) 100%);
-  box-shadow:
-    0 26px 68px rgba(3, 7, 18, 0.42),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  color: var(--pp-color-text-primary);
+    radial-gradient(circle at top left, rgba(var(--pp-accent-rgb), 0.12) 0%, transparent 28%),
+    radial-gradient(circle at 82% 16%, rgba(var(--pp-companion-rgb), 0.1) 0%, transparent 30%),
+    var(--pp-surface-panel-strong);
+  box-shadow: var(--pp-card-lift-shadow-strong) !important;
+  color: var(--pp-color-text-primary) !important;
   overflow: hidden;
 }
 
 .backdrop {
   backdrop-filter: blur(8px);
-  background: rgba(4, 8, 17, 0.58);
+  background: rgba(4, 8, 17, 0.42);
 }
 
 .header {
@@ -57,6 +56,15 @@
   flex: 0 0 auto;
   align-self: flex-start;
   color: var(--pp-color-text-secondary) !important;
+  border: 1px solid var(--pp-surface-border) !important;
+  background: var(--pp-surface-soft) !important;
+  border-radius: 14px !important;
+}
+
+.closeButton:hover {
+  color: var(--pp-color-text-primary) !important;
+  border-color: var(--pp-accent-border-strong) !important;
+  background: var(--pp-accent-soft) !important;
 }
 
 .content {

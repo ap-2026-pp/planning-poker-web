@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import type { ImportPlaneIssuesPayload, Issue } from '@entities/issue';
 import { type IssueDraft } from '../model/types';
@@ -67,6 +67,7 @@ export const IssuesSidebarSection = ({
     const [isImportPlaneOpen, setImportPlaneOpen] = useState(false);
     const [isImportingPlane, setImportingPlane] = useState(false);
     const [importPlaneError, setImportPlaneError] = useState<string | null>(null);
+    const inlineCreateFormRef = useRef<HTMLDivElement | null>(null);
 
     const visibleIssues = useMemo(
         () =>
@@ -125,6 +126,17 @@ export const IssuesSidebarSection = ({
         setSelectedIssueId(null);
         setEditIssueDialogOpen(false);
     };
+
+    useEffect(() => {
+        if (issueMode !== 'create' || visibleIssues.length === 0) {
+            return;
+        }
+
+        inlineCreateFormRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+        });
+    }, [issueMode, visibleIssues.length]);
 
     const handleCreateIssue = async () => {
         if (!canManageIssues || !issueDraft.title.trim() || !onAddIssue) {
@@ -205,40 +217,46 @@ export const IssuesSidebarSection = ({
                 </Box>
 
                 <Box className={styles.issuesScrollArea}>
-                    {issueMode === 'create' ? (
-                        <IssueFormCard
-                            mode="create"
-                            variant="sidebar"
-                            draft={issueDraft}
-                            isSubmitting={isSubmittingIssue}
-                            onChange={setIssueDraft}
-                            onCancel={closeCreateIssueForm}
-                            onSubmit={() => void handleCreateIssue()}
+                    {!visibleIssues.length && issueMode === 'list' ? (
+                        <IssuesEmptyState
+                            isCurrentParticipantMaster={canManageIssues}
+                            onAddIssue={openCreateIssue}
                         />
                     ) : null}
 
-                    {issueMode === 'list' ? (
-                        !visibleIssues.length ? (
-                            <IssuesEmptyState
-                                isCurrentParticipantMaster={canManageIssues}
-                                onAddIssue={openCreateIssue}
+                    {visibleIssues.length ? (
+                        <IssuesList
+                            issues={visibleIssues}
+                            canManageIssues={canManageIssues}
+                            canRevealCards={canRevealCards}
+                            onEditIssue={openEditIssue}
+                            onAddAnotherIssue={openCreateIssue}
+                            onDeleteIssue={onDeleteIssue}
+                            onSetIssueActive={onSetIssueActive}
+                            onResetIssueRound={onResetIssueRound}
+                            viewableResultIssueIds={viewableResultIssueIds}
+                            onOpenIssueResult={onOpenIssueResult}
+                            onMoveIssue={onMoveIssue}
+                            onReorderIssues={onReorderIssues}
+                            showAddAnotherIssueButton={issueMode !== 'create'}
+                        />
+                    ) : null}
+
+                    {issueMode === 'create' ? (
+                        <Box
+                            ref={inlineCreateFormRef}
+                            className={visibleIssues.length ? styles.issueInlineFormWrap : undefined}
+                        >
+                            <IssueFormCard
+                                mode="create"
+                                variant="sidebar"
+                                draft={issueDraft}
+                                isSubmitting={isSubmittingIssue}
+                                onChange={setIssueDraft}
+                                onCancel={closeCreateIssueForm}
+                                onSubmit={() => void handleCreateIssue()}
                             />
-                        ) : (
-                            <IssuesList
-                                issues={visibleIssues}
-                                canManageIssues={canManageIssues}
-                                canRevealCards={canRevealCards}
-                                onEditIssue={openEditIssue}
-                                onAddAnotherIssue={openCreateIssue}
-                                onDeleteIssue={onDeleteIssue}
-                                onSetIssueActive={onSetIssueActive}
-                                onResetIssueRound={onResetIssueRound}
-                                viewableResultIssueIds={viewableResultIssueIds}
-                                onOpenIssueResult={onOpenIssueResult}
-                                onMoveIssue={onMoveIssue}
-                                onReorderIssues={onReorderIssues}
-                            />
-                        )
+                        </Box>
                     ) : null}
                 </Box>
             </Box>

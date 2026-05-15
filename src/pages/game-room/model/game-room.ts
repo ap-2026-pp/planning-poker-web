@@ -132,32 +132,53 @@ export const getGameRoomDeck = (
   customCards?: readonly string[] | null,
   availableCards?: readonly string[] | null,
 ) => {
-  if (availableCards?.length) {
-    const normalizedCards = [...new Set(
-      availableCards
-        .map((card) => card.trim())
-        .filter(Boolean),
-    )];
+  const normalizedAvailableCards = [...new Set(
+    (availableCards ?? [])
+      .map((card) => card.trim())
+      .filter(Boolean),
+  )];
+  const normalizedCustomCards = [...new Set(
+    (customCards ?? [])
+      .map((card) => card.trim())
+      .filter(Boolean),
+  )];
 
-    const deckCards: VoteDeckCard[] = normalizedCards.map((card) => ({
+  const toDeckCards = (cards: readonly string[]): VoteDeckCard[] => {
+    const normalizedCards = [...cards];
+
+    if (!normalizedCards.includes('?')) {
+      normalizedCards.push('?');
+    }
+
+    if (!normalizedCards.includes('coffee')) {
+      normalizedCards.push('coffee');
+    }
+
+    return normalizedCards.map((card) => ({
       value: card,
       label: card === 'coffee' ? '☕' : card,
       ...(card === 'coffee' ? { ariaLabel: 'Пауза' } : {}),
       ...(card === '?' ? { ariaLabel: 'Не знаю' } : {}),
     }));
+  };
 
-    if (!normalizedCards.includes('?')) {
-      deckCards.push({ value: '?', label: '?', ariaLabel: 'Не знаю' });
-    }
+  if (normalizedAvailableCards.length) {
+    const fallbackDeckValues = getVotingSystemDeck(
+      votingSystem ?? VotingSystem.Fibonacci,
+      normalizedCustomCards,
+    ).map((card) => card.value);
+    const mergedDeckValues = [...fallbackDeckValues];
 
-    if (!normalizedCards.includes('coffee')) {
-      deckCards.push({ value: 'coffee', label: '☕', ariaLabel: 'Пауза' });
-    }
+    normalizedAvailableCards.forEach((card) => {
+      if (!mergedDeckValues.includes(card)) {
+        mergedDeckValues.push(card);
+      }
+    });
 
-    return deckCards;
+    return toDeckCards(mergedDeckValues);
   }
 
-  return getVotingSystemDeck(votingSystem ?? VotingSystem.Fibonacci, customCards);
+  return getVotingSystemDeck(votingSystem ?? VotingSystem.Fibonacci, normalizedCustomCards);
 };
 
 export const getGameRoomVotingLabel = (votingSystem?: VotingSystem | null) =>

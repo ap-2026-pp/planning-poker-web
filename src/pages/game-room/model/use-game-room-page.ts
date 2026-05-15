@@ -2,10 +2,18 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useGameRoomRealtime } from './use-game-room-realtime';
 
-import { IssuesPolicy, RevealPolicy, type Game, type GameInvite, type RoomState } from '@entities/game';
+import {
+  IssuesPolicy,
+  RevealPolicy,
+  type Game,
+  type GameInvite,
+  type RoomState,
+  type RoomTimerState,
+} from '@entities/game';
 import type { VoteResult, VotingHistoryItem } from '@entities/history';
 import { IssueStatus, type ImportPlaneIssuesPayload, type Issue } from '@entities/issue';
 import { ParticipantRole, type GameParticipant } from '@entities/participant';
+import type { EmojiReaction } from '@entities/reaction';
 import {
   createVoteRequest,
   createIssueRequest,
@@ -84,6 +92,10 @@ type ResultDialogState = {
 type PendingRevealState = {
   roomState: RoomState;
   participants?: GameParticipant[];
+};
+
+type EmojiReactionEvent = EmojiReaction & {
+  animationId: string;
 };
 
 const applyRoomStateToParticipants = (
@@ -237,6 +249,88 @@ const timerDurationPresets = [30, 60, 120, 300] as const;
 const clampTimerSeconds = (seconds: number) =>
   Math.min(maxTimerSeconds, Math.max(minTimerSeconds, Math.round(seconds)));
 
+const getRemainingTimerSeconds = (timer: RoomTimerState) => {
+  const endsAtMs = new Date(timer.endsAt).getTime();
+
+  if (Number.isFinite(endsAtMs)) {
+    return clampTimerSeconds(Math.max(minTimerSeconds, Math.ceil((endsAtMs - Date.now()) / 1000)));
+  }
+
+  return clampTimerSeconds(timer.remainingSeconds);
+};
+
+const playTimerExpiredChime = async () => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  const AudioContextCtor =
+    window.AudioContext ??
+    (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+
+  if (!AudioContextCtor) {
+    return;
+  }
+
+  const audioContext = new AudioContextCtor();
+
+  try {
+    if (audioContext.state === 'suspended') {
+      await audioContext.resume();
+    }
+
+    const masterGain = audioContext.createGain();
+    masterGain.gain.value = 0;
+    masterGain.connect(audioContext.destination);
+
+    const startAt = audioContext.currentTime + 0.02;
+    const notes = [
+      { frequency: 880, offset: 0, duration: 0.16 },
+      { frequency: 1318.51, offset: 0.12, duration: 0.24 },
+    ];
+
+    notes.forEach(({ frequency, offset, duration }) => {
+      const noteGain = audioContext.createGain();
+      const noteStartAt = startAt + offset;
+      const noteEndAt = noteStartAt + duration;
+
+      noteGain.gain.setValueAtTime(0.0001, noteStartAt);
+      noteGain.gain.exponentialRampToValueAtTime(0.24, noteStartAt + 0.024);
+      noteGain.gain.exponentialRampToValueAtTime(0.11, noteStartAt + duration * 0.45);
+      noteGain.gain.exponentialRampToValueAtTime(0.0001, noteEndAt);
+
+      noteGain.connect(masterGain);
+
+      [
+        { type: 'triangle' as OscillatorType, frequencyMultiplier: 1, detune: 0 },
+        { type: 'sine' as OscillatorType, frequencyMultiplier: 2, detune: -4 },
+      ].forEach(({ type, frequencyMultiplier, detune }) => {
+        const oscillator = audioContext.createOscillator();
+        oscillator.type = type;
+        oscillator.frequency.setValueAtTime(frequency * frequencyMultiplier, noteStartAt);
+        oscillator.detune.setValueAtTime(detune, noteStartAt);
+        oscillator.frequency.exponentialRampToValueAtTime(
+          frequency * frequencyMultiplier * 0.992,
+          noteEndAt,
+        );
+        oscillator.connect(noteGain);
+        oscillator.start(noteStartAt);
+        oscillator.stop(noteEndAt + 0.03);
+      });
+    });
+
+    masterGain.gain.setValueAtTime(0.0001, startAt);
+    masterGain.gain.exponentialRampToValueAtTime(1.12, startAt + 0.026);
+    masterGain.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.46);
+
+    await new Promise((resolve) => {
+      window.setTimeout(resolve, 520);
+    });
+  } finally {
+    void audioContext.close().catch(() => undefined);
+  }
+};
+
 export const useGameRoomPage = () => {
   const { gameId = '' } = useParams();
   const navigate = useNavigate();
@@ -278,10 +372,12 @@ export const useGameRoomPage = () => {
   const [nextIssueSubmitting, setNextIssueSubmitting] = useState(false);
   const [voteOverride, setVoteOverride] = useState<string | null | undefined>(undefined);
   const [selectedTimerSeconds, setSelectedTimerSeconds] = useState<number | null>(null);
+  const [pausedTimerSeconds, setPausedTimerSeconds] = useState<number | null>(null);
   const [revealCountdown, setRevealCountdown] = useState<number | null>(null);
   const [nowMs, setNowMs] = useState(() => Date.now());
   const [historyResults, setHistoryResults] = useState<VotingHistoryItem[] | null>(null);
   const [cachedIssueResults, setCachedIssueResults] = useState<Record<string, ResultDialogData>>({});
+  const [emojiReactionEvents, setEmojiReactionEvents] = useState<EmojiReactionEvent[]>([]);
   const [resultDialog, setResultDialog] = useState<ResultDialogState>({
     open: false,
     loading: false,
@@ -301,6 +397,7 @@ export const useGameRoomPage = () => {
   const autoRevealTriggerRef = useRef<string | null>(null);
   const suppressResultDialogRef = useRef(false);
   const timerExpiredAnnouncementRef = useRef<string | null>(null);
+  const emojiReactionSequenceRef = useRef(0);
 
   const storedParticipantSession = getCurrentRoomParticipantSession();
 
@@ -674,10 +771,12 @@ export const useGameRoomPage = () => {
         ...timerDurationPresets,
         defaultTimerSeconds,
         ...(selectedTimerSeconds !== null ? [selectedTimerSeconds] : []),
+        ...(pausedTimerSeconds !== null ? [pausedTimerSeconds] : []),
       ]),
     ].sort((left, right) => left - right);
-  }, [defaultTimerSeconds, selectedTimerSeconds]);
+  }, [defaultTimerSeconds, pausedTimerSeconds, selectedTimerSeconds]);
   const preferredTimerSeconds = selectedTimerSeconds ?? defaultTimerSeconds;
+  const displayedTimerSeconds = pausedTimerSeconds ?? preferredTimerSeconds;
 
   const deckValues = getGameRoomDeck(
     game?.votingSystem,
@@ -700,8 +799,8 @@ export const useGameRoomPage = () => {
   const isTimerActive = Boolean(roomState?.timer && !isTimerExpiredLocally);
   const timerLabel = roomState?.timer
     ? formatTimerLabel(timerRemainingSeconds ?? 0)
-    : resolvedActiveIssue && preferredTimerSeconds > 0
-      ? formatTimerLabel(preferredTimerSeconds)
+    : resolvedActiveIssue && displayedTimerSeconds > 0
+      ? formatTimerLabel(displayedTimerSeconds)
       : 'Таймер';
   const autoRevealEnabled = roomState?.autoRevealEnabled ?? game?.autoRevealCards ?? false;
   const isRevealPending = revealCountdown !== null;
@@ -781,6 +880,10 @@ export const useGameRoomPage = () => {
   }, [defaultTimerSeconds, selectedTimerSeconds]);
 
   useEffect(() => {
+    setPausedTimerSeconds(null);
+  }, [resolvedActiveIssue?.id]);
+
+  useEffect(() => {
     if (voteOverride === undefined) {
       return;
     }
@@ -820,18 +923,7 @@ export const useGameRoomPage = () => {
       tone: 'warning',
     });
 
-    if (!('speechSynthesis' in window)) {
-      return;
-    }
-
-    window.speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(
-      'Час вийшов. Можна відкривати карти або запустити таймер знову.',
-    );
-
-    utterance.lang = 'uk-UA';
-    window.speechSynthesis.speak(utterance);
+    void playTimerExpiredChime();
   }, [resolvedActiveIssue?.id, roomState?.timer?.endsAt, timerExpiredWithoutAutoReveal]);
 
   useEffect(() => {
@@ -1176,6 +1268,19 @@ export const useGameRoomPage = () => {
     await syncRoundState();
   }, [syncRoundState]);
 
+  const handleEmojiReactionReceived = useCallback((reaction: EmojiReaction) => {
+    emojiReactionSequenceRef.current += 1;
+
+    setEmojiReactionEvents((current) => {
+      const nextReaction = {
+        ...reaction,
+        animationId: `${reaction.createdAt}:${emojiReactionSequenceRef.current}`,
+      };
+
+      return [...current, nextReaction].slice(-24);
+    });
+  }, []);
+
   const realtime = useGameRoomRealtime({
     gameId,
     onParticipantJoined: handleParticipantJoined,
@@ -1187,6 +1292,7 @@ export const useGameRoomPage = () => {
     onIssueUpdated: handleIssueUpdated,
     onIssuesImported: handleIssuesImported,
     onRoundStateUpdated: handleRealtimeRoundStateUpdated,
+    onEmojiReactionReceived: handleEmojiReactionReceived,
     onReconnected: reloadRoom,
   });
 
@@ -1230,6 +1336,35 @@ export const useGameRoomPage = () => {
       }
     },
     [gameId],
+  );
+
+  const sendEmojiReaction = useCallback(
+    async (toParticipantId: string, emoji: string) => {
+      const currentParticipantId = currentParticipantIdRef.current;
+
+      if (!gameRef.current?.enableFunFeatures || !currentParticipantId) {
+        return;
+      }
+
+      if (currentParticipantId === toParticipantId) {
+        return;
+      }
+
+      try {
+        await realtime.sendEmojiReaction({
+          toParticipantId,
+          emoji,
+        });
+      } catch (requestError) {
+        setError(
+          requestError instanceof Error
+            ? requestError.message
+            : 'Не вдалося надіслати emoji',
+        );
+        throw requestError;
+      }
+    },
+    [realtime],
   );
 
   const submitVote = useCallback(
@@ -1294,6 +1429,7 @@ export const useGameRoomPage = () => {
 
   const updateTimerDurationSelection = useCallback((durationSeconds: number) => {
     setSelectedTimerSeconds(clampTimerSeconds(durationSeconds));
+    setPausedTimerSeconds(null);
   }, []);
 
   const startRoundTimer = useCallback(async (durationSeconds: number) => {
@@ -1305,12 +1441,14 @@ export const useGameRoomPage = () => {
 
     try {
       const nextDurationSeconds = clampTimerSeconds(durationSeconds);
+      const isResumeAction = pausedTimerSeconds !== null && nextDurationSeconds === pausedTimerSeconds;
       const nextTimer = await startTimerRequest(gameId, {
         durationSeconds: nextDurationSeconds,
       });
       const currentRoomState = roomStateRef.current;
 
       setSelectedTimerSeconds(nextDurationSeconds);
+      setPausedTimerSeconds(null);
       setNowMs(Date.now());
 
       if (currentRoomState) {
@@ -1328,7 +1466,7 @@ export const useGameRoomPage = () => {
       }
 
       setNotification({
-        message: 'Таймер запущено',
+        message: isResumeAction ? 'Таймер продовжено' : 'Таймер запущено',
         tone: 'success',
       });
     } catch (requestError) {
@@ -1342,7 +1480,14 @@ export const useGameRoomPage = () => {
     } finally {
       setTimerSubmitting(false);
     }
-  }, [gameId, isCurrentParticipantMaster, isRoundRevealed, resolvedActiveIssue, syncRoundState]);
+  }, [
+    gameId,
+    isCurrentParticipantMaster,
+    isRoundRevealed,
+    pausedTimerSeconds,
+    resolvedActiveIssue,
+    syncRoundState,
+  ]);
 
   const restartRoundTimer = useCallback(async () => {
     await startRoundTimer(preferredTimerSeconds);
@@ -1352,6 +1497,8 @@ export const useGameRoomPage = () => {
     if (!isCurrentParticipantMaster || !roomStateRef.current?.timer) {
       return;
     }
+
+    const remainingSeconds = getRemainingTimerSeconds(roomStateRef.current.timer);
 
     setTimerSubmitting(true);
 
@@ -1370,8 +1517,11 @@ export const useGameRoomPage = () => {
         setRoomState(nextRoomState);
       }
 
+      setPausedTimerSeconds(remainingSeconds);
+      setNowMs(Date.now());
+
       setNotification({
-        message: 'Таймер зупинено',
+        message: 'Таймер призупинено',
         tone: 'info',
       });
     } catch (requestError) {
@@ -1386,6 +1536,55 @@ export const useGameRoomPage = () => {
       setTimerSubmitting(false);
     }
   }, [gameId, isCurrentParticipantMaster]);
+
+  const resetRoundTimer = useCallback(async () => {
+    if (!isCurrentParticipantMaster) {
+      return;
+    }
+
+    const currentRoomState = roomStateRef.current;
+    const hasActiveTimer = Boolean(currentRoomState?.timer);
+
+    if (!hasActiveTimer && pausedTimerSeconds === null) {
+      return;
+    }
+
+    setTimerSubmitting(true);
+
+    try {
+      if (hasActiveTimer) {
+        await stopTimerRequest(gameId);
+
+        if (currentRoomState) {
+          const nextRoomState = {
+            ...currentRoomState,
+            timer: null,
+          };
+
+          roomStateRef.current = nextRoomState;
+          setRoomState(nextRoomState);
+        }
+      }
+
+      setPausedTimerSeconds(null);
+      setNowMs(Date.now());
+
+      setNotification({
+        message: 'Таймер скинуто',
+        tone: 'info',
+      });
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : 'Не вдалося скинути таймер',
+      );
+
+      throw requestError;
+    } finally {
+      setTimerSubmitting(false);
+    }
+  }, [gameId, isCurrentParticipantMaster, pausedTimerSeconds]);
 
   useEffect(() => {
     const hasVotes = votesCastCount > 0;
@@ -2178,6 +2377,7 @@ const resetCurrentRound = useCallback(async () => {
     onlineParticipantsCount: onlineParticipants.length,
     currentParticipantId: currentParticipant?.id ?? null,
     isCurrentParticipantMaster,
+    enableFunFeatures: game?.enableFunFeatures ?? false,
     canRevealCards,
     canManageIssues: canManageIssuesInRound,
     selectedParticipantId,
@@ -2185,6 +2385,12 @@ const resetCurrentRound = useCallback(async () => {
     selectParticipant,
     removeParticipant,
     transferMaster,
+    sendEmojiReaction,
+    emojiReactionEvents,
+    consumeEmojiReactionEvent: (animationId: string) =>
+      setEmojiReactionEvents((current) =>
+        current.filter((reaction) => reaction.animationId !== animationId),
+      ),
     addIssue,
     updateIssue,
     deleteIssue,
@@ -2204,7 +2410,8 @@ const resetCurrentRound = useCallback(async () => {
     votingSystemLabel,
     deckValues,
     timerOptions,
-    selectedTimerSeconds: preferredTimerSeconds,
+    selectedTimerSeconds: displayedTimerSeconds,
+    hasPausedTimer: pausedTimerSeconds !== null,
     viewableIssueResultIds,
     timerLabel,
     isTimerActive,
@@ -2229,6 +2436,7 @@ const resetCurrentRound = useCallback(async () => {
     updateTimerDurationSelection,
     startRoundTimer,
     restartRoundTimer,
+    resetRoundTimer,
     stopRoundTimer,
     submitVote,
     revealVotes,

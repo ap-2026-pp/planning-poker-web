@@ -60,7 +60,10 @@ export const ProfileMenu = ({
 
   const handleAccountClick = () => {
     onClose();
-    onNavigateToAccount();
+
+    if (openAccountAsDialog) {
+      onNavigateToAccount();
+    }
   };
 
   return (
@@ -123,7 +126,10 @@ export const ProfileMenu = ({
         </MenuItem>
 
         {showLogout ? (
-          <MenuItem onClick={onLogout} className={styles.menuItem}>
+          <MenuItem
+            onClick={onLogout}
+            className={[styles.menuItem, styles.menuItemDanger].join(' ')}
+          >
             <LogoutRoundedIcon fontSize="small" />
             <span>Вийти з акаунта</span>
           </MenuItem>

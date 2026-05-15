@@ -35,6 +35,7 @@ type IssuesListProps = {
     onResetIssueRound?: (issueId: string) => Promise<void>;
     onMoveIssue?: (issueId: string, direction: 'up' | 'down') => Promise<void>;
     onReorderIssues?: (issueIds: string[]) => Promise<void>;
+    showAddAnotherIssueButton?: boolean;
 };
 
 export const IssuesList = ({
@@ -50,6 +51,7 @@ export const IssuesList = ({
     onResetIssueRound,
     onMoveIssue,
     onReorderIssues,
+    showAddAnotherIssueButton = true,
 }: IssuesListProps) => {
     const orderedIssues = useMemo(
         () =>
@@ -186,7 +188,7 @@ export const IssuesList = ({
                     : null}
             </DndContext>
 
-            {canManageIssues ? (
+            {canManageIssues && showAddAnotherIssueButton ? (
                 <button
                     type="button"
                     className={styles.addAnotherIssueButton}

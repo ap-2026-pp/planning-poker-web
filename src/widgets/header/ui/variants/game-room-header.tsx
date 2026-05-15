@@ -34,6 +34,7 @@ import { ThemeMenu } from '../theme/theme-menu';
 type GameRoomHeaderProps = {
   accountLabel: string;
   accountTo: string;
+  openAccountAsDialog: boolean;
   fallbackParticipantLabel: string;
   headerVars: Record<string, string>;
   onRenameRoomParticipant: RenameRoomParticipantHandler;
@@ -49,6 +50,7 @@ type GameRoomHeaderProps = {
 export const GameRoomHeader = ({
   accountLabel,
   accountTo,
+  openAccountAsDialog,
   fallbackParticipantLabel,
   headerVars,
   onRenameRoomParticipant,
@@ -227,7 +229,7 @@ export const GameRoomHeader = ({
         caption={participantCaption}
         initials={participantInitials}
         showLogout={false}
-        openAccountAsDialog
+        openAccountAsDialog={openAccountAsDialog}
         onClose={handleCloseProfileMenu}
         onEditName={displayNameDialog.open}
         onLogout={handleLogout}

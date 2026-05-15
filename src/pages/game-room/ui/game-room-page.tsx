@@ -80,6 +80,7 @@ export const GameRoomPage = () => {
           onlineParticipantsCount={room.onlineParticipantsCount}
           currentParticipantId={room.currentParticipantId}
           isCurrentParticipantMaster={room.isCurrentParticipantMaster}
+          enableFunFeatures={room.enableFunFeatures}
           selectedParticipantId={room.selectedParticipantId}
           pendingParticipantActionId={room.pendingParticipantActionId}
           roundLabel={room.roundLabel}
@@ -92,6 +93,7 @@ export const GameRoomPage = () => {
           timerLabel={room.timerLabel}
           isTimerActive={room.isTimerActive}
           hasTimerState={room.hasTimerState}
+          hasPausedTimer={room.hasPausedTimer}
           isTimerExpiredWithoutAutoReveal={room.timerExpiredWithoutAutoReveal}
           isTimerPending={room.timerSubmitting}
           revealCountdown={room.revealCountdown}
@@ -110,6 +112,7 @@ export const GameRoomPage = () => {
           onTimerDurationChange={room.updateTimerDurationSelection}
           onStartTimer={room.startRoundTimer}
           onRestartTimer={room.restartRoundTimer}
+          onResetTimer={room.resetRoundTimer}
           onStopTimer={room.stopRoundTimer}
           onVoteSelect={room.submitVote}
           onRevealVotes={room.revealVotes}
@@ -119,6 +122,9 @@ export const GameRoomPage = () => {
           onParticipantSelect={room.selectParticipant}
           onRemoveParticipant={room.removeParticipant}
           onTransferMaster={room.transferMaster}
+          onSendEmojiReaction={room.sendEmojiReaction}
+          emojiReactionEvents={room.emojiReactionEvents}
+          onConsumeEmojiReactionEvent={room.consumeEmojiReactionEvent}
           onOpenGameSettings={() => setEditGameOpen(true)}
         />
       </Box>

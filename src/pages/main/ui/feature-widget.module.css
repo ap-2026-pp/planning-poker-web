@@ -3,7 +3,7 @@
   border-radius: 28px;
   border: 1px solid var(--pp-surface-border);
   background: var(--pp-surface-panel);
-  box-shadow: var(--pp-card-lift-shadow);
+  box-shadow: var(--pp-surface-shadow);
   padding: 22px 20px;
   display: flex;
   flex-direction: column;

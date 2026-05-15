@@ -13,7 +13,7 @@ import { MobileNavigationDrawer } from './navigation/mobile-navigation-drawer';
 
 export const Header = () => {
   const { user, isAuthenticated, logout } = useSession();
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
 
   const {
     roomTitle,
@@ -31,6 +31,7 @@ export const Header = () => {
   const isMyGamesPage = pathname === appRoutes.myGames;
   const isGameRoomPage = isGameRoomRoute(pathname);
   const isEditGamePage = /^\/games\/[^/]+\/edit$/.test(pathname);
+  const currentPath = `${pathname}${search}`;
 
   const isHeroPage =
     pathname === appRoutes.home ||
@@ -56,7 +57,12 @@ export const Header = () => {
     return (
       <GameRoomHeader
         accountLabel={isAuthenticated ? 'Мій акаунт' : 'Привʼязати акаунт'}
-        accountTo={isAuthenticated ? appRoutes.account : buildAuthRedirectPath(appRoutes.login, pathname)}
+        accountTo={
+          isAuthenticated
+            ? appRoutes.account
+            : buildAuthRedirectPath(appRoutes.login, currentPath)
+        }
+        openAccountAsDialog={isAuthenticated}
         fallbackParticipantLabel={isAuthenticated ? userLabel : 'Гість'}
         headerVars={headerVars}
         onRenameRoomParticipant={renameRoomParticipant}

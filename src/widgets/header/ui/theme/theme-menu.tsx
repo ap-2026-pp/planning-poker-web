@@ -18,6 +18,7 @@ import {
   type AccentColor,
   type ThemeMode,
 } from '@shared/config/theme';
+import styles from './theme-menu.module.css';
 
 type ThemeMenuProps = {
   anchorEl: HTMLElement | null;
@@ -43,84 +44,82 @@ export const ThemeMenu = ({
   onClose,
   onSelectTheme,
   onSelectAccent,
-}: ThemeMenuProps) => (
-  <Menu
-    anchorEl={anchorEl}
-    open={isOpen}
-    onClose={onClose}
-    anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-    MenuListProps={{ sx: { py: 1 } }}
-    PaperProps={{
-      sx: {
-        width: 300,
-        borderRadius: 3,
-        border: '1px solid',
-        borderColor: 'divider',
-        backgroundImage: 'none',
-      },
-    }}
-  >
-    <Typography
-      component="p"
-      sx={{ px: 2, py: 1, color: 'text.secondary', fontSize: '0.78rem', fontWeight: 800 }}
+}: ThemeMenuProps) => {
+  const handleSelectTheme = (theme: ThemeMode) => {
+    onSelectTheme(theme);
+    onClose();
+  };
+
+  const handleSelectAccent = (accent: AccentColor) => {
+    onSelectAccent(accent);
+    onClose();
+  };
+
+  return (
+    <Menu
+      anchorEl={anchorEl}
+      open={isOpen}
+      onClose={onClose}
+      anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      MenuListProps={{ disablePadding: true, className: styles.list }}
+      PaperProps={{ className: styles.paper }}
     >
-      Тема
-    </Typography>
+      <Typography component="p" className={styles.sectionLabel}>
+        Тема
+      </Typography>
 
-    {THEME_MODE_OPTIONS.map((theme) => {
-      const Icon = themeIcons[theme.value];
-      const isSelected = currentTheme === theme.value;
+      {THEME_MODE_OPTIONS.map((theme) => {
+        const Icon = themeIcons[theme.value];
+        const isSelected = currentTheme === theme.value;
 
-      return (
-        <MenuItem
-          key={theme.value}
-          onClick={() => onSelectTheme(theme.value)}
-          selected={isSelected}
-        >
-          <ListItemIcon>
-            <Icon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>{theme.label}</ListItemText>
-          {isSelected ? <CheckRoundedIcon color="primary" fontSize="small" /> : null}
-        </MenuItem>
-      );
-    })}
+        return (
+          <MenuItem
+            key={theme.value}
+            onClick={() => handleSelectTheme(theme.value)}
+            selected={isSelected}
+            className={styles.item}
+          >
+            <ListItemIcon className={styles.itemIcon}>
+              <Icon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText className={styles.itemText}>{theme.label}</ListItemText>
+            {isSelected ? <CheckRoundedIcon className={styles.check} fontSize="small" /> : null}
+          </MenuItem>
+        );
+      })}
 
-    <Divider sx={{ my: 1 }} />
+      <Divider className={styles.divider} />
 
-    <Typography
-      component="p"
-      sx={{ px: 2, py: 1, color: 'text.secondary', fontSize: '0.78rem', fontWeight: 800 }}
-    >
-      Акцент
-    </Typography>
+      <Typography component="p" className={styles.sectionLabel}>
+        Акцент
+      </Typography>
 
-    {ACCENT_COLORS.map((accent) => {
-      const isSelected = currentAccent === accent.value;
+      {ACCENT_COLORS.map((accent) => {
+        const isSelected = currentAccent === accent.value;
 
-      return (
-        <MenuItem
-          key={accent.value}
-          onClick={() => onSelectAccent(accent.value)}
-          selected={isSelected}
-        >
-          <ListItemIcon>
-            <Box
-              aria-hidden
-              sx={{
-                width: 18,
-                height: 18,
-                borderRadius: '50%',
-                background: `linear-gradient(135deg, ${accent.light} 0%, ${accent.dark} 100%)`,
-                boxShadow: `0 0 0 4px ${accent.main}22`,
-              }}
-            />
-          </ListItemIcon>
-          <ListItemText>{accent.label}</ListItemText>
-          {isSelected ? <CheckRoundedIcon color="primary" fontSize="small" /> : null}
-        </MenuItem>
-      );
-    })}
-  </Menu>
-);
+        return (
+          <MenuItem
+            key={accent.value}
+            onClick={() => handleSelectAccent(accent.value)}
+            selected={isSelected}
+            className={styles.item}
+          >
+            <ListItemIcon className={styles.itemIcon}>
+              <Box
+                aria-hidden
+                className={styles.swatch}
+                sx={{
+                  background: `linear-gradient(135deg, ${accent.light} 0%, ${accent.dark} 100%)`,
+                  boxShadow: `0 0 0 4px ${accent.main}22`,
+                }}
+              />
+            </ListItemIcon>
+            <ListItemText className={styles.itemText}>{accent.label}</ListItemText>
+            {isSelected ? <CheckRoundedIcon className={styles.check} fontSize="small" /> : null}
+          </MenuItem>
+        );
+      })}
+    </Menu>
+  );
+};

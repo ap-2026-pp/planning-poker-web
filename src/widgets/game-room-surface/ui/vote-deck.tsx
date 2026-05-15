@@ -21,6 +21,10 @@ export const VoteDeck = ({
   onSelectVote,
 }: VoteDeckProps) => {
   const handleSelectVote = async (value: string) => {
+    if (!canVote || isSubmitting) {
+      return;
+    }
+
     const nextVoteValue = selectedValue === value ? null : value;
 
     await onSelectVote(nextVoteValue);
@@ -50,7 +54,8 @@ export const VoteDeck = ({
                 }}
                 aria-label={card.ariaLabel ?? `Обрати оцінку ${card.label}`}
                 aria-pressed={isSelected}
-                disabled={!canVote || isSubmitting}
+                aria-disabled={!canVote || isSubmitting}
+                disabled={!canVote}
               >
                 <span className={styles.voteValueInner}>{card.label}</span>
               </button>

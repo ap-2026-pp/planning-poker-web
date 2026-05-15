@@ -85,6 +85,14 @@
   background: var(--pp-accent-soft) !important;
 }
 
+.menuItemDanger {
+  color: var(--pp-color-danger) !important;
+}
+
+.menuItemDanger:hover {
+  background: color-mix(in srgb, var(--pp-color-danger) 12%, transparent) !important;
+}
+
 .switchRow {
   display: flex;
   align-items: flex-start;

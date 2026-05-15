@@ -1,0 +1,75 @@
+.paper {
+  width: min(320px, calc(100vw - 24px));
+  border: 1px solid var(--pp-surface-border);
+  border-radius: 18px !important;
+  background: var(--pp-surface-panel-strong) !important;
+  box-shadow: var(--pp-surface-shadow) !important;
+  color: var(--pp-color-text-primary) !important;
+  overflow: hidden;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px !important;
+}
+
+.sectionLabel {
+  padding: 8px 12px 2px;
+  color: var(--pp-color-text-secondary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.divider {
+  margin: 6px 4px !important;
+  border-color: var(--pp-surface-border) !important;
+}
+
+.item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  min-height: 48px !important;
+  border-radius: 12px !important;
+  color: var(--pp-color-text-primary) !important;
+  font-size: 0.98rem !important;
+  font-weight: 700 !important;
+}
+
+.item:hover {
+  background: var(--pp-accent-soft) !important;
+}
+
+.item:global(.Mui-selected),
+.item:global(.Mui-selected:hover) {
+  background: var(--pp-accent-soft) !important;
+  color: var(--pp-accent-text) !important;
+}
+
+.item:global(.Mui-disabled) {
+  color: var(--pp-color-text-secondary) !important;
+  opacity: 0.56;
+}
+
+.itemIcon {
+  min-width: 36px !important;
+  color: currentColor !important;
+}
+
+.itemText :global(.MuiTypography-root) {
+  font-weight: 700 !important;
+}
+
+.check {
+  color: var(--pp-accent-main) !important;
+}
+
+.swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+}

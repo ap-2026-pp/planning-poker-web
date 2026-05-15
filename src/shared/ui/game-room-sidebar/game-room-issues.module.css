@@ -81,6 +81,20 @@
   gap: 12px;
 }
 
+.issueHeaderMain {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: grab;
+  user-select: none;
+}
+
+.issueHeaderMain:active {
+  cursor: grabbing;
+}
+
 .issueDot {
   width: 12px;
   height: 12px;
@@ -111,12 +125,13 @@
   flex: 1;
   flex-direction: column;
   gap: 8px;
-  cursor: grab;
-  user-select: none;
 }
 
-.issueText:active {
-  cursor: grabbing;
+.issueTitleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
 }
 
 .issueTitle {
@@ -134,17 +149,19 @@
 
 .issueFooter {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
 }
 
-.issueFooterActions {
+.issueSummaryDock {
   display: flex;
-  align-items: center;
+  margin-left: auto;
+  align-items: flex-end;
+  justify-content: flex-end;
   gap: 10px;
-  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .issueMeta {
@@ -155,46 +172,69 @@
 .issueCodeBadge {
   display: inline-flex;
   align-items: center;
-  min-height: 32px;
+  min-height: 30px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  color: #f1e9ff;
-  font-size: 0.86rem;
+  background: var(--pp-accent-soft);
+  color: var(--pp-accent-text);
+  border: 1px solid var(--pp-accent-border);
+  font-size: 0.82rem;
   font-weight: 800;
   padding-inline: 10px;
 }
 
 .issueResultButton {
-  width: 34px;
-  height: 34px;
-  color: rgba(248, 244, 255, 0.88) !important;
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  width: 48px;
+  height: 48px;
+  align-self: stretch;
+  border-radius: 16px !important;
+  color: var(--pp-color-text-primary) !important;
+  background: var(--pp-accent-card-bg) !important;
+  border: 1px solid var(--pp-accent-card-border) !important;
+}
+
+.issueResultButton:hover {
+  background: var(--pp-accent-card-bg) !important;
+  border-color: var(--pp-accent-border-strong) !important;
 }
 
 .issueCardMenuButton {
   margin-left: auto;
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  color: rgba(248, 244, 255, 0.82) !important;
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  width: 28px;
+  height: 28px;
+  padding: 0 !important;
+  color: var(--pp-color-text-secondary) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.issueCardMenuButton:hover {
+  color: var(--pp-color-text-primary) !important;
+  background: transparent !important;
+}
+
+.issueCardMenuButton svg {
+  font-size: 1.4rem !important;
 }
 
 .issuesMenuButton {
-  color: #f8f4ff !important;
-  background: rgba(255, 255, 255, 0.04) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: var(--pp-color-text-primary) !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+
+.issuesMenuButton:hover {
+  background: var(--pp-accent-soft) !important;
+  border-color: var(--pp-accent-border-strong) !important;
 }
 
 .issuesMenuPaper {
   min-width: 280px !important;
   border-radius: 18px !important;
-  background: rgba(34, 37, 56, 0.96) !important;
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 22px 50px rgba(3, 6, 16, 0.34) !important;
+  background: var(--pp-surface-panel-strong) !important;
+  border: 1px solid var(--pp-surface-border) !important;
+  box-shadow: var(--pp-surface-shadow) !important;
   padding: 8px !important;
 }
 
@@ -204,20 +244,26 @@
   gap: 12px !important;
   min-height: 52px !important;
   border-radius: 14px !important;
-  color: #e9e2f8 !important;
+  color: var(--pp-color-text-primary) !important;
   font-size: 1rem !important;
+  font-weight: 700 !important;
 }
 
 .issuesMenuItem:hover {
-  background: rgba(255, 255, 255, 0.06) !important;
+  background: var(--pp-accent-soft) !important;
+}
+
+.issuesMenuItem:global(.Mui-disabled) {
+  color: var(--pp-color-text-secondary) !important;
+  opacity: 0.56;
 }
 
 .issuesMenuItemDanger {
-  color: #ff7d9d !important;
+  color: var(--pp-color-danger) !important;
 }
 
 .issuesMenuItemDanger:hover {
-  background: rgba(255, 96, 129, 0.12) !important;
+  background: rgba(223, 129, 152, 0.12) !important;
 }
 
 .issueVoteButton {
@@ -239,30 +285,32 @@
 }
 
 .issueVoteButtonActive {
-  background: linear-gradient(90deg, #5b6578 0%, #454f60 100%);
-  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--pp-surface-border-strong);
+  background: var(--pp-surface-panel-strong);
+  color: var(--pp-color-text-primary);
+  box-shadow: 0 14px 24px rgba(5, 8, 20, 0.12);
 }
 
 .issueEstimatePanel {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 96px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.issueEstimateLabel {
-  color: rgba(216, 206, 235, 0.72) !important;
-  font-size: 0.8rem !important;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  padding: 8px;
+  border-radius: 16px;
+  background: var(--pp-accent-card-bg);
+  border: 1px solid var(--pp-accent-card-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 
 .issueEstimateValue {
-  color: #f8f4ff !important;
-  font-size: 1rem !important;
+  color: var(--pp-color-text-primary) !important;
+  font-size: 1.15rem !important;
   font-weight: 800 !important;
+  line-height: 1 !important;
+  text-align: center !important;
 }
 
 .addIssueButton,
@@ -354,14 +402,17 @@
   display: flex;
   flex-direction: column;
   gap: 22px;
-  margin-top: 18px;
   padding: 28px 24px;
-  border-radius: 40px;
+  border-radius: 20px;
   border: 1px solid var(--pp-surface-border);
   background: var(--pp-surface-panel-strong);
   box-shadow: var(--pp-card-lift-shadow);
   position: relative;
   overflow: hidden;
+}
+
+.issueInlineFormWrap {
+  margin-top: 18px;
 }
 
 .issueFormCard::before {
@@ -473,32 +524,32 @@
 .issueField :global(textarea::placeholder),
 .issueFieldBlue :global(.MuiInputBase-input::placeholder),
 .issueFieldBlue :global(textarea::placeholder) {
-  color: rgba(226, 220, 245, 0.42) !important;
+  color: color-mix(in srgb, var(--pp-color-text-secondary) 70%, transparent) !important;
   opacity: 1;
 }
 
 .issueField :global(.MuiFormHelperText-root),
 .issueFieldBlue :global(.MuiFormHelperText-root) {
   margin-inline: 4px !important;
-  color: #ffb4c5 !important;
+  color: var(--pp-color-danger) !important;
 }
 
 .issueReadonlyField :global(.MuiOutlinedInput-root.Mui-disabled) {
-  color: rgba(248, 245, 255, 0.72) !important;
-  background: rgba(255, 255, 255, 0.035) !important;
+  color: var(--pp-color-text-secondary) !important;
+  background: var(--pp-surface-soft) !important;
 }
 
 .issueReadonlyField :global(.MuiInputBase-input.Mui-disabled) {
-  -webkit-text-fill-color: rgba(248, 245, 255, 0.72) !important;
+  -webkit-text-fill-color: var(--pp-color-text-primary) !important;
 }
 
 .issueReadonlyField :global(.MuiInputLabel-root.Mui-disabled) {
-  color: rgba(226, 220, 245, 0.48) !important;
+  color: var(--pp-color-text-secondary) !important;
 }
 
 .issueReadonlyField :global(.MuiOutlinedInput-input[readonly]) {
-  -webkit-text-fill-color: rgba(248, 245, 255, 0.72) !important;
-  color: rgba(248, 245, 255, 0.72) !important;
+  -webkit-text-fill-color: var(--pp-color-text-primary) !important;
+  color: var(--pp-color-text-primary) !important;
 }
 
 .issueCopyButton {

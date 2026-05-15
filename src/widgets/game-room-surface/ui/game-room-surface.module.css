@@ -154,10 +154,10 @@
 .centerIconButton {
   width: 46px;
   height: 46px;
-  border: 1px solid rgba(134, 185, 255, 0.24);
+  border: 1px solid var(--pp-surface-border);
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.04);
-  color: #d9ecff;
+  color: var(--pp-accent-text);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -172,8 +172,8 @@
 
 .centerIconButton:hover:not(:disabled) {
   transform: translateY(-1px);
-  background: rgba(52, 123, 229, 0.1);
-  border-color: rgba(134, 185, 255, 0.38);
+  background: var(--pp-accent-soft);
+  border-color: var(--pp-accent-border);
 }
 
 .centerIconButtonPrimary {
@@ -253,7 +253,7 @@
   border-radius: 22px;
   border: 1px solid var(--pp-surface-border-strong);
   background: var(--pp-surface-panel-strong);
-  box-shadow: var(--pp-card-lift-shadow);
+  box-shadow: var(--pp-surface-shadow);
   backdrop-filter: blur(16px);
   text-align: center;
   pointer-events: auto;
@@ -428,6 +428,148 @@
   z-index: 4;
 }
 
+.emojiReactionLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.emojiFlight,
+.emojiImpact {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+}
+
+.emojiFlightGlyph {
+  display: block;
+  font-size: 1.7rem;
+  line-height: 1;
+  filter: drop-shadow(0 10px 18px rgba(22, 34, 58, 0.32));
+  animation: emojiFlightPath 760ms cubic-bezier(0.2, 0.78, 0.26, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.emojiImpactCore {
+  display: block;
+  font-size: 1.7rem;
+  line-height: 1;
+  filter: drop-shadow(0 8px 16px rgba(22, 34, 58, 0.26));
+  animation: emojiImpactCore 540ms ease-out forwards;
+}
+
+.emojiImpactRing {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(var(--pp-accent-rgb), 0.42);
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  animation: emojiImpactRing 540ms ease-out forwards;
+}
+
+.emojiImpactShard {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  font-size: 0.95rem;
+  line-height: 1;
+  opacity: 0;
+  animation: emojiImpactShard 540ms ease-out forwards;
+}
+
+.emojiImpactShardOne {
+  --emoji-impact-shard-x: -28px;
+  --emoji-impact-shard-y: -16px;
+}
+
+.emojiImpactShardTwo {
+  --emoji-impact-shard-x: 26px;
+  --emoji-impact-shard-y: -20px;
+}
+
+.emojiImpactShardThree {
+  --emoji-impact-shard-x: -20px;
+  --emoji-impact-shard-y: 24px;
+}
+
+.emojiImpactShardFour {
+  --emoji-impact-shard-x: 24px;
+  --emoji-impact-shard-y: 22px;
+}
+
+@keyframes emojiFlightPath {
+  0% {
+    transform: translate(0, 0) scale(0.72) rotate(-16deg);
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  58% {
+    transform: translate(var(--emoji-flight-mid-x), var(--emoji-flight-mid-y)) scale(1.08) rotate(10deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(var(--emoji-flight-x), var(--emoji-flight-y)) scale(0.92) rotate(0deg);
+    opacity: 0.98;
+  }
+}
+
+@keyframes emojiImpactCore {
+  0% {
+    transform: translate(0, 0) scale(1.2);
+    opacity: 0.96;
+  }
+
+  72% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.88;
+  }
+
+  100% {
+    transform: translate(0, 0) scale(0.64);
+    opacity: 0;
+  }
+}
+
+@keyframes emojiImpactRing {
+  0% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(4.4);
+  }
+}
+
+@keyframes emojiImpactShard {
+  0% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translate(
+        calc(-50% + var(--emoji-impact-shard-x)),
+        calc(-50% + var(--emoji-impact-shard-y))
+      )
+      scale(0.22);
+  }
+}
+
 .participantCardButton {
   display: flex;
   width: 100%;
@@ -478,7 +620,7 @@
   );
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 10px 22px var(--pp-accent-shadow);
+    0 10px 22px var(--pp-surface-shadow);
 }
 
 .votePreviewCardEmpty::before {
@@ -534,11 +676,12 @@
   display: grid;
   place-items: center;
   border-color: var(--pp-accent-border-strong);
-  background: linear-gradient(180deg, #ffffff 0%, rgba(var(--pp-accent-rgb), 0.18) 100%);
-  color: var(--pp-accent-strong);
+  background: linear-gradient(180deg, var(--pp-accent-light) 0%, var(--pp-accent-main) 100%);
+  color: var(--pp-accent-contrast);
   box-shadow:
-    0 12px 26px var(--pp-accent-shadow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    0 8px 18px var(--pp-accent-shadow),
+    0 0 0 2px var(--pp-accent-soft),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .votePreviewValue {
@@ -573,12 +716,21 @@
   text-align: center;
 }
 
-.participantActionPanel,
-.participantHintPanel {
+.participantPopoverStack {
   position: absolute;
   left: 50%;
   bottom: calc(100% + 10px);
+  max-width: calc(100vw - 24px);
   transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.participantActionPanel,
+.participantHintPanel,
+.emojiPickerPanel {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -592,11 +744,96 @@
   white-space: nowrap;
 }
 
+.emojiPickerPanel {
+  padding: 8px;
+}
+
 .participantHintPanel {
   padding-inline: 12px;
   color: var(--pp-color-text-secondary);
   font-size: 0.78rem;
   font-weight: 700;
+}
+
+.emojiQuickList {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.emojiReactionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--pp-surface-soft);
+  color: var(--pp-color-text-primary);
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.emojiReactionButton:hover:not(:disabled) {
+  transform: translateY(-1px) scale(1.04);
+  background: var(--pp-accent-soft);
+  box-shadow: 0 12px 22px rgba(var(--pp-accent-rgb), 0.18);
+}
+
+.emojiReactionButton:disabled {
+  cursor: wait;
+  opacity: 0.64;
+  transform: none;
+  box-shadow: none;
+}
+
+.emojiReactionButton span {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.emojiReactionButtonActive {
+  background: var(--pp-accent-soft);
+  box-shadow: 0 0 0 4px rgba(var(--pp-accent-rgb), 0.12);
+}
+
+.emojiReactionMoreButton svg {
+  font-size: 1.1rem !important;
+}
+
+.emojiReactionButtonLarge {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+}
+
+.emojiReactionButtonLarge span {
+  font-size: 1.35rem;
+}
+
+.emojiMenuPaper {
+  margin-top: 8px !important;
+  border-radius: 18px !important;
+  border: 1px solid var(--pp-surface-border) !important;
+  background: var(--pp-surface-panel-strong) !important;
+  box-shadow: var(--pp-surface-shadow) !important;
+  overflow: hidden !important;
+}
+
+.emojiMenuList {
+  padding: 0 !important;
+}
+
+.emojiMenuGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  min-width: 228px;
+  padding: 12px;
 }
 
 .participantActionButton {
@@ -762,6 +999,151 @@
   font-size: 1.15rem !important;
 }
 
+.timerMenuPaper {
+  margin-top: 8px !important;
+  min-width: min(332px, calc(100vw - 24px)) !important;
+  border-radius: 18px !important;
+  border: 1px solid var(--pp-surface-border) !important;
+  background: var(--pp-surface-panel-strong) !important;
+  box-shadow: var(--pp-surface-shadow) !important;
+  color: var(--pp-color-text-primary) !important;
+  overflow: hidden;
+}
+
+.timerMenuList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px !important;
+}
+
+.timerMenuItem {
+  min-height: 46px !important;
+  border-radius: 12px !important;
+  color: var(--pp-color-text-primary) !important;
+  font-size: 0.98rem !important;
+  font-weight: 700 !important;
+}
+
+.timerMenuItem:hover {
+  background: var(--pp-accent-soft) !important;
+}
+
+.timerMenuItem:global(.Mui-selected),
+.timerMenuItem:global(.Mui-selected:hover) {
+  background: var(--pp-accent-soft) !important;
+  color: var(--pp-accent-text) !important;
+}
+
+.timerMenuItem:global(.Mui-disabled) {
+  color: var(--pp-color-text-secondary) !important;
+  opacity: 0.58;
+}
+
+.timerMenuDivider {
+  margin: 6px 4px !important;
+  border-color: var(--pp-surface-border) !important;
+}
+
+.timerMenuContent {
+  display: grid;
+  gap: 12px;
+  padding: 12px;
+}
+
+.timerMenuLabel {
+  color: var(--pp-color-text-secondary) !important;
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase;
+}
+
+.timerMenuField :global(.MuiInputLabel-root) {
+  color: var(--pp-color-text-secondary) !important;
+}
+
+.timerMenuField :global(.MuiInputLabel-root.Mui-focused) {
+  color: var(--pp-accent-text) !important;
+}
+
+.timerMenuField :global(.MuiOutlinedInput-root) {
+  color: var(--pp-color-text-primary) !important;
+  border-radius: 18px !important;
+  background: var(--pp-surface-soft) !important;
+}
+
+.timerMenuField :global(.MuiOutlinedInput-notchedOutline) {
+  border-color: var(--pp-surface-border) !important;
+}
+
+.timerMenuField :global(.MuiOutlinedInput-root:hover) {
+  background: var(--pp-surface-strong) !important;
+}
+
+.timerMenuField :global(.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline) {
+  border-color: var(--pp-surface-border-strong) !important;
+}
+
+.timerMenuField :global(.MuiOutlinedInput-root.Mui-focused) {
+  background: var(--pp-surface-panel-strong) !important;
+  box-shadow: 0 0 0 6px rgba(var(--pp-accent-rgb), 0.14) !important;
+}
+
+.timerMenuField :global(.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline) {
+  border-color: var(--pp-accent-border-strong) !important;
+}
+
+.timerMenuField :global(.MuiFormHelperText-root) {
+  margin-inline: 4px !important;
+  color: var(--pp-color-danger) !important;
+}
+
+.timerMenuActionRow {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px !important;
+}
+
+.timerMenuPrimaryButton,
+.timerMenuSecondaryButton,
+.timerMenuRestartButton {
+  min-height: 48px !important;
+  border-radius: 14px !important;
+  text-transform: none !important;
+  font-weight: 800 !important;
+}
+
+.timerMenuPrimaryButton {
+  color: var(--pp-accent-contrast) !important;
+  background: var(--pp-gradient-primary) !important;
+  box-shadow: 0 18px 32px var(--pp-accent-shadow) !important;
+}
+
+.timerMenuPrimaryButton:disabled {
+  box-shadow: none !important;
+}
+
+.timerMenuSecondaryButton {
+  color: var(--pp-color-text-primary) !important;
+  border-color: var(--pp-surface-border) !important;
+  background: var(--pp-surface-soft) !important;
+}
+
+.timerMenuSecondaryButton:hover {
+  border-color: var(--pp-accent-border-strong) !important;
+  background: var(--pp-accent-soft) !important;
+}
+
+.timerMenuRestartButton {
+  color: var(--pp-accent-text) !important;
+  background: transparent !important;
+}
+
+.timerMenuRestartButton:hover {
+  background: var(--pp-accent-soft) !important;
+}
+
 .roundSummary {
   position: relative;
   z-index: 1;
@@ -771,11 +1153,9 @@
   width: 100%;
   padding: 18px 20px;
   border-radius: 24px;
-  border: 1px solid var(--pp-surface-border-strong);
+  border: 1px solid var(--pp-surface-border);
   background: var(--pp-surface-panel);
-  box-shadow:
-    var(--pp-surface-shadow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  box-shadow: var(--pp-surface-shadow);
 }
 
 .roundSummaryDistribution {
@@ -805,15 +1185,16 @@
   align-items: flex-end;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(134, 148, 164, 0.38);
+  background: color-mix(in srgb, var(--pp-accent-main) 14%, var(--pp-surface-soft));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .roundSummaryBarFill {
   width: 100%;
   min-height: 16px;
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.84) 100%);
-  box-shadow: 0 8px 18px rgba(255, 255, 255, 0.18);
+  background: linear-gradient(180deg, var(--pp-companion-main) 0%, var(--pp-accent-main) 100%);
+  box-shadow: 0 10px 20px rgba(var(--pp-accent-rgb), 0.24);
 }
 
 .roundSummaryVoteCard {
@@ -822,13 +1203,13 @@
   height: 92px;
   place-items: center;
   border-radius: 18px;
-  border: 2px solid rgba(255, 255, 255, 0.92);
-  background: rgba(16, 31, 47, 0.78);
-  box-shadow: 0 18px 36px rgba(4, 12, 24, 0.2);
+  border: 1px solid var(--pp-surface-border-strong);
+  background: var(--pp-surface-panel-strong);
+  box-shadow: var(--pp-card-lift-shadow);
 }
 
 .roundSummaryVoteValue {
-  color: #ffffff !important;
+  color: var(--pp-color-text-primary) !important;
   font-size: 1.55rem !important;
   font-weight: 900 !important;
   line-height: 1 !important;
@@ -854,8 +1235,8 @@
   gap: 8px;
   padding: 16px 18px;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--pp-surface-border);
+  background: var(--pp-surface-soft);
 }
 
 .roundSummaryStatLabel {
@@ -886,11 +1267,12 @@
   place-items: center;
   border-radius: 50%;
   background:
-    radial-gradient(circle at center, rgba(15, 27, 40, 0.98) 0 60%, transparent 61%),
+    radial-gradient(circle at center, var(--pp-surface-panel-strong) 0 60%, transparent 61%),
     conic-gradient(
-      rgba(56, 223, 163, 0.92) 0 var(--agreement-progress),
-      rgba(108, 123, 139, 0.34) var(--agreement-progress) 100%
+      var(--pp-companion-main) 0 var(--agreement-progress),
+      var(--pp-surface-strong) var(--agreement-progress) 100%
     );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
 .roundSummaryAgreementInner {
@@ -899,8 +1281,8 @@
   height: 76px;
   place-items: center;
   border-radius: 50%;
-  background: rgba(16, 31, 47, 0.94);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--pp-accent-border);
+  background: color-mix(in srgb, var(--pp-accent-main) 12%, var(--pp-surface-panel-strong));
 }
 
 .roundSummaryAgreementValue {
@@ -941,8 +1323,8 @@
   min-width: 0;
   padding: 12px 14px;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--pp-surface-border);
+  background: var(--pp-surface-soft);
 }
 
 .roundSummaryVoteName {
@@ -1025,7 +1407,7 @@
   place-items: center;
   width: 58px;
   height: 78px;
-  border-radius: 14px;
+  border-radius: 8px;
   border: 1px solid var(--pp-accent-border);
   background: linear-gradient(
     180deg,
@@ -1232,7 +1614,8 @@
   }
 
   .participantActionPanel,
-  .participantHintPanel {
+  .participantHintPanel,
+  .emojiPickerPanel {
     max-width: calc(100vw - 36px);
   }
 
