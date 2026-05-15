@@ -93,6 +93,11 @@ export const useGameRoomRealtime = ({
         onReconnected,
     ]);
 
+    const isActiveConnection = useCallback(
+        (connection: HubConnection) => connectionRef.current === connection,
+        [],
+    );
+
     const attachHandlers = useCallback((connection: HubConnection) => {
         connection.on(gameRoomRealtimeEventNames.participantJoined, (participant: GameParticipant) => {
             void handlersRef.current.onParticipantJoined?.(participant);
@@ -139,18 +144,30 @@ export const useGameRoomRealtime = ({
         });
 
         connection.onreconnecting(() => {
+            if (!isActiveConnection(connection)) {
+                return;
+            }
+
             setConnectionStatus('reconnecting');
         });
 
         connection.onreconnected(async () => {
+            if (!isActiveConnection(connection)) {
+                return;
+            }
+
             setConnectionStatus('connected');
             await handlersRef.current.onReconnected?.();
         });
 
         connection.onclose(() => {
+            if (!isActiveConnection(connection)) {
+                return;
+            }
+
             setConnectionStatus('disconnected');
         });
-    }, []);
+    }, [isActiveConnection]);
 
     const detachHandlers = useCallback((connection: HubConnection) => {
         connection.off(gameRoomRealtimeEventNames.participantJoined);
@@ -243,12 +260,13 @@ export const useGameRoomRealtime = ({
             setConnectionStatus('connecting');
 
             if (current) {
+                connectionRef.current = null;
                 detachHandlers(current);
                 await stopSignalRConnection(current);
             }
 
-            connectionRef.current = null;
             await createAndConnect();
+            await handlersRef.current.onReconnected?.();
         } catch (error) {
             console.error('Failed to retry SignalR connection', error);
             setConnectionStatus('disconnected');

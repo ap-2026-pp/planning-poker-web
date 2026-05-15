@@ -676,6 +676,15 @@ export const useGameRoomPage = () => {
     const storedParticipantId =
       storedParticipantSession?.gameId === gameId ? storedParticipantSession.participantId : null;
 
+    if (user?.id) {
+      const authenticatedParticipant =
+        sortedParticipants.find((participant) => participant.userId === user.id) ?? null;
+
+      if (authenticatedParticipant) {
+        return authenticatedParticipant;
+      }
+    }
+
     if (storedParticipantId) {
       const storedParticipant = sortedParticipants.find(
         (participant) => participant.id === storedParticipantId,
@@ -686,10 +695,6 @@ export const useGameRoomPage = () => {
       }
     }
 
-    if (user?.id) {
-      return sortedParticipants.find((participant) => participant.userId === user.id) ?? null;
-    }
-
     return null;
   }, [
     gameId,
@@ -698,26 +703,6 @@ export const useGameRoomPage = () => {
     storedParticipantSession?.participantId,
     user?.id,
   ]);
-
-  const sidebarParticipants = useMemo(
-    () => sortSidebarParticipants(sortedParticipants, currentParticipant?.id ?? null),
-    [sortedParticipants, currentParticipant?.id],
-  );
-
-  const onlineParticipants = useMemo(
-    () => sortedParticipants.filter(isParticipantOnline),
-    [sortedParticipants],
-  );
-
-  const positionedParticipants = useMemo(
-    () => getParticipantPositions(onlineParticipants, isMobileLayout),
-    [isMobileLayout, onlineParticipants],
-  );
-
-  const overflowParticipants = useMemo(
-    () => onlineParticipants.slice(getParticipantVisibilityLimit(isMobileLayout)),
-    [isMobileLayout, onlineParticipants],
-  );
 
   const isCurrentParticipantMaster = currentParticipant?.role === ParticipantRole.Master;
 
@@ -1295,6 +1280,41 @@ export const useGameRoomPage = () => {
     onEmojiReactionReceived: handleEmojiReactionReceived,
     onReconnected: reloadRoom,
   });
+
+  const displayedParticipants = useMemo(() => {
+    if (realtime.connectionStatus !== 'disconnected' || !currentParticipant?.id) {
+      return sortedParticipants;
+    }
+
+    return sortedParticipants.map((participant) =>
+      participant.id === currentParticipant.id
+        ? {
+            ...participant,
+            isConnected: false,
+          }
+        : participant,
+    );
+  }, [currentParticipant?.id, realtime.connectionStatus, sortedParticipants]);
+
+  const sidebarParticipants = useMemo(
+    () => sortSidebarParticipants(displayedParticipants, currentParticipant?.id ?? null),
+    [currentParticipant?.id, displayedParticipants],
+  );
+
+  const onlineParticipants = useMemo(
+    () => displayedParticipants.filter(isParticipantOnline),
+    [displayedParticipants],
+  );
+
+  const positionedParticipants = useMemo(
+    () => getParticipantPositions(onlineParticipants, isMobileLayout),
+    [isMobileLayout, onlineParticipants],
+  );
+
+  const overflowParticipants = useMemo(
+    () => onlineParticipants.slice(getParticipantVisibilityLimit(isMobileLayout)),
+    [isMobileLayout, onlineParticipants],
+  );
 
   const selectParticipant = useCallback((participantId: string) => {
     setSelectedParticipantId((current) => (current === participantId ? null : participantId));

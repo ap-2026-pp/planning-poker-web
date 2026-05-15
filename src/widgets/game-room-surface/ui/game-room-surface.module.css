@@ -862,7 +862,7 @@
 
 .participantActionDanger {
   background: rgba(255, 96, 129, 0.16);
-  color: #ffd7df;
+  color: var(--pp-color-danger);
 }
 
 .participantInitials {

@@ -302,7 +302,7 @@
     flex-shrink: 0;
     border: 1px solid rgba(255, 126, 153, 0.22) !important;
     background: rgba(140, 28, 55, 0.18) !important;
-    color: #ffe8ee !important;
+    color: var(--pp-color-text-primary) !important;
 }
 
 .alert :global(.MuiAlert-icon) {

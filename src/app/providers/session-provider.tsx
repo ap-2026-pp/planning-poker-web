@@ -84,6 +84,7 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
       lastAuthenticatedEmailRef.current = currentUser.email;
       setLastAuthenticatedEmail(currentUser.email);
       clearGuestAccessToken();
+      clearCurrentRoomParticipantSession();
 
       setUser(currentUser);
       setStatus('authenticated');
@@ -144,6 +145,7 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
       lastAuthenticatedEmailRef.current = currentUser.email;
       setLastAuthenticatedEmail(currentUser.email);
       clearGuestAccessToken();
+      clearCurrentRoomParticipantSession();
 
       setUser(currentUser);
       setStatus('authenticated');
@@ -162,6 +164,7 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
       lastAuthenticatedEmailRef.current = currentUser.email;
       setLastAuthenticatedEmail(currentUser.email);
       clearGuestAccessToken();
+      clearCurrentRoomParticipantSession();
 
       setUser(currentUser);
       setStatus('authenticated');
